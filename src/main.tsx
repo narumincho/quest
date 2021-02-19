@@ -5,7 +5,6 @@ import { ThemedApp } from "./ThemedApp";
 window.addEventListener("load", () => {
   const entryElement = document.createElement("div");
   document.body.appendChild(entryElement);
-  document.body.style.margin = "0";
 
   ReactDom.render(
     <React.StrictMode>

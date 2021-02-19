@@ -147,7 +147,7 @@
       ],
       "@typescript-eslint/consistent-type-definitions": [
         "error",
-        "interface"
+        "type"
       ],
       "@typescript-eslint/no-dynamic-delete": [
         "error"
