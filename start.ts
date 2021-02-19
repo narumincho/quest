@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-var-requires */
-const esbuild = require("esbuild");
-const fastify = require("fastify");
-const axios = require("axios");
+import * as axios from "axios";
+import * as esbuild from "esbuild";
+import * as fastify from "fastify";
 
 const server = fastify.fastify({
   logger: true,
@@ -13,9 +11,11 @@ const mainServerPortNumber = 5000;
 const esbuildPortNumber = 5001;
 const esbuildOutFileName = "main.js";
 
-server.get("/", (request, reply) => {
-  reply.type("text/html");
-  return `
+server.get(
+  "/",
+  (request, reply): Promise<string> => {
+    reply.type("text/html");
+    return Promise.resolve(`
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -28,11 +28,12 @@ server.get("/", (request, reply) => {
   <noscript>このサイトではJavaScriptを使用します. ブラウザの設定から有効にしてください</noscript>
 </body>
 </html>
-`;
-});
+`);
+  }
+);
 
 server.get(scriptPath, async (request) => {
-  console.log("request.accept", request.accept);
+  console.log("request.accept", request.headers.accept);
   const response = await axios.default.get(
     `http://localhost:${esbuildPortNumber}/${esbuildOutFileName}`,
     {
