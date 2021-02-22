@@ -19,6 +19,6 @@ jobs:
       - name: Install npm dependencies (npm ci)
         run: npm ci
       - name: Run build script
-        run: npm run production-build
+        run: npm run start-production-build
       - name: type check
         run: npm run typeCheck

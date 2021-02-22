@@ -16,7 +16,7 @@ jobs:
       - name: Install npm dependencies (npm ci)
         run: npm ci
       - name: Run build script
-        run: npm run production-build
+        run: npm run start-production-build
       - name: deploy functions to firebase
         uses: w9jds/firebase-action@master
         with:

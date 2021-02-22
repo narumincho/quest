@@ -57,20 +57,12 @@ const generateFirebaseJson = (clientMode: BuildMode): Promise<void> => {
         ],
         rewrites: [
           {
-            source: "sitemap",
-            function: "sitemap",
-          },
-          {
             source: "api/**",
             function: "api",
           },
           {
             source: "logInCallback/**",
             function: "logInCallback",
-          },
-          {
-            source: "**",
-            function: "html",
           },
         ],
         cleanUrls: true,
