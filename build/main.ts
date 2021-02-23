@@ -44,25 +44,10 @@ const generateFirebaseJson = (clientMode: BuildMode): Promise<void> => {
       },
       hosting: {
         public: hostingDistributionPath,
-        headers: [
-          {
-            source: "icon",
-            headers: [
-              {
-                key: "content-type",
-                value: "image/png",
-              },
-            ],
-          },
-        ],
         rewrites: [
           {
-            source: "api/**",
+            source: "/api/**",
             function: "api",
-          },
-          {
-            source: "logInCallback/**",
-            function: "logInCallback",
           },
         ],
         cleanUrls: true,
@@ -120,6 +105,7 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
     "firebase-functions",
     "axios",
     "jsonwebtoken",
+    "graphql",
   ];
 
   await fileSystem.outputFile(
@@ -128,7 +114,7 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
       name: "definy-functions",
       version: "1.0.0",
       description: "definy in Cloud Functions for Firebase",
-      main: "main.js",
+      main: "./functions/main.js",
       author: "narumincho",
       engines: { node: "14" },
       dependencies: Object.fromEntries(
