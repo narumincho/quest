@@ -1,6 +1,7 @@
 import * as React from "react";
 import { AppBar, Box, Toolbar, Typography } from "@material-ui/core";
 import { Content } from "./Content";
+import { LineLogInButton } from "./LineLoginButton";
 
 export const App: React.FC<Record<never, never>> = () => {
   return (
@@ -11,6 +12,7 @@ export const App: React.FC<Record<never, never>> = () => {
         </Toolbar>
       </AppBar>
       <Content />
+      <LineLogInButton />
     </Box>
   );
 };
