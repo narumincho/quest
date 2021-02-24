@@ -6,7 +6,8 @@
   "scripts": {
     "start-development-build": "ts-node build/start-development-build.ts",
     "start-production-build": "ts-node build/start-production-build.ts",
-    "start-emulator": "firebase emulators:start --project north-quest"
+    "start-emulator": "firebase emulators:start --project north-quest",
+    "typeCheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
