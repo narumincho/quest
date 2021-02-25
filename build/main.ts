@@ -1,6 +1,7 @@
 import * as esbuild from "esbuild";
 import * as fileSystem from "fs-extra";
 import * as ts from "typescript";
+import { Mode } from "../common/mode";
 
 const clientSourceEntryPath = "./client/main.tsx";
 const functionsSourceEntryPath = "./functions/main.ts";
@@ -8,11 +9,10 @@ const distributionPath = "./distribution";
 const functionsDistributionPath = `${distributionPath}/functions`;
 const hostingDistributionPath = `${distributionPath}/hosting`;
 
-type BuildMode = "development" | "production";
 /**
  * Firebase へ デプロイするためにやビルドする
  */
-export const build = async (buildMode: BuildMode): Promise<void> => {
+export const build = async (buildMode: Mode): Promise<void> => {
   await outputPackageJsonForFunctions();
 
   await generateFirebaseJson(buildMode);
@@ -33,9 +33,14 @@ export const build = async (buildMode: BuildMode): Promise<void> => {
   });
 
   buildFunctionsTypeScript();
+  console.log(
+    `やったー ${distributionPath}に${
+      buildMode === "development" ? "開発" : "本番"
+    }用のビルドができたぞ!`
+  );
 };
 
-const generateFirebaseJson = (clientMode: BuildMode): Promise<void> => {
+const generateFirebaseJson = (clientMode: Mode): Promise<void> => {
   return fileSystem.outputFile(
     `firebase.json`,
     JSON.stringify({
