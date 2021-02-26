@@ -1,6 +1,7 @@
 import * as apiCodec from "../common/apiCodec";
 import * as functions from "firebase-functions";
 import * as lib from "./lib";
+import * as url from "../common/url";
 
 /*
  * =====================================================================
@@ -76,6 +77,23 @@ const callApiFromCodecAndFunction = async <Request, Response>(
  */
 export const lineLoginCallback = functions.https.onRequest(
   (request, response) => {
-    response.send("LINEログインは実装途中");
+    const code: unknown = request.query.code;
+    const state: unknown = request.query.state;
+    if (!(typeof code === "string" && typeof state === "string")) {
+      console.log("codeかstateが送られて来なかった。ユーザーがキャンセルした?");
+      response.redirect(
+        301,
+        url
+          .urlDataToUrl({
+            location: { tag: "top" },
+            accountToken: undefined,
+          })
+          .toString()
+      );
+      return;
+    }
+    lib.lineLoginCallback(code, state).then((result) => {
+      response.redirect(301, url.urlDataToUrl(result).toString());
+    });
   }
 );
