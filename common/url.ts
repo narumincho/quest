@@ -1,10 +1,10 @@
-import { AccountToken } from "./accountToken";
+import * as d from "../data";
 import { origin } from "./origin";
 
 /** URLに含めるデータ */
 export type UrlData = {
   location: Location;
-  accountToken: AccountToken | undefined;
+  accountToken: d.AccountToken | undefined;
 };
 
 /** quest 内の場所 */
@@ -40,12 +40,12 @@ export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
   if (
     accountTokenResult !== null &&
     accountTokenResult.groups !== undefined &&
-    typeof accountTokenResult.groups["account-token"] === "string"
+    typeof accountTokenResult.groups.token === "string"
   ) {
-    const accountTokenAsString = accountTokenResult.groups["account-token"];
+    const accountTokenAsString = accountTokenResult.groups.token;
     if (typeof accountTokenAsString === "string") {
       return {
-        accountToken: accountTokenAsString as AccountToken,
+        accountToken: accountTokenAsString as d.AccountToken,
         location,
       };
     }

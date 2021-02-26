@@ -1,9 +1,9 @@
 import * as apiCodec from "../common/apiCodec";
 import * as crypto from "crypto";
+import * as d from "../data";
 import * as firebaseInterface from "./firebaseInterface";
 import * as jsonWebToken from "jsonwebtoken";
 import { UrlData, lineLoginCallbackUrl } from "../common/url";
-import { AccountToken } from "../common/accountToken";
 import axios from "axios";
 
 type ApiCodecType = typeof apiCodec;
@@ -17,6 +17,12 @@ export const apiFunc: {
     const state = createRandomId();
     await firebaseInterface.createLogInState(state);
     return generateLineLogInUrl(state).toString();
+  },
+  getAccountByAccountToken: async (accountToken) => {
+    const result = await firebaseInterface.getAccountByAccountTokenHash(
+      hashAccountToken(accountToken)
+    );
+    return result === undefined ? "不明なユーザー" : result.name;
   },
 };
 
@@ -37,19 +43,25 @@ export const lineLoginCallback = async (
   state: string
 ): Promise<UrlData> => {
   const isValid = await firebaseInterface.existsLoginState(state);
-  if (isValid) {
-    await firebaseInterface.deleteLoginState(state);
-    const profile = await getLineProfile(code);
-    await firebaseInterface.createAccount({
-      id: createRandomId(),
-      lineId: profile.id,
-      imageUrl: profile.imageUrl.toString(),
-      name: profile.name,
-    });
+  if (!isValid) {
+    return {
+      location: { tag: "top" },
+      accountToken: undefined,
+    };
   }
+  await firebaseInterface.deleteLoginState(state);
+  const profile = await getLineProfile(code);
+  const accountTokenAndHash = issueAccessToken();
+  await firebaseInterface.createAccount({
+    id: createRandomId(),
+    lineId: profile.id,
+    imageUrl: profile.imageUrl.toString(),
+    name: profile.name,
+    accountTokenHash: accountTokenAndHash.accountTokenHash,
+  });
   return {
     location: { tag: "top" },
-    accountToken: "dummy-account-token" as AccountToken,
+    accountToken: accountTokenAndHash.accountToken,
   };
 };
 
@@ -97,7 +109,7 @@ const getLineProfile = async (
     picture: unknown;
   };
   if (
-    markedDecoded.iss !== "https://accounts.google.com" ||
+    markedDecoded.iss !== "https://access.line.me" ||
     typeof markedDecoded.name !== "string" ||
     typeof markedDecoded.sub !== "string" ||
     typeof markedDecoded.picture !== "string"
@@ -116,3 +128,23 @@ const getLineProfile = async (
     imageUrl: new URL(markedDecoded.picture),
   };
 };
+
+/**
+ * アクセストークンを生成する
+ */
+const issueAccessToken = (): {
+  accountToken: d.AccountToken;
+  accountTokenHash: string;
+} => {
+  const accountToken = crypto.randomBytes(32).toString("hex") as d.AccountToken;
+  return {
+    accountToken,
+    accountTokenHash: hashAccountToken(accountToken),
+  };
+};
+
+const hashAccountToken = (accountToken: d.AccountToken): string =>
+  crypto
+    .createHash("sha256")
+    .update(new Uint8Array(d.AccountToken.codec.encode(accountToken)))
+    .digest("hex");

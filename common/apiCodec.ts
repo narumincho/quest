@@ -11,3 +11,8 @@ export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
   request: d.Unit.codec,
   response: d.String.codec,
 };
+
+export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.String> = {
+  request: d.AccountToken.codec,
+  response: d.String.codec,
+};

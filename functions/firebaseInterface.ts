@@ -18,6 +18,7 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
       lineId: string;
       imageUrl: string;
       createTime: admin.firestore.Timestamp;
+      accountTokenHash: string;
     };
     subCollections: Record<never, never>;
   };
@@ -45,13 +46,31 @@ export const createAccount = async (accountCrateData: {
   name: string;
   lineId: string;
   imageUrl: string;
+  accountTokenHash: string;
 }): Promise<void> => {
   await firestore.collection("account").doc(accountCrateData.id).create({
     name: accountCrateData.name,
     lineId: accountCrateData.lineId,
     imageUrl: accountCrateData.imageUrl,
     createTime: admin.firestore.Timestamp.now(),
+    accountTokenHash: accountCrateData.accountTokenHash,
   });
+};
+
+export const getAccountByAccountTokenHash = async (
+  accountTokenHash: string
+): Promise<{ name: string } | undefined> => {
+  const documents = await firestore
+    .collection("account")
+    .where("accountTokenHash", "==", accountTokenHash)
+    .get();
+  const document = documents.docs[0];
+  if (document === undefined) {
+    return undefined;
+  }
+  return {
+    name: document.data().name,
+  };
 };
 
 /**
