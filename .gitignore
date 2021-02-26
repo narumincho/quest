@@ -2,3 +2,4 @@ node_modules
 /distribution
 firebase.json
 *.log
+common/origin.ts

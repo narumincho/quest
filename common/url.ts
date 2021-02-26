@@ -1,4 +1,5 @@
 import { AccountToken } from "./accountToken";
+import { origin } from "./origin";
 
 /** URLに含めるデータ */
 export type UrlData = {
@@ -10,13 +11,11 @@ export type UrlData = {
 export type Location = { tag: "top" };
 
 /** アカウントトークンを含んだ パスとハッシュを生成する */
-export const urlDataToPathAndHash = (
-  urlData: UrlData
-): { path: string; hash: string } => {
-  return {
-    path: locationToPath(urlData.location),
-    hash: `#account-token=${urlData.accountToken}`,
-  };
+export const urlDataToUrl = (urlData: UrlData): URL => {
+  const url = new URL(origin);
+  url.pathname = locationToPath(urlData.location);
+  url.hash = `account-token=${urlData.accountToken}`;
+  return url;
 };
 
 /** quest 内の場所からURLのパスを得る */

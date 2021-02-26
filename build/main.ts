@@ -1,5 +1,8 @@
 import * as esbuild from "esbuild";
 import * as fileSystem from "fs-extra";
+import * as jsTsCodeGen from "js-ts-code-generator";
+import * as jsTsData from "js-ts-code-generator/data";
+import * as jsTsIndenter from "js-ts-code-generator/identifer";
 import * as ts from "typescript";
 import { Mode } from "../common/mode";
 
@@ -12,10 +15,11 @@ const hostingDistributionPath = `${distributionPath}/hosting`;
 /**
  * Firebase へ デプロイするためにやビルドする
  */
-export const build = async (buildMode: Mode): Promise<void> => {
+export const build = async (mode: Mode): Promise<void> => {
   await outputPackageJsonForFunctions();
+  await outputCommonOrigin(mode);
 
-  await generateFirebaseJson(buildMode);
+  await generateFirebaseJson(mode);
 
   /** staticなファイルのコピー */
   await fileSystem.copy("./static", hostingDistributionPath);
@@ -35,7 +39,7 @@ export const build = async (buildMode: Mode): Promise<void> => {
   buildFunctionsTypeScript();
   console.log(
     `やったー ${distributionPath}に${
-      buildMode === "development" ? "開発" : "本番"
+      mode === "development" ? "開発" : "本番"
     }用のビルドができたぞ!`
   );
 };
@@ -53,6 +57,10 @@ const generateFirebaseJson = (clientMode: Mode): Promise<void> => {
           {
             source: "/api/**",
             function: "api",
+          },
+          {
+            source: "/lineLoginCallback",
+            function: "lineLoginCallback",
           },
         ],
         cleanUrls: true,
@@ -100,6 +108,12 @@ const buildFunctionsTypeScript = (): void => {
   }).emit();
 };
 
+/**
+ * Cloud Functions for Firebase で 使われる `package.json` のファイルを出力する
+ *
+ * 使用するパッケージはこの関数内で指定し,
+ * バージョンは リポジトリのルートにある `package.json` のバージョンを読み取って使用する.
+ */
 const outputPackageJsonForFunctions = async (): Promise<void> => {
   const packageJson: {
     devDependencies: Record<string, string>;
@@ -133,5 +147,30 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
         )
       ),
     })
+  );
+};
+
+/** `common/origin` のファイルを出力する. modeによって出力されるオリジンが変更される. */
+const outputCommonOrigin = (mode: Mode): Promise<void> => {
+  const origin =
+    mode === "development"
+      ? "http://localhost:5000"
+      : "https://north-quest.web.app";
+  return fileSystem.outputFile(
+    "./common/origin.ts",
+    jsTsCodeGen.generateCodeAsString(
+      {
+        exportDefinitionList: [
+          jsTsData.ExportDefinition.Variable({
+            name: jsTsIndenter.fromString("origin"),
+            document: `questのWebアプリを配信, APIを提供するオリジン. (ビルド時にこのコードが書き換わる. ) ${origin}`,
+            expr: jsTsData.Expr.StringLiteral(origin),
+            type: jsTsData.Type.String,
+          }),
+        ],
+        statementList: [],
+      },
+      "TypeScript"
+    )
   );
 };
