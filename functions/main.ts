@@ -5,6 +5,7 @@ import * as lib from "./lib";
 /*
  * =====================================================================
  *               api データを取得したり変更したりする
+ *           http://localhost:5000/api/requestLineLoginUrl
  *        https://north-quest.web.app/api/requestLineLoginUrl
  *                            など
  *            ↓ Firebase Hosting firebase.json rewrite
@@ -62,3 +63,19 @@ const callApiFromCodecAndFunction = async <Request, Response>(
   );
   return codec.response.encode(response);
 };
+
+/*
+ * =====================================================================
+ *               lineLoginCallback ソーシャルログインのコールバック先
+ *         http://localhost:5000/lineLoginCallback/?state=&code=
+ *      https://north-quest.web.app/lineLoginCallback/?state=&code=
+ *                            など
+ *            ↓ Firebase Hosting firebase.json rewrite
+ *           Cloud Functions for Firebase / lineLoginCallback
+ * =====================================================================
+ */
+export const lineLoginCallback = functions.https.onRequest(
+  (request, response) => {
+    response.send("LINEログインは実装途中");
+  }
+);

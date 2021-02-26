@@ -60,3 +60,6 @@ export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
 export const pathToLocation = (path: string): Location => {
   return { tag: "top" };
 };
+
+/** LINEログインで指定する. コールバックURL */
+export const lineLoginCallbackUrl = `${origin}/lineLoginCallback`;

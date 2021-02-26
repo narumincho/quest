@@ -13,8 +13,10 @@ export const LineLogInButton: React.FunctionComponent<Props> = () => {
       case "preCalling": {
         setCallState("calling");
         api.requestLineLoginUrl(undefined).then((response) => {
-          console.log(response);
           setCallState("notCalled");
+          if (response._ === "Just") {
+            location.href = response.value;
+          }
         });
       }
     }

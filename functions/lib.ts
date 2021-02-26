@@ -8,6 +8,6 @@ export const apiFunc: {
   ) => Promise<apiCodec.GetCodecType<ApiCodecType[apiName]["response"]>>;
 } = {
   requestLineLoginUrl: () => {
-    return Promise.resolve("サンプルURL");
+    return Promise.resolve("https://narumincho.com");
   },
 };
