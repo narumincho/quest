@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button, CircularProgress } from "@material-ui/core";
 import { api } from "./api";
 import { makeStyles } from "@material-ui/styles";
+import { useSnackbar } from "notistack";
 
 type Props = Record<never, never>;
 
@@ -36,16 +37,20 @@ const useStyle = makeStyles({
 
 export const LineLogInButton: React.FunctionComponent<Props> = () => {
   const classes = useStyle();
+  const { enqueueSnackbar } = useSnackbar();
   const [callState, setCallState] = React.useState<CallState>("notCalled");
+
   React.useEffect(() => {
     switch (callState) {
       case "preCalling": {
         setCallState("calling");
         api.requestLineLoginUrl(undefined).then((response) => {
-          if (response._ === "Just") {
-            location.href = response.value;
-            setCallState("jumping");
+          if (response._ === "Nothing") {
+            enqueueSnackbar("LINEログインのURLを発行できなかった");
+            return;
           }
+          location.href = response.value;
+          setCallState("jumping");
         });
       }
     }

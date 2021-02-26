@@ -2,6 +2,7 @@ import * as React from "react";
 import { CssBaseline, ThemeProvider, createMuiTheme } from "@material-ui/core";
 import { App } from "./App";
 import { PaletteOptions } from "@material-ui/core/styles/createPalette";
+import { SnackbarProvider } from "notistack";
 
 type DarkOrLight = PaletteOptions["type"];
 
@@ -31,7 +32,9 @@ export const ThemedApp: React.FC<Record<never, never>> = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <SnackbarProvider maxSnack={3}>
+        <App />
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };
