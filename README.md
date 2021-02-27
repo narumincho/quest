@@ -23,13 +23,13 @@ npm run start-development-build
 ```
 
 または, VSCode の NPM スクリプトから `start-development-build` を実行するとビルドします.
-`start-production-build` は本番用ビルドです (オリジンの指定が https://north-quest.web.app になる)
+`start-production-build` は本番用ビルドです (オリジンの指定が https://north-quest.web.app になる, Cloud Storage を使うようになるなど)
 
 ビルドの結果は
 
 - firebase.json
 - distribution
-- common/origin.ts
+- common/nowMode.ts
   に出力されます
 
 Firebase の エミュレーターの起動は

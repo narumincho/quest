@@ -2,6 +2,7 @@ import * as apiCodec from "../common/apiCodec";
 import * as crypto from "crypto";
 import * as d from "../data";
 import * as firebaseInterface from "./firebaseInterface";
+import * as jimp from "jimp";
 import * as jsonWebToken from "jsonwebtoken";
 import { UrlData, lineLoginCallbackUrl } from "../common/url";
 import axios from "axios";
@@ -51,11 +52,12 @@ export const lineLoginCallback = async (
   }
   await firebaseInterface.deleteLoginState(state);
   const profile = await getLineProfile(code);
+  const imageHash = await getAndSaveUserImage(profile.imageUrl);
   const accountTokenAndHash = issueAccessToken();
   await firebaseInterface.createAccount({
     id: createRandomId(),
     lineId: profile.id,
-    imageUrl: profile.imageUrl.toString(),
+    imageHash,
     name: profile.name,
     accountTokenHash: accountTokenAndHash.accountTokenHash,
   });
@@ -148,3 +150,38 @@ const hashAccountToken = (accountToken: d.AccountToken): string =>
     .createHash("sha256")
     .update(new Uint8Array(d.AccountToken.codec.encode(accountToken)))
     .digest("hex");
+
+const getAndSaveUserImage = async (imageUrl: URL): Promise<d.ImageHash> => {
+  const response = await axios.get<Buffer>(imageUrl.toString(), {
+    responseType: "arraybuffer",
+  });
+  return savePngFile(
+    await (await jimp.create(response.data))
+      .resize(64, 64)
+      .getBufferAsync(imagePngMimeType)
+  );
+};
+
+const imagePngMimeType = "image/png";
+
+/**
+ * Cloud Storage for Firebase にPNGファイルを保存する
+ */
+const savePngFile = async (binary: Uint8Array): Promise<d.ImageHash> => {
+  const fileName = createImageHashFromUint8ArrayAndMimeType(
+    binary,
+    imagePngMimeType
+  );
+  await firebaseInterface.saveFile(fileName, imagePngMimeType, binary);
+  return fileName;
+};
+
+const createImageHashFromUint8ArrayAndMimeType = (
+  binary: Uint8Array,
+  mimeType: string
+): d.ImageHash =>
+  crypto
+    .createHash("sha256")
+    .update(binary)
+    .update(mimeType, "utf8")
+    .digest("hex") as d.ImageHash;

@@ -125,6 +125,7 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
     "axios",
     "jsonwebtoken",
     "graphql",
+    "jimp",
   ];
 
   await fileSystem.outputFile(
@@ -152,20 +153,20 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
 
 /** `common/origin` のファイルを出力する. modeによって出力されるオリジンが変更される. */
 const outputCommonOrigin = (mode: Mode): Promise<void> => {
-  const origin =
-    mode === "development"
-      ? "http://localhost:5000"
-      : "https://north-quest.web.app";
+  const modeIdentifer = jsTsIndenter.fromString("Mode");
   return fileSystem.outputFile(
-    "./common/origin.ts",
+    "./common/nowMode.ts",
     jsTsCodeGen.generateCodeAsString(
       {
         exportDefinitionList: [
           jsTsData.ExportDefinition.Variable({
-            name: jsTsIndenter.fromString("origin"),
-            document: `questのWebアプリを配信, APIを提供するオリジン. (ビルド時にこのコードが書き換わる. ) ${origin}`,
-            expr: jsTsData.Expr.StringLiteral(origin),
-            type: jsTsData.Type.String,
+            name: jsTsIndenter.fromString("nowMode"),
+            document: "現在のビルドの動作モード",
+            expr: jsTsData.Expr.StringLiteral(mode),
+            type: jsTsData.Type.ImportedType({
+              moduleName: "./mode",
+              name: modeIdentifer,
+            }),
           }),
         ],
         statementList: [],

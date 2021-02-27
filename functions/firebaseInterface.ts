@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
+import * as fileSystem from "fs-extra";
 import * as functions from "firebase-functions";
 import type * as typedFirestore from "typed-admin-firestore";
+import { nowMode } from "../common/nowMode";
 
 const app = admin.initializeApp();
 const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
@@ -16,13 +18,14 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     value: {
       name: string;
       lineId: string;
-      imageUrl: string;
+      imageHash: string;
       createTime: admin.firestore.Timestamp;
       accountTokenHash: string;
     };
     subCollections: Record<never, never>;
   };
 }>;
+const cloudStorageBucket = app.storage().bucket();
 
 export const createLogInState = async (state: string): Promise<void> => {
   await firestore.collection("loginState").doc(state).create({
@@ -45,13 +48,13 @@ export const createAccount = async (accountCrateData: {
   id: string;
   name: string;
   lineId: string;
-  imageUrl: string;
+  imageHash: string;
   accountTokenHash: string;
 }): Promise<void> => {
   await firestore.collection("account").doc(accountCrateData.id).create({
     name: accountCrateData.name,
     lineId: accountCrateData.lineId,
-    imageUrl: accountCrateData.imageUrl,
+    imageHash: accountCrateData.imageHash,
     createTime: admin.firestore.Timestamp.now(),
     accountTokenHash: accountCrateData.accountTokenHash,
   });
@@ -71,6 +74,34 @@ export const getAccountByAccountTokenHash = async (
   return {
     name: document.data().name,
   };
+};
+
+/**
+ * Cloud Storage for Firebase にファイルを保存する
+ */
+export const saveFile = async (
+  fileName: string,
+  mimeType: string,
+  binary: Uint8Array
+): Promise<void> => {
+  if (nowMode === "production") {
+    await cloudStorageBucket
+      .file(fileName)
+      .save(Buffer.from(binary), { contentType: mimeType });
+    return;
+  }
+  await fileSystem.outputFile(
+    `./fakeCloudStorage/${fileName}${mimeTypeToExtension(mimeType)}`,
+    binary
+  );
+};
+
+const mimeTypeToExtension = (mimeType: string): string => {
+  switch (mimeType) {
+    case "image/png":
+      return ".png";
+  }
+  return "";
 };
 
 /**

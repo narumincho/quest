@@ -1,5 +1,11 @@
 import * as d from "../data";
-import { origin } from "./origin";
+import { nowMode } from "./nowMode";
+
+/** オリジン */
+const origin =
+  nowMode === "development"
+    ? "http://localhost:5000"
+    : "https://north-quest.web.app";
 
 /** URLに含めるデータ */
 export type UrlData = {
