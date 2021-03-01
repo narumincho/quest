@@ -130,6 +130,7 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
     "jsonwebtoken",
     "graphql",
     "jimp",
+    "fs-extra",
   ];
 
   await fileSystem.outputFile(
