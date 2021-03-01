@@ -393,6 +393,21 @@ export type ElmCustomTypeExportLevel =
   | "ExportTypeAndVariant";
 
 /**
+ * quest の アカウント
+ * @typePartId 4e6857a774597ae66e5c316642a8ae8b
+ */
+export type QAccount = {
+  /**
+   * アカウント名
+   */
+  readonly name: String;
+  /**
+   * アイコン画像のハッシュ値
+   */
+  readonly iconHash: ImageHash;
+};
+
+/**
  * 関数のパラメーター. パラメーター名, 型
  * @typePartId 5433bade7738da21e7663ff043f588d5
  */
@@ -1144,6 +1159,12 @@ export type ImportedType = {
 };
 
 /**
+ * アカウントトークンのハッシュ値. データベースに保存する用
+ * @typePartId b553ab17ca45f4975d9fe17fe1a63ac4
+ */
+export type AccountTokenHash = string & { readonly _accountTokenHash: never };
+
+/**
  * Definyだけでは表現できない式
  * @typePartId b6eef263a982482747a8ad0bc9f05e21
  */
@@ -1165,7 +1186,7 @@ export type SetTypePartListParameter = {
   /**
    * 型パーツのリスト
    */
-  readonly typePartList: List<IdAndData<Int32, TypePartId>>;
+  readonly typePartList: List<IdAndData<TypePartId, TypePart>>;
 };
 
 /**
@@ -1245,7 +1266,10 @@ export type LogInState =
     }
   | { readonly _: "JumpingToLogInPage"; readonly string: String }
   | { readonly _: "VerifyingAccountToken"; readonly accountToken: AccountToken }
-  | { readonly _: "LoggedIn"; readonly int32: Int32 };
+  | {
+      readonly _: "LoggedIn";
+      readonly accountTokenAndUserId: AccountTokenAndUserId;
+    };
 
 /**
  * for文
@@ -3735,6 +3759,46 @@ export const ElmCustomTypeExportLevel: {
         };
       }
       throw new Error("存在しないパターンを指定された 型を更新してください");
+    },
+  },
+};
+
+/**
+ * quest の アカウント
+ * @typePartId 4e6857a774597ae66e5c316642a8ae8b
+ */
+export const QAccount: {
+  readonly codec: Codec<QAccount>;
+  /**
+   * 型を合わせる上で便利なヘルパー関数
+   */
+  readonly helper: (a: QAccount) => QAccount;
+} = {
+  helper: (qAccount: QAccount): QAccount => qAccount,
+  codec: {
+    encode: (value: QAccount): ReadonlyArray<number> =>
+      String.codec
+        .encode(value.name)
+        .concat(ImageHash.codec.encode(value.iconHash)),
+    decode: (
+      index: number,
+      binary: Uint8Array
+    ): { readonly result: QAccount; readonly nextIndex: number } => {
+      const nameAndNextIndex: {
+        readonly result: String;
+        readonly nextIndex: number;
+      } = String.codec.decode(index, binary);
+      const iconHashAndNextIndex: {
+        readonly result: ImageHash;
+        readonly nextIndex: number;
+      } = ImageHash.codec.decode(nameAndNextIndex.nextIndex, binary);
+      return {
+        result: {
+          name: nameAndNextIndex.result,
+          iconHash: iconHashAndNextIndex.result,
+        },
+        nextIndex: iconHashAndNextIndex.nextIndex,
+      };
     },
   },
 };
@@ -6712,6 +6776,25 @@ export const ImportedType: {
 };
 
 /**
+ * アカウントトークンのハッシュ値. データベースに保存する用
+ * @typePartId b553ab17ca45f4975d9fe17fe1a63ac4
+ */
+export const AccountTokenHash: { readonly codec: Codec<AccountTokenHash> } = {
+  codec: {
+    encode: (value: AccountTokenHash): ReadonlyArray<number> =>
+      encodeToken(value),
+    decode: (
+      index: number,
+      binary: Uint8Array
+    ): { readonly result: AccountTokenHash; readonly nextIndex: number } =>
+      decodeToken(index, binary) as {
+        readonly result: AccountTokenHash;
+        readonly nextIndex: number;
+      },
+  },
+};
+
+/**
  * Definyだけでは表現できない式
  * @typePartId b6eef263a982482747a8ad0bc9f05e21
  */
@@ -6798,7 +6881,7 @@ export const SetTypePartListParameter: {
         .encode(value.accountToken)
         .concat(ProjectId.codec.encode(value.projectId))
         .concat(
-          List.codec(IdAndData.codec(Int32.codec, TypePartId.codec)).encode(
+          List.codec(IdAndData.codec(TypePartId.codec, TypePart.codec)).encode(
             value.typePartList
           )
         ),
@@ -6818,9 +6901,9 @@ export const SetTypePartListParameter: {
         readonly nextIndex: number;
       } = ProjectId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
       const typePartListAndNextIndex: {
-        readonly result: List<IdAndData<Int32, TypePartId>>;
+        readonly result: List<IdAndData<TypePartId, TypePart>>;
         readonly nextIndex: number;
-      } = List.codec(IdAndData.codec(Int32.codec, TypePartId.codec)).decode(
+      } = List.codec(IdAndData.codec(TypePartId.codec, TypePart.codec)).decode(
         projectIdAndNextIndex.nextIndex,
         binary
       );
@@ -7159,7 +7242,7 @@ export const LogInState: {
   /**
    * ログインしている状態
    */
-  readonly LoggedIn: (a: Int32) => LogInState;
+  readonly LoggedIn: (a: AccountTokenAndUserId) => LogInState;
   readonly codec: Codec<LogInState>;
 } = {
   LoadingAccountTokenFromIndexedDB: { _: "LoadingAccountTokenFromIndexedDB" },
@@ -7175,7 +7258,10 @@ export const LogInState: {
     _: "VerifyingAccountToken",
     accountToken,
   }),
-  LoggedIn: (int32: Int32): LogInState => ({ _: "LoggedIn", int32 }),
+  LoggedIn: (accountTokenAndUserId: AccountTokenAndUserId): LogInState => ({
+    _: "LoggedIn",
+    accountTokenAndUserId,
+  }),
   codec: {
     encode: (value: LogInState): ReadonlyArray<number> => {
       switch (value._) {
@@ -7197,7 +7283,9 @@ export const LogInState: {
           return [4].concat(AccountToken.codec.encode(value.accountToken));
         }
         case "LoggedIn": {
-          return [5].concat(Int32.codec.encode(value.int32));
+          return [5].concat(
+            AccountTokenAndUserId.codec.encode(value.accountTokenAndUserId)
+          );
         }
       }
     },
@@ -7250,9 +7338,9 @@ export const LogInState: {
       }
       if (patternIndex.result === 5) {
         const result: {
-          readonly result: Int32;
+          readonly result: AccountTokenAndUserId;
           readonly nextIndex: number;
-        } = Int32.codec.decode(patternIndex.nextIndex, binary);
+        } = AccountTokenAndUserId.codec.decode(patternIndex.nextIndex, binary);
         return {
           result: LogInState.LoggedIn(result.result),
           nextIndex: result.nextIndex,

@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
+import * as d from "../data";
 import * as fileSystem from "fs-extra";
 import * as functions from "firebase-functions";
+import type * as stream from "stream";
 import type * as typedFirestore from "typed-admin-firestore";
 import { nowMode } from "../common/nowMode";
 
@@ -18,7 +20,7 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     value: {
       name: string;
       lineId: string;
-      imageHash: string;
+      iconHash: d.ImageHash;
       createTime: admin.firestore.Timestamp;
       accountTokenHash: string;
     };
@@ -48,13 +50,13 @@ export const createAccount = async (accountCrateData: {
   id: string;
   name: string;
   lineId: string;
-  imageHash: string;
+  iconHash: d.ImageHash;
   accountTokenHash: string;
 }): Promise<void> => {
   await firestore.collection("account").doc(accountCrateData.id).create({
     name: accountCrateData.name,
     lineId: accountCrateData.lineId,
-    imageHash: accountCrateData.imageHash,
+    iconHash: accountCrateData.iconHash,
     createTime: admin.firestore.Timestamp.now(),
     accountTokenHash: accountCrateData.accountTokenHash,
   });
@@ -62,7 +64,7 @@ export const createAccount = async (accountCrateData: {
 
 export const getAccountByAccountTokenHash = async (
   accountTokenHash: string
-): Promise<{ name: string } | undefined> => {
+): Promise<{ name: string; iconHash: d.ImageHash } | undefined> => {
   const documents = await firestore
     .collection("account")
     .where("accountTokenHash", "==", accountTokenHash)
@@ -71,10 +73,14 @@ export const getAccountByAccountTokenHash = async (
   if (document === undefined) {
     return undefined;
   }
+  const data = document.data();
   return {
-    name: document.data().name,
+    name: data.name,
+    iconHash: data.iconHash,
   };
 };
+
+const fakeCloudStoragePath = "./fakeCloudStorage";
 
 /**
  * Cloud Storage for Firebase にファイルを保存する
@@ -91,8 +97,30 @@ export const saveFile = async (
     return;
   }
   await fileSystem.outputFile(
-    `./fakeCloudStorage/${fileName}${mimeTypeToExtension(mimeType)}`,
+    `${fakeCloudStoragePath}/${fileName}${mimeTypeToExtension(mimeType)}`,
     binary
+  );
+};
+
+/**
+ * Cloud Storage for Firebase からファイルを読み込む
+ */
+export const readFile = async (fileName: string): Promise<stream.Readable> => {
+  if (nowMode === "production") {
+    return cloudStorageBucket.file(fileName).createReadStream();
+  }
+  const fileNameListInFakeFolder = await fileSystem.readdir(
+    `${fakeCloudStoragePath}`
+  );
+  for (const fileNameInFakeFolder of fileNameListInFakeFolder) {
+    if (fileNameInFakeFolder.startsWith(fileName)) {
+      return fileSystem.createReadStream(
+        `${fakeCloudStoragePath}/${fileNameInFakeFolder}`
+      );
+    }
+  }
+  throw new Error(
+    `開発モードでファイルを見つけることができなかった ${fileName}`
   );
 };
 

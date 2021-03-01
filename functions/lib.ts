@@ -23,7 +23,15 @@ export const apiFunc: {
     const result = await firebaseInterface.getAccountByAccountTokenHash(
       hashAccountToken(accountToken)
     );
-    return result === undefined ? "不明なユーザー" : result.name;
+    if (result === undefined) {
+      throw new Error(
+        "指定したアカウントトークンのアカウントを見つけられなかった"
+      );
+    }
+    return {
+      name: result.name,
+      iconHash: result.iconHash,
+    };
   },
 };
 
@@ -52,12 +60,12 @@ export const lineLoginCallback = async (
   }
   await firebaseInterface.deleteLoginState(state);
   const profile = await getLineProfile(code);
-  const imageHash = await getAndSaveUserImage(profile.imageUrl);
+  const iconHash = await getAndSaveUserImage(profile.imageUrl);
   const accountTokenAndHash = issueAccessToken();
   await firebaseInterface.createAccount({
     id: createRandomId(),
     lineId: profile.id,
-    imageHash,
+    iconHash,
     name: profile.name,
     accountTokenHash: accountTokenAndHash.accountTokenHash,
   });

@@ -1,4 +1,5 @@
 import * as apiCodec from "../common/apiCodec";
+import * as firebaseInterface from "./firebaseInterface";
 import * as functions from "firebase-functions";
 import * as lib from "./lib";
 import * as url from "../common/url";
@@ -97,3 +98,28 @@ export const lineLoginCallback = functions.https.onRequest(
     });
   }
 );
+
+/*
+ * =====================================================================
+ *              file Cloud Storage for Firebase のファイルを取得
+ *           (ローカルの開発時には, ファイルシステムに保存されているものを取得)
+ *
+ * http://localhost:5000/file/ff4ceb521f1a66ecb44a59e2377c22ee9881b2ed0759137bfd1368a7b5b7cd5e
+ * https://north-quest.web.app/file/ff4ceb521f1a66ecb44a59e2377c22ee9881b2ed0759137bfd1368a7b5b7cd5e
+ *                            など
+ *            ↓ Firebase Hosting firebase.json rewrite
+ *           Cloud Functions for Firebase / file
+ * =====================================================================
+ */
+export const file = functions.https.onRequest(async (request, response) => {
+  const fileHash = request.path.split("/")[2];
+  if (typeof fileHash !== "string") {
+    response.status(400).send(
+      `ファイルの取得には, ファイルのSHA256のハッシュ値をパスにしていする必要があります.
+例: https://north-quest.web.app/file/ff4ceb521f1a66ecb44a59e2377c22ee9881b2ed0759137bfd1368a7b5b7cd5e`
+    );
+    return;
+  }
+  const readableStream = await firebaseInterface.readFile(fileHash);
+  readableStream.pipe(response);
+});

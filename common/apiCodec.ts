@@ -12,7 +12,7 @@ export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
   response: d.String.codec,
 };
 
-export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.String> = {
+export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.QAccount> = {
   request: d.AccountToken.codec,
-  response: d.String.codec,
+  response: d.QAccount.codec,
 };

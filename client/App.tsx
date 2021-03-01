@@ -45,7 +45,7 @@ export const App: React.FC<Record<never, never>> = () => {
         setState({
           tag: "LoggedIn",
           accountToken,
-          accountName: response.value,
+          accountName: response.value.name,
         });
       }
     });
