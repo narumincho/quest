@@ -105,18 +105,26 @@ export const saveFile = async (
 /**
  * Cloud Storage for Firebase からファイルを読み込む
  */
-export const readFile = async (fileName: string): Promise<stream.Readable> => {
+export const readFile = async (
+  fileName: string
+): Promise<{ mimeType: string; readableStream: stream.Readable }> => {
   if (nowMode === "production") {
-    return cloudStorageBucket.file(fileName).createReadStream();
+    return {
+      mimeType: cloudStorageBucket.file(fileName).metadata.contentType,
+      readableStream: cloudStorageBucket.file(fileName).createReadStream(),
+    };
   }
   const fileNameListInFakeFolder = await fileSystem.readdir(
     `${fakeCloudStoragePath}`
   );
   for (const fileNameInFakeFolder of fileNameListInFakeFolder) {
     if (fileNameInFakeFolder.startsWith(fileName)) {
-      return fileSystem.createReadStream(
-        `${fakeCloudStoragePath}/${fileNameInFakeFolder}`
-      );
+      return {
+        mimeType: fileNameWithExtensionToMimeType(fileNameInFakeFolder),
+        readableStream: fileSystem.createReadStream(
+          `${fakeCloudStoragePath}/${fileNameInFakeFolder}`
+        ),
+      };
     }
   }
   throw new Error(
@@ -128,6 +136,15 @@ const mimeTypeToExtension = (mimeType: string): string => {
   switch (mimeType) {
     case "image/png":
       return ".png";
+  }
+  return "";
+};
+
+const fileNameWithExtensionToMimeType = (
+  fileNameWithExtension: string
+): string => {
+  if (fileNameWithExtension.endsWith(".png")) {
+    return "image/png";
   }
   return "";
 };

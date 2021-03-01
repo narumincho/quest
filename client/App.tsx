@@ -19,6 +19,7 @@ type State =
       tag: "LoggedIn";
       accountToken: d.AccountToken;
       accountName: string;
+      accountImageHash: d.ImageHash;
     };
 
 export const App: React.FC<Record<never, never>> = () => {
@@ -46,6 +47,7 @@ export const App: React.FC<Record<never, never>> = () => {
           tag: "LoggedIn",
           accountToken,
           accountName: response.value.name,
+          accountImageHash: response.value.iconHash,
         });
       }
     });
@@ -56,6 +58,7 @@ export const App: React.FC<Record<never, never>> = () => {
       return (
         <AdminTop
           accountName={state.accountName}
+          accountImageHash={state.accountImageHash}
           accountToken={state.accountToken}
         />
       );

@@ -120,6 +120,7 @@ export const file = functions.https.onRequest(async (request, response) => {
     );
     return;
   }
-  const readableStream = await firebaseInterface.readFile(fileHash);
-  readableStream.pipe(response);
+  const mimeTypeAndReadableStream = await firebaseInterface.readFile(fileHash);
+  response.contentType(mimeTypeAndReadableStream.mimeType);
+  mimeTypeAndReadableStream.readableStream.pipe(response);
 });

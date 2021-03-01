@@ -69,3 +69,7 @@ export const pathToLocation = (path: string): Location => {
 
 /** LINEログインで指定する. コールバックURL */
 export const lineLoginCallbackUrl = `${origin}/lineLoginCallback`;
+
+/** アカウントの画像などのURLを生成する */
+export const imageUrl = (imageHash: d.ImageHash): URL =>
+  new URL(`${origin}/file/${imageHash}`);
