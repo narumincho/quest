@@ -4,6 +4,7 @@ import * as fileSystem from "fs-extra";
 import * as functions from "firebase-functions";
 import type * as stream from "stream";
 import type * as typedFirestore from "typed-admin-firestore";
+import { imagePng } from "./mimeType";
 import { nowMode } from "../common/nowMode";
 
 const app = admin.initializeApp();
@@ -85,68 +86,30 @@ const fakeCloudStoragePath = "./fakeCloudStorage";
 /**
  * Cloud Storage for Firebase にファイルを保存する
  */
-export const saveFile = async (
-  fileName: string,
-  mimeType: string,
+export const savePngFile = async (
+  hash: string,
   binary: Uint8Array
 ): Promise<void> => {
+  const fileName = `${hash}.png`;
   if (nowMode === "production") {
     await cloudStorageBucket
       .file(fileName)
-      .save(Buffer.from(binary), { contentType: mimeType });
+      .save(Buffer.from(binary), { contentType: imagePng });
     return;
   }
-  await fileSystem.outputFile(
-    `${fakeCloudStoragePath}/${fileName}${mimeTypeToExtension(mimeType)}`,
-    binary
-  );
+  await fileSystem.outputFile(`${fakeCloudStoragePath}/${fileName}`, binary);
 };
 
 /**
- * Cloud Storage for Firebase からファイルを読み込む
+ * Cloud Storage for Firebase からPNGファイルを読み込む.
+ * ローカルではファイルシステムからファイルを読み取る
  */
-export const readFile = async (
-  fileName: string
-): Promise<{ mimeType: string; readableStream: stream.Readable }> => {
+export const readPngFile = (hash: string): stream.Readable => {
+  const fileName = `${hash}.png`;
   if (nowMode === "production") {
-    return {
-      mimeType: cloudStorageBucket.file(fileName).metadata.contentType,
-      readableStream: cloudStorageBucket.file(fileName).createReadStream(),
-    };
+    return cloudStorageBucket.file(fileName).createReadStream();
   }
-  const fileNameListInFakeFolder = await fileSystem.readdir(
-    `${fakeCloudStoragePath}`
-  );
-  for (const fileNameInFakeFolder of fileNameListInFakeFolder) {
-    if (fileNameInFakeFolder.startsWith(fileName)) {
-      return {
-        mimeType: fileNameWithExtensionToMimeType(fileNameInFakeFolder),
-        readableStream: fileSystem.createReadStream(
-          `${fakeCloudStoragePath}/${fileNameInFakeFolder}`
-        ),
-      };
-    }
-  }
-  throw new Error(
-    `開発モードでファイルを見つけることができなかった ${fileName}`
-  );
-};
-
-const mimeTypeToExtension = (mimeType: string): string => {
-  switch (mimeType) {
-    case "image/png":
-      return ".png";
-  }
-  return "";
-};
-
-const fileNameWithExtensionToMimeType = (
-  fileNameWithExtension: string
-): string => {
-  if (fileNameWithExtension.endsWith(".png")) {
-    return "image/png";
-  }
-  return "";
+  return fileSystem.createReadStream(`${fakeCloudStoragePath}/${fileName}`);
 };
 
 /**

@@ -6,6 +6,7 @@ import * as jimp from "jimp";
 import * as jsonWebToken from "jsonwebtoken";
 import { UrlData, lineLoginCallbackUrl } from "../common/url";
 import axios from "axios";
+import { imagePng } from "./mimeType";
 
 type ApiCodecType = typeof apiCodec;
 
@@ -166,22 +167,17 @@ const getAndSaveUserImage = async (imageUrl: URL): Promise<d.ImageHash> => {
   return savePngFile(
     await (await jimp.create(response.data))
       .resize(64, 64)
-      .getBufferAsync(imagePngMimeType)
+      .getBufferAsync(imagePng)
   );
 };
-
-const imagePngMimeType = "image/png";
 
 /**
  * Cloud Storage for Firebase にPNGファイルを保存する
  */
 const savePngFile = async (binary: Uint8Array): Promise<d.ImageHash> => {
-  const fileName = createImageHashFromUint8ArrayAndMimeType(
-    binary,
-    imagePngMimeType
-  );
-  await firebaseInterface.saveFile(fileName, imagePngMimeType, binary);
-  return fileName;
+  const imageHash = createImageHashFromUint8ArrayAndMimeType(binary, imagePng);
+  await firebaseInterface.savePngFile(imageHash, binary);
+  return imageHash;
 };
 
 const createImageHashFromUint8ArrayAndMimeType = (

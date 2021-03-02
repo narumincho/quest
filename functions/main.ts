@@ -3,6 +3,7 @@ import * as firebaseInterface from "./firebaseInterface";
 import * as functions from "firebase-functions";
 import * as lib from "./lib";
 import * as url from "../common/url";
+import { imagePng } from "./mimeType";
 
 /*
  * =====================================================================
@@ -111,7 +112,7 @@ export const lineLoginCallback = functions.https.onRequest(
  *           Cloud Functions for Firebase / file
  * =====================================================================
  */
-export const file = functions.https.onRequest(async (request, response) => {
+export const file = functions.https.onRequest((request, response) => {
   const fileHash = request.path.split("/")[2];
   if (typeof fileHash !== "string") {
     response.status(400).send(
@@ -120,7 +121,7 @@ export const file = functions.https.onRequest(async (request, response) => {
     );
     return;
   }
-  const mimeTypeAndReadableStream = await firebaseInterface.readFile(fileHash);
-  response.contentType(mimeTypeAndReadableStream.mimeType);
-  mimeTypeAndReadableStream.readableStream.pipe(response);
+  const mimeTypeAndReadableStream = firebaseInterface.readPngFile(fileHash);
+  response.contentType(imagePng);
+  mimeTypeAndReadableStream.pipe(response);
 });
