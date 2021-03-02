@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as d from "../data";
+import * as indexedDb from "./indexedDb";
 import * as url from "../common/url";
 import { Box, CircularProgress } from "@material-ui/core";
 import { AdminTop } from "./page/AdminTop";
@@ -22,6 +23,15 @@ type State =
       accountImageHash: d.ImageHash;
     };
 
+const getAccountToken = (
+  urlData: url.UrlData
+): Promise<d.AccountToken | undefined> => {
+  if (urlData.accountToken !== undefined) {
+    return Promise.resolve(urlData.accountToken);
+  }
+  return indexedDb.getAccountToken();
+};
+
 export const App: React.FC<Record<never, never>> = () => {
   const [state, setState] = React.useState<State>({
     tag: "Loading",
@@ -31,25 +41,27 @@ export const App: React.FC<Record<never, never>> = () => {
     const nowUrl = new URL(location.href);
     const urlData = url.pathAndHashToUrlData(nowUrl.pathname, nowUrl.hash);
     console.log("urlData", urlData);
-    if (urlData.accountToken === undefined) {
-      setState({ tag: "NoLogin" });
-      return;
-    }
-    setState({
-      tag: "VerifyingAccountToken",
-      accountToken: urlData.accountToken,
-    });
-    history.replaceState(undefined, "", url.locationToPath(urlData.location));
-    const accountToken = urlData.accountToken;
-    api.getAccountByAccountToken(urlData.accountToken).then((response) => {
-      if (response._ === "Just") {
-        setState({
-          tag: "LoggedIn",
-          accountToken,
-          accountName: response.value.name,
-          accountImageHash: response.value.iconHash,
-        });
+    getAccountToken(urlData).then((accountToken) => {
+      if (accountToken === undefined) {
+        setState({ tag: "NoLogin" });
+        return;
       }
+      indexedDb.setAccountToken(accountToken);
+      setState({
+        tag: "VerifyingAccountToken",
+        accountToken,
+      });
+      history.replaceState(undefined, "", url.locationToPath(urlData.location));
+      api.getAccountByAccountToken(accountToken).then((response) => {
+        if (response._ === "Just") {
+          setState({
+            tag: "LoggedIn",
+            accountToken,
+            accountName: response.value.name,
+            accountImageHash: response.value.iconHash,
+          });
+        }
+      });
     });
   }, []);
 
