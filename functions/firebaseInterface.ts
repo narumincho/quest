@@ -17,7 +17,7 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     subCollections: Record<never, never>;
   };
   account: {
-    key: string;
+    key: d.AccountId;
     value: {
       name: string;
       lineId: string;
@@ -48,7 +48,7 @@ export const deleteLoginState = async (state: string): Promise<void> => {
 };
 
 export const createAccount = async (accountCrateData: {
-  id: string;
+  id: d.AccountId;
   name: string;
   lineId: string;
   iconHash: d.ImageHash;
@@ -65,7 +65,9 @@ export const createAccount = async (accountCrateData: {
 
 export const getAccountByAccountTokenHash = async (
   accountTokenHash: string
-): Promise<{ name: string; iconHash: d.ImageHash } | undefined> => {
+): Promise<
+  { id: d.AccountId; name: string; iconHash: d.ImageHash } | undefined
+> => {
   const documents = await firestore
     .collection("account")
     .where("accountTokenHash", "==", accountTokenHash)
@@ -76,9 +78,40 @@ export const getAccountByAccountTokenHash = async (
   }
   const data = document.data();
   return {
+    id: document.id,
     name: data.name,
     iconHash: data.iconHash,
   };
+};
+
+export const getAccountByLineId = async (
+  lineId: string
+): Promise<
+  undefined | { id: d.AccountId; name: string; iconHash: d.ImageHash }
+> => {
+  const documents = await firestore
+    .collection("account")
+    .where("lineId", "==", lineId)
+    .get();
+  const document = documents.docs[0];
+  if (document === undefined) {
+    return undefined;
+  }
+  const data = document.data();
+  return {
+    id: document.id,
+    name: data.name,
+    iconHash: data.iconHash,
+  };
+};
+
+export const updateAccountToken = async (
+  accountId: d.AccountId,
+  accountTokenHash: d.AccountTokenHash
+): Promise<void> => {
+  await firestore.collection("account").doc(accountId).update({
+    accountTokenHash,
+  });
 };
 
 const fakeCloudStoragePath = "./fakeCloudStorage";

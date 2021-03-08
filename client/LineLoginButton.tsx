@@ -45,11 +45,14 @@ export const LineLogInButton: React.FunctionComponent<Props> = () => {
       case "preCalling": {
         setCallState("calling");
         api.requestLineLoginUrl(undefined).then((response) => {
-          if (response._ === "Nothing") {
-            enqueueSnackbar("LINEログインのURLを発行できなかった");
+          if (response._ === "Error") {
+            enqueueSnackbar(
+              `LINEログインのURLを発行できなかった ${response.error}`,
+              { variant: "error" }
+            );
             return;
           }
-          location.href = response.value;
+          location.href = response.ok;
           setCallState("jumping");
         });
       }

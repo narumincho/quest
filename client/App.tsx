@@ -6,6 +6,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { AdminTop } from "./page/AdminTop";
 import { Login } from "./page/Login";
 import { api } from "./api";
+import { useSnackbar } from "notistack";
 
 type State =
   | { tag: "Loading" }
@@ -33,6 +34,7 @@ const getAccountToken = (
 };
 
 export const App: React.FC<Record<never, never>> = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = React.useState<State>({
     tag: "Loading",
   });
@@ -53,14 +55,22 @@ export const App: React.FC<Record<never, never>> = () => {
       });
       history.replaceState(undefined, "", url.locationToPath(urlData.location));
       api.getAccountByAccountToken(accountToken).then((response) => {
-        if (response._ === "Just") {
-          setState({
-            tag: "LoggedIn",
-            accountToken,
-            accountName: response.value.name,
-            accountImageHash: response.value.iconHash,
+        if (response._ === "Error") {
+          enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
+            variant: "error",
           });
+          setState({
+            tag: "NoLogin",
+          });
+          indexedDb.deleteAccountToken();
+          return;
         }
+        setState({
+          tag: "LoggedIn",
+          accountToken,
+          accountName: response.ok.name,
+          accountImageHash: response.ok.iconHash,
+        });
       });
     });
   }, []);

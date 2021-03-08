@@ -61,15 +61,23 @@ export const lineLoginCallback = async (
   }
   await firebaseInterface.deleteLoginState(state);
   const profile = await getLineProfile(code);
-  const iconHash = await getAndSaveUserImage(profile.imageUrl);
+  const account = await firebaseInterface.getAccountByLineId(profile.id);
   const accountTokenAndHash = issueAccessToken();
-  await firebaseInterface.createAccount({
-    id: createRandomId(),
-    lineId: profile.id,
-    iconHash,
-    name: profile.name,
-    accountTokenHash: accountTokenAndHash.accountTokenHash,
-  });
+  if (account === undefined) {
+    const iconHash = await getAndSaveUserImage(profile.imageUrl);
+    await firebaseInterface.createAccount({
+      id: createRandomId() as d.AccountId,
+      lineId: profile.id,
+      iconHash,
+      name: profile.name,
+      accountTokenHash: accountTokenAndHash.accountTokenHash,
+    });
+  } else {
+    await firebaseInterface.updateAccountToken(
+      account.id,
+      accountTokenAndHash.accountTokenHash
+    );
+  }
   return {
     location: { tag: "top" },
     accountToken: accountTokenAndHash.accountToken,
@@ -145,7 +153,7 @@ const getLineProfile = async (
  */
 const issueAccessToken = (): {
   accountToken: d.AccountToken;
-  accountTokenHash: string;
+  accountTokenHash: d.AccountTokenHash;
 } => {
   const accountToken = crypto.randomBytes(32).toString("hex") as d.AccountToken;
   return {
@@ -154,11 +162,11 @@ const issueAccessToken = (): {
   };
 };
 
-const hashAccountToken = (accountToken: d.AccountToken): string =>
+const hashAccountToken = (accountToken: d.AccountToken): d.AccountTokenHash =>
   crypto
     .createHash("sha256")
     .update(new Uint8Array(d.AccountToken.codec.encode(accountToken)))
-    .digest("hex");
+    .digest("hex") as d.AccountTokenHash;
 
 const getAndSaveUserImage = async (imageUrl: URL): Promise<d.ImageHash> => {
   const response = await axios.get<Buffer>(imageUrl.toString(), {

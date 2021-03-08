@@ -4,8 +4,7 @@ import * as d from "../data";
 type ApiCodecType = typeof apiCodec;
 
 /**
- * quest の API. api[api名](リクエストのデータ) で呼べる. 戻り値の Nothing は fetch が失敗した場合に返す.
- * いずれは, Result型を返したい
+ * quest の API. api[api名](リクエストのデータ) で呼べる.
  */
 export const api = Object.fromEntries(
   Object.entries(apiCodec).map(([apiName, codec]) => [
@@ -15,8 +14,9 @@ export const api = Object.fromEntries(
         ApiCodecType[keyof ApiCodecType]["request"]
       >
     ): Promise<
-      d.Maybe<
-        apiCodec.GetCodecType<ApiCodecType[keyof ApiCodecType]["response"]>
+      d.Result<
+        apiCodec.GetCodecType<ApiCodecType[keyof ApiCodecType]["response"]>,
+        string
       >
     > => {
       console.log(apiName, "request", requestData);
@@ -26,19 +26,22 @@ export const api = Object.fromEntries(
           body: new Uint8Array(codec.request.encode(requestData as never)),
           headers: [["content-type", "application/octet-stream"]],
         });
+        if (!response.ok) {
+          return d.Result.Error(await response.text());
+        }
         const binaryResponse = await response.arrayBuffer();
         const decodedResponse = codec.response.decode(
           0,
           new Uint8Array(binaryResponse)
         ).result;
         console.log(apiName, "response", decodedResponse);
-        return d.Maybe.Just(decodedResponse);
+        return d.Result.Ok(decodedResponse);
       } catch (reason) {
         console.error(
           `quest api の ${apiName} を呼ぶときにエラーが発生した`,
           reason
         );
-        return d.Maybe.Nothing();
+        return d.Result.Error(JSON.stringify(reason));
       }
     },
   ])
@@ -46,6 +49,6 @@ export const api = Object.fromEntries(
   [apiName in keyof ApiCodecType]: (
     requestData: apiCodec.GetCodecType<ApiCodecType[apiName]["request"]>
   ) => Promise<
-    d.Maybe<apiCodec.GetCodecType<ApiCodecType[apiName]["response"]>>
+    d.Result<apiCodec.GetCodecType<ApiCodecType[apiName]["response"]>, string>
   >;
 };
