@@ -14,13 +14,15 @@ export type UrlData = {
 };
 
 /** quest 内の場所 */
-export type Location = { tag: "top" };
+export type Location = { tag: "top" } | { tag: "setting" };
 
 /** アカウントトークンを含んだ パスとハッシュを生成する */
 export const urlDataToUrl = (urlData: UrlData): URL => {
   const url = new URL(origin);
   url.pathname = locationToPath(urlData.location);
-  url.hash = `account-token=${urlData.accountToken}`;
+  if (typeof urlData.accountToken === "string") {
+    url.hash = `account-token=${urlData.accountToken}`;
+  }
   return url;
 };
 
@@ -29,6 +31,8 @@ export const locationToPath = (location: Location): string => {
   switch (location.tag) {
     case "top":
       return "/";
+    case "setting":
+      return "/setting";
   }
 };
 
@@ -64,6 +68,10 @@ export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
 
 /** パスから quest 内の場所を得る */
 export const pathToLocation = (path: string): Location => {
+  switch (path) {
+    case "/setting":
+      return { tag: "setting" };
+  }
   return { tag: "top" };
 };
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import { AppBar, Box, Toolbar, Typography } from "@material-ui/core";
 import { LineLogInButton } from "../LineLoginButton";
 
-export const Login: React.FunctionComponent<Record<string, never>> = () => {
+export const Login: React.VFC<Record<string, never>> = () => {
   return (
     <Box>
       <AppBar position="static">

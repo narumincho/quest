@@ -22,9 +22,9 @@
   "homepage": "https://github.com/narumincho/quest#readme",
   "devDependencies": {
     "@material-ui/core": "4.11.3",
-    "@material-ui/styles": "4.11.3",
+    "@material-ui/icons": "4.11.2",
     "@types/fs-extra": "9.0.8",
-    "@types/jsonwebtoken": "^8.5.0",
+    "@types/jsonwebtoken": "8.5.0",
     "@types/node": "14.14.32",
     "@types/react": "17.0.3",
     "@types/react-dom": "17.0.1",

@@ -1,12 +1,12 @@
+import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
-import * as url from "../common/url";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { createContainer } from "unstated-next";
 import { useSnackbar } from "notistack";
 
-type AppState =
+export type LoginState =
   | { tag: "Loading" }
   | {
       tag: "NoLogin";
@@ -23,7 +23,7 @@ type AppState =
     };
 
 const getAccountToken = (
-  urlData: url.UrlData
+  urlData: commonUrl.UrlData
 ): Promise<d.AccountToken | undefined> => {
   if (urlData.accountToken !== undefined) {
     return Promise.resolve(urlData.accountToken);
@@ -33,36 +33,48 @@ const getAccountToken = (
 
 const useAppStateInLocal = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [appState, setAppState] = useState<AppState>({
+  const [loginState, setLoginState] = useState<LoginState>({
     tag: "Loading",
   });
+  const [location, setLocation] = useState<commonUrl.Location>({ tag: "top" });
   useEffect(() => {
-    const nowUrl = new URL(location.href);
-    const urlData = url.pathAndHashToUrlData(nowUrl.pathname, nowUrl.hash);
+    // ブラウザで戻るボタンを押したときのイベントを登録
+    window.addEventListener("popstate", () => {
+      setLocation(commonUrl.pathToLocation(window.location.pathname));
+    });
+
+    const nowUrl = new URL(window.location.href);
+    const urlData = commonUrl.pathAndHashToUrlData(
+      nowUrl.pathname,
+      nowUrl.hash
+    );
     console.log("urlData", urlData);
+    setLocation(urlData.location);
     getAccountToken(urlData).then((accountToken) => {
       if (accountToken === undefined) {
-        setAppState({ tag: "NoLogin" });
+        setLoginState({ tag: "NoLogin" });
         return;
       }
       indexedDb.setAccountToken(accountToken);
-      setAppState({
+      setLoginState({
         tag: "VerifyingAccountToken",
         accountToken,
       });
-      history.replaceState(undefined, "", url.locationToPath(urlData.location));
+      history.replaceState(
+        undefined,
+        "",
+        commonUrl.locationToPath(urlData.location)
+      );
       api.getAccountByAccountToken(accountToken).then((response) => {
         if (response._ === "Error") {
           enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
             variant: "error",
           });
-          setAppState({
-            tag: "NoLogin",
-          });
+          setLoginState({ tag: "NoLogin" });
           indexedDb.deleteAccountToken();
           return;
         }
-        setAppState({
+        setLoginState({
           tag: "LoggedIn",
           accountToken,
           accountName: response.ok.name,
@@ -73,18 +85,32 @@ const useAppStateInLocal = () => {
   }, []);
 
   return {
-    loginState: appState,
+    loginState,
     accountToken: (): d.AccountToken | undefined => {
-      switch (appState.tag) {
+      switch (loginState.tag) {
         case "LoggedIn":
-          return appState.accountToken;
+          return loginState.accountToken;
       }
       return undefined;
     },
     logout: () => {
-      setAppState({
+      setLoginState({
         tag: "NoLogin",
       });
+    },
+    location,
+    jump: (newLocation: commonUrl.Location): void => {
+      window.history.pushState(
+        undefined,
+        "",
+        commonUrl
+          .urlDataToUrl({
+            location: newLocation,
+            accountToken: undefined,
+          })
+          .toString()
+      );
+      setLocation(newLocation);
     },
   };
 };

@@ -1,36 +1,45 @@
 import * as React from "react";
 import * as d from "../../data";
 import * as url from "../../common/url";
-import { AppBar, Box, Button, Toolbar, Typography } from "@material-ui/core";
-import { useAppState } from "../state";
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Toolbar,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
+import { Link } from "../ui/Link";
+
+const useStyles = makeStyles((theme) => ({
+  title: {
+    flexGrow: 1,
+  },
+}));
 
 type Props = {
-  accountToken: d.AccountToken;
   accountName: string;
   accountImageHash: d.ImageHash;
 };
 
-export const AdminTop: React.FunctionComponent<Props> = (props) => {
-  const { logout } = useAppState();
+export const AdminTop: React.VFC<Props> = (props) => {
+  const classes = useStyles();
   return (
     <Box>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6">作成したプロジェクト</Typography>
+          <Typography variant="h6" className={classes.title}>
+            作成したプロジェクト
+          </Typography>
+          <Link location={{ tag: "setting" }}>
+            <Avatar
+              alt={props.accountName}
+              src={url.imageUrl(props.accountImageHash).toString()}
+            />
+          </Link>
         </Toolbar>
       </AppBar>
-      <Box padding={1}>
-        <img
-          src={url.imageUrl(props.accountImageHash).toString()}
-          alt="アカウントの画像"
-        />
-        <Typography variant="body1">
-          {props.accountName} さん こんにちは
-        </Typography>
-        <Button variant="contained" onClick={logout}>
-          ログアウト
-        </Button>
-      </Box>
+      <Box padding={1}>プロジェクト一覧を表示したい</Box>
     </Box>
   );
 };

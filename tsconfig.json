@@ -6,6 +6,9 @@
     "module": "CommonJS",
     "lib": ["DOM", "ES2020"],
     "moduleResolution": "Node",
-    "jsx": "react"
+    "jsx": "react",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }

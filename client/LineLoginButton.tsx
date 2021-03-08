@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Button, CircularProgress } from "@material-ui/core";
+import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 import { api } from "./api";
-import { makeStyles } from "@material-ui/styles";
 import { useSnackbar } from "notistack";
 
 type Props = Record<never, never>;

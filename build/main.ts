@@ -66,6 +66,10 @@ const generateFirebaseJson = (clientMode: Mode): Promise<void> => {
             source: "/file/**",
             function: "file",
           },
+          {
+            source: "**",
+            destination: "/index.html",
+          },
         ],
         cleanUrls: true,
         trailingSlash: false,
