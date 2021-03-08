@@ -35,7 +35,7 @@ const useAppStateInLocal = () => {
   const [loginState, setLoginState] = useState<LoginState>({
     tag: "Loading",
   });
-  const [location, setLocation] = useState<commonUrl.Location>({ tag: "top" });
+  const [location, setLocation] = useState<d.QLocation>("Top");
   useEffect(() => {
     // ブラウザで戻るボタンを押したときのイベントを登録
     window.addEventListener("popstate", () => {
@@ -97,7 +97,7 @@ const useAppStateInLocal = () => {
       });
     },
     location,
-    jump: (newLocation: commonUrl.Location): void => {
+    jump: (newLocation: d.QLocation): void => {
       window.history.pushState(
         undefined,
         "",

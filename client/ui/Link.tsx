@@ -1,8 +1,9 @@
 import * as React from "react";
-import { Location, locationToPath } from "../../common/url";
+import * as d from "../../data";
+import { locationToPath } from "../../common/url";
 import { useAppState } from "../state";
 
-export const Link: React.FC<{ location: Location }> = (props) => {
+export const Link: React.FC<{ location: d.QLocation }> = (props) => {
   const { jump } = useAppState();
   return (
     <a

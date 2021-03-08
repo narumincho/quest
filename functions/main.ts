@@ -87,7 +87,7 @@ export const lineLoginCallback = functions.https.onRequest(
         301,
         url
           .urlDataToUrl({
-            location: { tag: "top" },
+            location: "Top",
             accountToken: undefined,
           })
           .toString()

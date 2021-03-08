@@ -9,12 +9,9 @@ const origin =
 
 /** URLに含めるデータ */
 export type UrlData = {
-  location: Location;
+  location: d.QLocation;
   accountToken: d.AccountToken | undefined;
 };
-
-/** quest 内の場所 */
-export type Location = { tag: "top" } | { tag: "setting" };
 
 /** アカウントトークンを含んだ パスとハッシュを生成する */
 export const urlDataToUrl = (urlData: UrlData): URL => {
@@ -27,12 +24,14 @@ export const urlDataToUrl = (urlData: UrlData): URL => {
 };
 
 /** quest 内の場所からURLのパスを得る */
-export const locationToPath = (location: Location): string => {
-  switch (location.tag) {
-    case "top":
+export const locationToPath = (location: d.QLocation): string => {
+  switch (location) {
+    case "Top":
       return "/";
-    case "setting":
-      return "/setting";
+    case "Setting":
+      return settingPath;
+    case "NewProject":
+      return newProjectPath;
   }
 };
 
@@ -43,7 +42,7 @@ export const locationToPath = (location: Location): string => {
  * @param hash URL の `#` からはじまる. ハッシュ (`#`を含む)
  */
 export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
-  const location: Location = pathToLocation(path);
+  const location: d.QLocation = pathToLocation(path);
   const accountTokenResult = hash.match(
     /account-token=(?<token>[0-9a-f]{64})/u
   );
@@ -67,12 +66,14 @@ export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
 };
 
 /** パスから quest 内の場所を得る */
-export const pathToLocation = (path: string): Location => {
+export const pathToLocation = (path: string): d.QLocation => {
   switch (path) {
-    case "/setting":
-      return { tag: "setting" };
+    case settingPath:
+      return d.QLocation.Setting;
+    case newProjectPath:
+      return d.QLocation.NewProject;
   }
-  return { tag: "top" };
+  return d.QLocation.Top;
 };
 
 /** LINEログインで指定する. コールバックURL */
@@ -81,3 +82,6 @@ export const lineLoginCallbackUrl = `${origin}/lineLoginCallback`;
 /** アカウントの画像などのURLを生成する */
 export const imageUrl = (imageHash: d.ImageHash): URL =>
   new URL(`${origin}/file/${imageHash}`);
+
+const settingPath = "/setting";
+const newProjectPath = "/new-project";

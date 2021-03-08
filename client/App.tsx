@@ -3,6 +3,7 @@ import * as d from "../data";
 import { Box, CircularProgress } from "@material-ui/core";
 import { AdminTop } from "./page/AdminTop";
 import { Login } from "./page/Login";
+import { NewProject } from "./page/NewProject";
 import { Setting } from "./page/Setting";
 import { useAppState } from "./state";
 
@@ -10,7 +11,12 @@ export const App: React.VFC<Record<never, never>> = () => {
   const { loginState } = useAppState();
   switch (loginState.tag) {
     case "LoggedIn":
-      return <LoggedIn account={loginState.account} />;
+      return (
+        <LoggedIn
+          accountToken={loginState.accountToken}
+          account={loginState.account}
+        />
+      );
     case "NoLogin":
       return <Login />;
     default:
@@ -28,13 +34,18 @@ export const App: React.VFC<Record<never, never>> = () => {
 };
 
 const LoggedIn: React.VFC<{
+  accountToken: d.AccountToken;
   account: d.QAccount;
 }> = (props) => {
   const { location } = useAppState();
-  switch (location.tag) {
-    case "top":
+  switch (location) {
+    case "Top":
       return <AdminTop account={props.account} />;
-    case "setting":
-      return <Setting />;
+    case "Setting":
+      return <Setting account={props.account} />;
+    case "NewProject":
+      return (
+        <NewProject accountToken={props.accountToken} account={props.account} />
+      );
   }
 };

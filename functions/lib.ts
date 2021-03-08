@@ -56,7 +56,7 @@ export const lineLoginCallback = async (
   const isValid = await firebaseInterface.existsLoginState(state);
   if (!isValid) {
     return {
-      location: { tag: "top" },
+      location: "Top",
       accountToken: undefined,
     };
   }
@@ -80,7 +80,7 @@ export const lineLoginCallback = async (
     );
   }
   return {
-    location: { tag: "top" },
+    location: "Top",
     accountToken: accountTokenAndHash.accountToken,
   };
 };
