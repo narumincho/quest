@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as d from "../../data";
 import * as url from "../../common/url";
-import { AppBar, Box, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Box, Button, Toolbar, Typography } from "@material-ui/core";
+import { useAppState } from "../state";
 
 type Props = {
   accountToken: d.AccountToken;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export const AdminTop: React.FunctionComponent<Props> = (props) => {
+  const { logout } = useAppState();
   return (
     <Box>
       <AppBar position="static">
@@ -25,6 +27,9 @@ export const AdminTop: React.FunctionComponent<Props> = (props) => {
         <Typography variant="body1">
           {props.accountName} さん こんにちは
         </Typography>
+        <Button variant="contained" onClick={logout}>
+          ログアウト
+        </Button>
       </Box>
     </Box>
   );
