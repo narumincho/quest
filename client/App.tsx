@@ -10,12 +10,7 @@ export const App: React.VFC<Record<never, never>> = () => {
   const { loginState } = useAppState();
   switch (loginState.tag) {
     case "LoggedIn":
-      return (
-        <LoggedIn
-          accountName={loginState.accountName}
-          accountImageHash={loginState.accountImageHash}
-        />
-      );
+      return <LoggedIn account={loginState.account} />;
     case "NoLogin":
       return <Login />;
     default:
@@ -33,18 +28,12 @@ export const App: React.VFC<Record<never, never>> = () => {
 };
 
 const LoggedIn: React.VFC<{
-  accountName: string;
-  accountImageHash: d.ImageHash;
+  account: d.QAccount;
 }> = (props) => {
   const { location } = useAppState();
   switch (location.tag) {
     case "top":
-      return (
-        <AdminTop
-          accountName={props.accountName}
-          accountImageHash={props.accountImageHash}
-        />
-      );
+      return <AdminTop account={props.account} />;
     case "setting":
       return <Setting />;
   }

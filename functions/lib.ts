@@ -32,6 +32,7 @@ export const apiFunc: {
     return {
       name: result.name,
       iconHash: result.iconHash,
+      id: result.id,
     };
   },
 };

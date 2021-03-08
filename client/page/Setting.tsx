@@ -40,16 +40,17 @@ const AccountDetail: React.VFC<Record<never, never>> = () => {
   }
   return (
     <Box padding={1}>
+      <Box padding={1}>アカウントID: {loginState.account.id}</Box>
       <Box padding={1}>
         アカウント画像:
         <Avatar
-          alt={loginState.accountName}
-          src={commonUrl.imageUrl(loginState.accountImageHash).toString()}
+          alt={loginState.account.name}
+          src={commonUrl.imageUrl(loginState.account.iconHash).toString()}
         />
       </Box>
       <Box padding={1}>
         アカウント名:
-        {loginState.accountName}
+        {loginState.account.name}
       </Box>
       <Button variant="contained" onClick={logout}>
         ログアウト

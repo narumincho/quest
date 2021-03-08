@@ -18,8 +18,7 @@ export type LoginState =
   | {
       tag: "LoggedIn";
       accountToken: d.AccountToken;
-      accountName: string;
-      accountImageHash: d.ImageHash;
+      account: d.QAccount;
     };
 
 const getAccountToken = (
@@ -77,8 +76,7 @@ const useAppStateInLocal = () => {
         setLoginState({
           tag: "LoggedIn",
           accountToken,
-          accountName: response.ok.name,
-          accountImageHash: response.ok.iconHash,
+          account: response.ok,
         });
       });
     });

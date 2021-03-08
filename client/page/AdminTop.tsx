@@ -18,8 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  accountName: string;
-  accountImageHash: d.ImageHash;
+  account: d.QAccount;
 };
 
 export const AdminTop: React.VFC<Props> = (props) => {
@@ -33,8 +32,8 @@ export const AdminTop: React.VFC<Props> = (props) => {
           </Typography>
           <Link location={{ tag: "setting" }}>
             <Avatar
-              alt={props.accountName}
-              src={url.imageUrl(props.accountImageHash).toString()}
+              alt={props.account.name}
+              src={url.imageUrl(props.account.iconHash).toString()}
             />
           </Link>
         </Toolbar>
