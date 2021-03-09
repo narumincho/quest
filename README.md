@@ -39,3 +39,14 @@ npm run start-emulator
 ```
 
 でできます. `/distribution/functions/.runtimeconfig.json` に LINE ログインのチャンネルシークレットを事前に入れておく必要があります
+
+## リリース方法
+
+GitHub Actions で Run Workflow ボタンを押して, ビルドとリリースができます.
+
+- Deploy to Cloud Functions for Firebase
+  - サーバーのプログラムを変えた分を反映させるために実行する
+  - 時間が 3 分ほどかかるので注意
+- Deploy to Firebase Hosting
+  - クライアントのプログラムを変えた分を反映させるために実行する
+  - 1 分以内に終わる
