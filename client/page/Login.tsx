@@ -1,15 +1,11 @@
 import * as React from "react";
-import { AppBar, Box, Toolbar, Typography } from "@material-ui/core";
-import { LineLogInButton } from "../container/LineLoginButton";
+import { AppBar, LineLogInButton } from "../container";
+import { Box, Typography } from "@material-ui/core";
 
 export const Login: React.VFC<Record<string, never>> = () => {
   return (
     <Box>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">ログイン</Typography>
-        </Toolbar>
-      </AppBar>
+      <AppBar title="ログイン" />
       <Box padding={1}>
         <Typography variant="body1">
           クエストを使うためにはLINEログインが必要です

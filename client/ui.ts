@@ -1,2 +1,2 @@
 export { AppBar } from "./ui/AppBar";
-export { Link } from "./ui/Link";
+export { LineLoginButton } from "./ui/LineLoginButton";

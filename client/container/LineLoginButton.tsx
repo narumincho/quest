@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CallState, LineLogInButton as Pure } from "../ui/LineLoginButton";
+import { CallState, LineLoginButton as Pure } from "../ui/LineLoginButton";
 import { api } from "../api";
 import { useSnackbar } from "notistack";
 

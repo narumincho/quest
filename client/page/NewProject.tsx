@@ -2,7 +2,7 @@ import * as React from "react";
 import * as d from "../../data";
 import { Box, Button, TextField, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import { AppBar } from "../ui";
+import { AppBar } from "../container";
 import { stringToValidProjectName } from "../../common/validation";
 
 const useStyles = makeStyles({

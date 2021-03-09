@@ -10,7 +10,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
-import { Link } from "./Link";
+import { Link } from "../container/Link";
 
 export type Props = {
   title: string;
@@ -23,6 +23,10 @@ export type Props = {
    * @default false
    */
   isHideBack?: boolean;
+  /**
+   * 戻るボタンを押した
+   */
+  onBackClick: () => void;
 };
 
 const useStyles = makeStyles({
@@ -39,11 +43,7 @@ export const AppBar: React.VFC<Props> = (props) => {
         {props.isHideBack ? (
           <></>
         ) : (
-          <IconButton
-            onClick={() => {
-              window.history.back();
-            }}
-          >
+          <IconButton onClick={props.onBackClick}>
             <ArrowBack />
           </IconButton>
         )}

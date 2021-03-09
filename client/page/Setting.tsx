@@ -2,7 +2,7 @@ import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
 import { Avatar, Box, Button } from "@material-ui/core";
-import { AppBar } from "../ui";
+import { AppBar } from "../container";
 import { useAppState } from "../state";
 
 export const Setting: React.VFC<{ account: d.QAccount }> = (props) => {

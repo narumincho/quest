@@ -35,7 +35,7 @@ const useStyle = makeStyles({
   },
 });
 
-export const LineLogInButton: React.VFC<Props> = (props) => {
+export const LineLoginButton: React.VFC<Props> = (props) => {
   const classes = useStyle();
   if (props.callState === "notCalled") {
     return (
