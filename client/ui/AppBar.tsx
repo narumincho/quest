@@ -12,13 +12,7 @@ import {
 import { ArrowBack } from "@material-ui/icons";
 import { Link } from "./Link";
 
-const useStyles = makeStyles({
-  title: {
-    flexGrow: 1,
-  },
-});
-
-export const AppBar: React.VFC<{
+export type Props = {
   title: string;
   /**
    * 右に表示するアカウント. 指定なしで非表示
@@ -29,7 +23,15 @@ export const AppBar: React.VFC<{
    * @default false
    */
   isHideBack?: boolean;
-}> = (props) => {
+};
+
+const useStyles = makeStyles({
+  title: {
+    flexGrow: 1,
+  },
+});
+
+export const AppBar: React.VFC<Props> = (props) => {
   const classes = useStyles();
   return (
     <MAppBar position="static">

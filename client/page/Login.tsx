@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AppBar, Box, Toolbar, Typography } from "@material-ui/core";
-import { LineLogInButton } from "../LineLoginButton";
+import { LineLogInButton } from "../container/LineLoginButton";
 
 export const Login: React.VFC<Record<string, never>> = () => {
   return (
