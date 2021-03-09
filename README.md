@@ -50,3 +50,7 @@ GitHub Actions で Run Workflow ボタンを押して, ビルドとリリース�
 - Deploy to Firebase Hosting
   - クライアントのプログラムを変えた分を反映させるために実行する
   - 1 分以内に終わる
+
+## 各ファイルの依存関係
+
+![各ファイルの依存関係のグラフ図](graph.svg)
