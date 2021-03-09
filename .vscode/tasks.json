@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "start-development-build",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: start-development-build",
+      "detail": "ts-node build/start-development-build.ts"
+    },
+    {
+      "type": "npm",
+      "script": "start-emulator",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: start-emulator",
+      "detail": "firebase emulators:start --project north-quest"
+    }
+  ]
+}
