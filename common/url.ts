@@ -30,8 +30,8 @@ export const locationToPath = (location: d.QLocation): string => {
       return "/";
     case "Setting":
       return settingPath;
-    case "NewProject":
-      return newProjectPath;
+    case "NewProgram":
+      return newProgramPath;
   }
 };
 
@@ -70,8 +70,8 @@ export const pathToLocation = (path: string): d.QLocation => {
   switch (path) {
     case settingPath:
       return d.QLocation.Setting;
-    case newProjectPath:
-      return d.QLocation.NewProject;
+    case newProgramPath:
+      return d.QLocation.NewProgram;
   }
   return d.QLocation.Top;
 };
@@ -84,4 +84,4 @@ export const imageUrl = (imageHash: d.ImageHash): URL =>
   new URL(`${origin}/file/${imageHash}`);
 
 const settingPath = "/setting";
-const newProjectPath = "/new-project";
+const newProgramPath = "/new-program";

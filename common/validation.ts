@@ -1,7 +1,7 @@
 import * as d from "../data";
 
 /**
- * プロジェクト名を正規化する.
+ * プログラム名を正規化する.
  */
 export const stringToValidProjectName = (
   text: string
@@ -9,10 +9,10 @@ export const stringToValidProjectName = (
   const normalized = normalizeOneLineString(text);
   const { length } = [...normalized];
   if (length <= 0) {
-    return d.Result.Error("プロジェクト名が空です");
+    return d.Result.Error("プログラム名が空です");
   }
   if (length <= 0 || length > 100) {
-    return d.Result.Error("プロジェクト名は100文字以内です");
+    return d.Result.Error("プログラム名は100文字以内です");
   }
   return d.Result.Ok(normalized);
 };

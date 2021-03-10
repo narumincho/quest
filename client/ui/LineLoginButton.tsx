@@ -1,5 +1,10 @@
 import * as React from "react";
-import { Button, CircularProgress, makeStyles } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  IconButton,
+  makeStyles,
+} from "@material-ui/core";
 
 export type CallState = "notCalled" | "calling" | "jumping";
 
@@ -51,8 +56,13 @@ export const LineLoginButton: React.VFC<Props> = (props) => {
     );
   }
   return (
-    <Button variant="contained" disabled className={classes.button}>
-      <CircularProgress />
+    <Button
+      variant="contained"
+      disabled
+      className={classes.button}
+      startIcon={<CircularProgress />}
+    >
+      ログイン準備中……
     </Button>
   );
 };

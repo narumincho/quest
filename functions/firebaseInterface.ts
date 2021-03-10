@@ -27,6 +27,14 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     };
     subCollections: Record<never, never>;
   };
+  program: {
+    key: d.QProgramId;
+    value: {
+      name: string;
+      createAccountId: d.AccountId;
+    };
+    subCollections: Record<never, never>;
+  };
 }>;
 const cloudStorageBucket = app.storage().bucket();
 
@@ -111,6 +119,17 @@ export const updateAccountToken = async (
 ): Promise<void> => {
   await firestore.collection("account").doc(accountId).update({
     accountTokenHash,
+  });
+};
+
+export const createProject = async (data: {
+  id: d.QProgramId;
+  name: string;
+  createAccountId: d.AccountId;
+}): Promise<void> => {
+  await firestore.collection("program").doc(data.id).create({
+    name: data.name,
+    createAccountId: data.createAccountId,
   });
 };
 

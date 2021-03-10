@@ -43,7 +43,7 @@ const LoggedIn: React.VFC<{
       return <AdminTop account={props.account} />;
     case "Setting":
       return <Setting account={props.account} />;
-    case "NewProject":
+    case "NewProgram":
       return (
         <NewProject accountToken={props.accountToken} account={props.account} />
       );

@@ -20,9 +20,9 @@ export const AdminTop: React.VFC<Props> = (props) => {
   const classes = useStyles();
   return (
     <Box>
-      <AppBar title="作成したプロジェクト" account={props.account} isHideBack />
-      <Box padding={1}>プロジェクト一覧を表示したい</Box>
-      <Link location="NewProject">
+      <AppBar title="作成したプログラム" account={props.account} isHideBack />
+      <Box padding={1}>プログラム一覧を表示したい</Box>
+      <Link location={d.QLocation.NewProgram}>
         <Fab
           color="primary"
           variant="extended"
@@ -30,7 +30,7 @@ export const AdminTop: React.VFC<Props> = (props) => {
           className={classes.fab}
         >
           <Add />
-          プロジェクト作成
+          プログラム作成
         </Fab>
       </Link>
     </Box>

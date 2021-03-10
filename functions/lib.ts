@@ -7,6 +7,7 @@ import * as jsonWebToken from "jsonwebtoken";
 import { UrlData, lineLoginCallbackUrl } from "../common/url";
 import axios from "axios";
 import { imagePng } from "./mimeType";
+import { stringToValidProjectName as stringToValidProgramName } from "../common/validation";
 
 type ApiCodecType = typeof apiCodec;
 
@@ -33,6 +34,29 @@ export const apiFunc: {
       name: result.name,
       iconHash: result.iconHash,
       id: result.id,
+    };
+  },
+  createProgram: async (parameter) => {
+    const accountResult = await firebaseInterface.getAccountByAccountTokenHash(
+      hashAccountToken(parameter.accountToken)
+    );
+    if (accountResult === undefined) {
+      throw new Error("アカウントトークンからアカウントの情報を得られなかった");
+    }
+    const programNameResult = stringToValidProgramName(parameter.programName);
+    if (programNameResult._ === "Error") {
+      throw new Error(programNameResult.error);
+    }
+    const programId = createRandomId() as d.QProgramId;
+    await firebaseInterface.createProject({
+      id: programId,
+      name: programNameResult.ok,
+      createAccountId: accountResult.id,
+    });
+    return {
+      id: programId,
+      name: programNameResult.ok,
+      createAccountId: accountResult.id,
     };
   },
 };

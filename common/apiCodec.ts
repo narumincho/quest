@@ -16,3 +16,8 @@ export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.QAccount> = {
   request: d.AccountToken.codec,
   response: d.QAccount.codec,
 };
+
+export const createProgram: ApiCodec<d.QCreateProgramParameter, d.QProgram> = {
+  request: d.QCreateProgramParameter.codec,
+  response: d.QProgram.codec,
+};
