@@ -1,15 +1,7 @@
 import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  Paper,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
+import { Avatar, Box, Paper, Typography, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 
 export type Props = {

@@ -21,6 +21,8 @@ export const App: React.VFC<Record<never, never>> = () => {
         />
       );
     case "NoLogin":
+    case "RequestingLoginUrl":
+    case "JumpingPage":
       return <Login appState={appState} />;
     default:
       return (

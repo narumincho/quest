@@ -37,27 +37,26 @@ export const apiFunc: {
     };
   },
   createProgram: async (parameter) => {
-    const accountResult = await firebaseInterface.getAccountByAccountTokenHash(
-      hashAccountToken(parameter.accountToken)
-    );
-    if (accountResult === undefined) {
-      throw new Error("アカウントトークンからアカウントの情報を得られなかった");
-    }
+    const account = await validateAndGetAccount(parameter.accountToken);
     const programNameResult = stringToValidProgramName(parameter.programName);
     if (programNameResult._ === "Error") {
       throw new Error(programNameResult.error);
     }
     const programId = createRandomId() as d.QProgramId;
-    await firebaseInterface.createProject({
+    await firebaseInterface.createProgram({
       id: programId,
       name: programNameResult.ok,
-      createAccountId: accountResult.id,
+      createAccountId: account.id,
     });
     return {
       id: programId,
       name: programNameResult.ok,
-      createAccountId: accountResult.id,
+      createAccountId: account.id,
     };
+  },
+  getCreatedProgram: async (accountToken) => {
+    const account = await validateAndGetAccount(accountToken);
+    return firebaseInterface.getProgramListByCreateAccountId(account.id);
   },
 };
 
@@ -222,3 +221,19 @@ const createImageHashFromUint8ArrayAndMimeType = (
     .update(binary)
     .update(mimeType, "utf8")
     .digest("hex") as d.ImageHash;
+
+/**
+ * アカウントトークンが正しいかと, アカウントの情報を得る
+ * @throws 指定したアカウントトークンのアカウントが見つからなかったとき
+ */
+const validateAndGetAccount = async (
+  accountToken: d.AccountToken
+): Promise<d.QAccount> => {
+  const accountResult = await firebaseInterface.getAccountByAccountTokenHash(
+    hashAccountToken(accountToken)
+  );
+  if (accountResult === undefined) {
+    throw new Error("アカウントトークンからアカウントの情報を得られなかった");
+  }
+  return accountResult;
+};

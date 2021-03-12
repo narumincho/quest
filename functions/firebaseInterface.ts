@@ -122,7 +122,7 @@ export const updateAccountToken = async (
   });
 };
 
-export const createProject = async (data: {
+export const createProgram = async (data: {
   id: d.QProgramId;
   name: string;
   createAccountId: d.AccountId;
@@ -131,6 +131,25 @@ export const createProject = async (data: {
     name: data.name,
     createAccountId: data.createAccountId,
   });
+};
+
+export const getProgramListByCreateAccountId = async (
+  createAccountId: d.AccountId
+): Promise<ReadonlyArray<d.QProgram>> => {
+  const result = await firestore
+    .collection("program")
+    .where("createAccountId", "==", createAccountId)
+    .get();
+  return result.docs.map(
+    (docSnapshot): d.QProgram => {
+      const document = docSnapshot.data();
+      return {
+        id: docSnapshot.id,
+        name: document.name,
+        createAccountId: document.createAccountId,
+      };
+    }
+  );
 };
 
 const fakeCloudStoragePath = "./fakeCloudStorage";

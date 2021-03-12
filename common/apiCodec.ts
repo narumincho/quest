@@ -21,3 +21,11 @@ export const createProgram: ApiCodec<d.QCreateProgramParameter, d.QProgram> = {
   request: d.QCreateProgramParameter.codec,
   response: d.QProgram.codec,
 };
+
+/**
+ * 指定したアカウントトークンのアカウントの作成したプログラムを取得する
+ */
+export const getCreatedProgram: ApiCodec<d.AccountToken, d.List<d.QProgram>> = {
+  request: d.AccountToken.codec,
+  response: d.List.codec(d.QProgram.codec),
+};
