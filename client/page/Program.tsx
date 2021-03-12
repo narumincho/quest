@@ -6,7 +6,6 @@ import { AppState } from "../state";
 
 export type Props = {
   readonly programId: d.QProgramId;
-  readonly account: d.QAccount;
   readonly appState: AppState;
 };
 
@@ -15,11 +14,7 @@ export const Program: React.VFC<Props> = (props) => {
   if (program === undefined) {
     return (
       <Box>
-        <AppBar
-          title="プログラム読み込み中"
-          account={props.account}
-          appState={props.appState}
-        />
+        <AppBar title="プログラム読み込み中" appState={props.appState} />
         <Box></Box>
       </Box>
     );
@@ -29,7 +24,6 @@ export const Program: React.VFC<Props> = (props) => {
     <Box>
       <AppBar
         title={`${program.name} | プログラム`}
-        account={props.account}
         appState={props.appState}
       />
       <Box padding={1}>

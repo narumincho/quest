@@ -13,8 +13,6 @@ import { AppState } from "../state";
 import { stringToValidProjectName } from "../../common/validation";
 
 export type Props = {
-  readonly accountToken: d.AccountToken;
-  readonly account: d.QAccount;
   readonly appState: AppState;
 };
 
@@ -45,11 +43,7 @@ export const NewProgram: React.VFC<Props> = (props) => {
   };
   return (
     <Box>
-      <AppBar
-        title="プログラム作成"
-        account={props.account}
-        appState={props.appState}
-      />
+      <AppBar title="プログラム作成" appState={props.appState} />
       <Box padding={1}>
         <Box padding={1}>
           <TextField

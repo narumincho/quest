@@ -7,6 +7,8 @@ import { Login } from "./page/Login";
 import { NewProgram } from "./page/NewProgram";
 import { Program } from "./page/Program";
 import { Setting } from "./page/Setting";
+import { NewQuestion } from "./page/NewQuestion";
+import { Question } from "./page/Question";
 
 export const App: React.VFC<Record<never, never>> = () => {
   const appState = useAppState();
@@ -36,22 +38,24 @@ const LoggedIn: React.VFC<{
 }> = (props) => {
   switch (props.appState.location._) {
     case "Top":
-      return <AdminTop account={props.account} appState={props.appState} />;
+      return <AdminTop appState={props.appState} />;
     case "Setting":
       return <Setting account={props.account} appState={props.appState} />;
     case "NewProgram":
-      return (
-        <NewProgram
-          accountToken={props.accountToken}
-          account={props.account}
-          appState={props.appState}
-        />
-      );
+      return <NewProgram appState={props.appState} />;
     case "Program":
       return (
         <Program
-          account={props.account}
           programId={props.appState.location.qProgramId}
+          appState={props.appState}
+        />
+      );
+    case "NewQuestion":
+      return <NewQuestion appState={props.appState} />;
+    case "Question":
+      return (
+        <Question
+          questionId={props.appState.location.qQuestionId}
           appState={props.appState}
         />
       );

@@ -23,10 +23,6 @@ export type Props = {
    */
   title: string;
   /**
-   * 右に表示するアカウント. 指定なしで非表示
-   */
-  account?: d.QAccount;
-  /**
    * 戻るボタンを隠すか
    * @default false
    */
@@ -54,15 +50,17 @@ export const AppBar: React.VFC<Props> = (props) => {
         <Typography variant="h6" className={classes.title}>
           {props.title}
         </Typography>
-        {props.account === undefined ? (
-          <></>
-        ) : (
+        {props.appState.loginState.tag === "LoggedIn" ? (
           <Link location={d.QLocation.Setting} appState={props.appState}>
             <Avatar
-              alt={props.account.name}
-              src={commonUrl.imageUrl(props.account.iconHash).toString()}
+              alt={props.appState.loginState.account.name}
+              src={commonUrl
+                .imageUrl(props.appState.loginState.account.iconHash)
+                .toString()}
             />
           </Link>
+        ) : (
+          <></>
         )}
       </Toolbar>
     </MAppBar>

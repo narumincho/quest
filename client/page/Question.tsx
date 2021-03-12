@@ -6,12 +6,11 @@ import { AppState } from "../state";
 
 export const Question: React.VFC<{
   appState: AppState;
-  account: d.QAccount;
   questionId: d.QQuestionId;
 }> = (props) => {
   return (
     <Box>
-      <AppBar title="質問" appState={props.appState} account={props.account} />
+      <AppBar title="質問" appState={props.appState} />
       <Typography>質問の詳細ページ</Typography>
     </Box>
   );

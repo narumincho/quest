@@ -6,15 +6,10 @@ import { AppState } from "../state";
 
 export const NewQuestion: React.VFC<{
   appState: AppState;
-  account: d.QAccount;
 }> = (props) => {
   return (
     <Box>
-      <AppBar
-        title="質問 新規作成"
-        appState={props.appState}
-        account={props.account}
-      />
+      <AppBar title="質問 新規作成" appState={props.appState} />
       <Typography>質問作成ページ</Typography>
     </Box>
   );
