@@ -19,6 +19,25 @@ export type CreatedProgramListState =
       projectIdList: ReadonlyArray<d.QProgramId>;
     };
 
+export type RequestQuestionListInProgramState =
+  | {
+      tag: "None";
+    }
+  | {
+      tag: "Requesting";
+    }
+  | {
+      tag: "Loaded";
+      questionIdList: ReadonlyArray<d.QQuestionId>;
+    };
+
+export type ProgramWithQuestionIdList = {
+  readonly id: d.QProgramId;
+  readonly name: string;
+  readonly createAccountId: d.AccountId;
+  readonly questionList: RequestQuestionListInProgramState;
+};
+
 export type AppState = {
   /** ログイン状態 */
   loginState: LoginState;
@@ -27,11 +46,11 @@ export type AppState = {
   /** 作成したプログラムの取得状態 */
   createdProgramListState: CreatedProgramListState;
   /** プログラムの情報を得る */
-  program: (id: d.QProgramId) => d.QProgram | undefined;
+  program: (id: d.QProgramId) => ProgramWithQuestionIdList | undefined;
   /** アカウントの情報を得る */
   account: (id: d.AccountId) => d.QAccount | undefined;
-  /** プログラムに属する質問を取得する */
-  questionListInProgram: (id: d.QProgramId) => ReadonlyArray<d.QQuestion>;
+  /** 質問を取得する */
+  question: (id: d.QQuestionId) => d.QQuestion | undefined;
   /** 質問を作成中かどうか */
   isCreatingQuestion: boolean;
 
@@ -99,7 +118,7 @@ export const useAppState = (): AppState => {
   });
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const [programMap, setProgramMap] = useState<
-    ReadonlyMap<d.QProgramId, d.QProgram>
+    ReadonlyMap<d.QProgramId, ProgramWithQuestionIdList>
   >(new Map());
   const [accountMap, setAccountMap] = useState<
     ReadonlyMap<d.AccountId, d.QAccount>
@@ -115,7 +134,12 @@ export const useAppState = (): AppState => {
 
   const setProgram = (program: d.QProgram): void => {
     setProgramMap((before) => {
-      return new Map(before).set(program.id, program);
+      return new Map(before).set(program.id, {
+        id: program.id,
+        name: program.id,
+        createAccountId: program.createAccountId,
+        questionList: { tag: "None" },
+      });
     });
   };
 
@@ -123,7 +147,12 @@ export const useAppState = (): AppState => {
     setProgramMap((before) => {
       const map = new Map(before);
       for (const program of programList) {
-        map.set(program.id, program);
+        map.set(program.id, {
+          id: program.id,
+          name: program.id,
+          createAccountId: program.createAccountId,
+          questionList: { tag: "None" },
+        });
       }
       return map;
     });
@@ -348,15 +377,6 @@ export const useAppState = (): AppState => {
           setQuestionList(response.ok);
         });
     },
-    questionListInProgram: (programId) => {
-      const list: Array<d.QQuestion> = [];
-      for (const question of questionMap.values()) {
-        if (question.programId === programId) {
-          list.push(question);
-        }
-      }
-      return list;
-    },
     createQuestion: (programId, parent, questionText) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
@@ -385,6 +405,9 @@ export const useAppState = (): AppState => {
           setQuestion(response.ok);
           setLocation(d.QLocation.Question(response.ok.id));
         });
+    },
+    question: (id) => {
+      return questionMap.get(id);
     },
   };
 };

@@ -35,18 +35,24 @@ export const mockAppState: AppState = {
           name: "サンプルプログラム名A",
           createAccountId: mockAccountId,
           id: mockProgramIdA,
+          questionList: {
+            tag: "Loaded",
+            questionIdList: [mockQuestionIdA, mockQuestionIdB, mockQuestionIdC],
+          },
         };
       case mockProgramIdB:
         return {
           name: "サンプルプログラム名B",
           createAccountId: mockAccountId,
           id: mockProgramIdA,
+          questionList: { tag: "None" },
         };
       case mockProgramIdLong:
         return {
           name: lorem,
           createAccountId: mockAccountId,
           id: mockProgramIdA,
+          questionList: { tag: "None" },
         };
     }
     return undefined;
@@ -69,11 +75,35 @@ export const mockAppState: AppState = {
   ) => {
     console.log("質問を作成しようとした", programId, parent, text);
   },
-  questionListInProgram: () => {
-    return [];
-  },
   requestGetQuestionListInProgram: (programId) => {
     console.log("プログラムに属している質問を習得しようとした", programId);
+  },
+  question: (id): d.QQuestion | undefined => {
+    switch (id) {
+      case mockQuestionIdA:
+        return {
+          id: mockQuestionIdA,
+          name: "サンプル質問",
+          parent: d.Maybe.Nothing(),
+          programId: mockProgramIdA,
+        };
+      case mockQuestionIdB:
+        return {
+          id: mockQuestionIdB,
+          name:
+            "幼少期・小学校・中学校・高校それぞれで一番嬉しかったことは何ですか?",
+          parent: d.Maybe.Nothing(),
+          programId: mockProgramIdA,
+        };
+      case mockQuestionIdC:
+        return {
+          id: mockQuestionIdC,
+          name: "小さい頃の夢はなんですか?",
+          parent: d.Maybe.Nothing(),
+          programId: mockProgramIdA,
+        };
+    }
+    return undefined;
   },
 };
 
@@ -90,6 +120,8 @@ export const mockProgramIdB = "mockProgramB" as d.QProgramId;
 export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
 
 export const mockQuestionIdA = "mockQuestionA" as d.QQuestionId;
+export const mockQuestionIdB = "mockQuestionB" as d.QQuestionId;
+export const mockQuestionIdC = "mockQuestionLong" as d.QQuestionId;
 
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
