@@ -29,3 +29,12 @@ export const getCreatedProgram: ApiCodec<d.AccountToken, d.List<d.QProgram>> = {
   request: d.AccountToken.codec,
   response: d.List.codec(d.QProgram.codec),
 };
+
+/** 質問を作成する */
+export const createQuestion: ApiCodec<
+  d.QCreateQuestionParamter,
+  d.QQuestion
+> = {
+  request: d.QCreateQuestionParamter.codec,
+  response: d.QQuestion.codec,
+};

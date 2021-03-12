@@ -35,6 +35,15 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     };
     subCollections: Record<never, never>;
   };
+  question: {
+    key: d.QQuestionId;
+    value: {
+      name: string;
+      parent: d.QQuestionId | null;
+      programId: d.QProgramId;
+    };
+    subCollections: Record<never, never>;
+  };
 }>;
 const cloudStorageBucket = app.storage().bucket();
 
@@ -133,6 +142,24 @@ export const createProgram = async (data: {
   });
 };
 
+export const getProgram = async (
+  programId: d.QProgramId
+): Promise<d.QProgram | undefined> => {
+  const docSnapshot = await firestore
+    .collection("program")
+    .doc(programId)
+    .get();
+  const doc = docSnapshot.data();
+  if (doc === undefined) {
+    return undefined;
+  }
+  return {
+    id: docSnapshot.id,
+    name: doc.name,
+    createAccountId: doc.createAccountId,
+  };
+};
+
 export const getProgramListByCreateAccountId = async (
   createAccountId: d.AccountId
 ): Promise<ReadonlyArray<d.QProgram>> => {
@@ -150,6 +177,36 @@ export const getProgramListByCreateAccountId = async (
       };
     }
   );
+};
+
+export const createQuestion = async (question: d.QQuestion): Promise<void> => {
+  await firestore
+    .collection("question")
+    .doc(question.id)
+    .create({
+      name: question.name,
+      parent: question.parent._ === "Just" ? question.parent.value : null,
+      programId: question.programId,
+    });
+};
+
+export const getQuestion = async (
+  questionId: d.QQuestionId
+): Promise<d.QQuestion | undefined> => {
+  const docSnapshot = await firestore
+    .collection("question")
+    .doc(questionId)
+    .get();
+  const doc = docSnapshot.data();
+  if (doc === undefined) {
+    return undefined;
+  }
+  return {
+    id: docSnapshot.id,
+    name: doc.name,
+    parent: doc.parent === null ? d.Maybe.Nothing() : d.Maybe.Just(doc.parent),
+    programId: doc.programId,
+  };
 };
 
 const fakeCloudStoragePath = "./fakeCloudStorage";

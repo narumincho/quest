@@ -95,6 +95,9 @@ export const useAppState = (): AppState => {
     createdProgramList,
     setCreatedProgramList,
   ] = useState<CreatedProgramListState>({ tag: "None" });
+  const [questionMap, setQuestionMap] = useState<
+    ReadonlyMap<d.QQuestionId, d.QQuestion>
+  >(new Map());
 
   const setProgram = (program: d.QProgram): void => {
     setProgramMap((before) => {

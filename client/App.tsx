@@ -5,10 +5,10 @@ import { AdminTop } from "./page/AdminTop";
 import { Loading } from "./page/Loading";
 import { Login } from "./page/Login";
 import { NewProgram } from "./page/NewProgram";
-import { Program } from "./page/Program";
-import { Setting } from "./page/Setting";
 import { NewQuestion } from "./page/NewQuestion";
+import { Program } from "./page/Program";
 import { Question } from "./page/Question";
+import { Setting } from "./page/Setting";
 
 export const App: React.VFC<Record<never, never>> = () => {
   const appState = useAppState();
