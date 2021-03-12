@@ -1,7 +1,13 @@
 import * as React from "react";
 import { AdminTop, Props } from "../../client/page/AdminTop";
 import { Meta, Story } from "@storybook/react";
-import { mockAccount, mockAppState } from "../mock";
+import {
+  mockAccount,
+  mockAppState,
+  mockProgramIdA,
+  mockProgramIdB,
+  mockProgramIdLong,
+} from "../mock";
 
 const meta: Meta = {
   title: "Page/AdminTop",
@@ -12,6 +18,29 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<Props> = () => (
+export const Loading: Story<Props> = () => (
   <AdminTop account={mockAccount} appState={mockAppState} />
+);
+
+export const Requesting: Story<Props> = () => (
+  <AdminTop
+    account={mockAccount}
+    appState={{
+      ...mockAppState,
+      createdProgramListState: { tag: "Requesting" },
+    }}
+  />
+);
+
+export const Loaded: Story<Props> = () => (
+  <AdminTop
+    account={mockAccount}
+    appState={{
+      ...mockAppState,
+      createdProgramListState: {
+        tag: "Loaded",
+        projectIdList: [mockProgramIdA, mockProgramIdB, mockProgramIdLong],
+      },
+    }}
+  />
 );

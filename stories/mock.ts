@@ -3,6 +3,7 @@ import { AppState } from "../client/state";
 
 export const mockAppState: AppState = {
   loginState: { tag: "NoLogin" },
+  createdProgramListState: { tag: "None" },
   jump: (newLocation) => {
     console.log(`${JSON.stringify(newLocation)}に移動しようとした`);
   },
@@ -28,11 +29,27 @@ export const mockAppState: AppState = {
     console.log(`${projectName} というプログラムを作ろうとした`);
   },
   program: (id) => {
-    return {
-      id,
-      createAccountId: "fakeUserId" as d.AccountId,
-      name: "サンプルプログラム名",
-    };
+    switch (id) {
+      case mockProgramIdA:
+        return {
+          name: "サンプルプログラム名A",
+          createAccountId: mockAccountId,
+          id: mockProgramIdA,
+        };
+      case mockProgramIdB:
+        return {
+          name: "サンプルプログラム名B",
+          createAccountId: mockAccountId,
+          id: mockProgramIdA,
+        };
+      case mockProgramIdLong:
+        return {
+          name: lorem,
+          createAccountId: mockAccountId,
+          id: mockProgramIdA,
+        };
+    }
+    return undefined;
   },
   account: (id) => {
     return {
@@ -40,6 +57,9 @@ export const mockAppState: AppState = {
       iconHash: "fakeIconHash" as d.ImageHash,
       name: "サンプルアカウント名",
     };
+  },
+  requestGetCreatedProgram: () => {
+    console.log("作成したプログラム一覧を取得しようとした");
   },
 };
 
@@ -51,9 +71,9 @@ export const mockAccount: d.QAccount = {
 export const mockAccountId = "mockAccountId" as d.AccountId;
 export const mockAccountToken = "mockAccountToken" as d.AccountToken;
 
-export const mockProgramId = "mockProgramId" as d.QProgramId;
-export const mockProgram: d.QProgram = {
-  name: "サンプルプログラム名",
-  createAccountId: mockAccountId,
-  id: mockProgramId,
-};
+export const mockProgramIdA = "mockProgramA" as d.QProgramId;
+export const mockProgramIdB = "mockProgramB" as d.QProgramId;
+export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
+
+const lorem =
+  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";

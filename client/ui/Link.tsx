@@ -1,20 +1,21 @@
 import * as React from "react";
 import * as d from "../../data";
 import { AppState } from "../state";
+import { Link as MuiLink } from "@material-ui/core";
 import { locationToPath } from "../../common/url";
 
 export const Link: React.FC<{ appState: AppState; location: d.QLocation }> = (
   props
 ) => {
   return (
-    <a
+    <MuiLink
       href={locationToPath(props.location)}
-      onClick={(mouseEvent) =>
+      onClick={(mouseEvent: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
         onClick(mouseEvent, () => props.appState.jump(props.location))
       }
     >
       {props.children}
-    </a>
+    </MuiLink>
   );
 };
 
