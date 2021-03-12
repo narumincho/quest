@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  Button,
-  CircularProgress,
-  IconButton,
-  makeStyles,
-} from "@material-ui/core";
+import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 
 export type CallState = "notCalled" | "calling" | "jumping";
 

@@ -1,14 +1,17 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState } from "../state";
 import { locationToPath } from "../../common/url";
-import { useAppState } from "../state";
 
-export const Link: React.FC<{ location: d.QLocation }> = (props) => {
-  const { jump } = useAppState();
+export const Link: React.FC<{ appState: AppState; location: d.QLocation }> = (
+  props
+) => {
   return (
     <a
       href={locationToPath(props.location)}
-      onClick={(mouseEvent) => onClick(mouseEvent, () => jump(props.location))}
+      onClick={(mouseEvent) =>
+        onClick(mouseEvent, () => props.appState.jump(props.location))
+      }
     >
       {props.children}
     </a>

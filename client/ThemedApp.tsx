@@ -1,7 +1,6 @@
 import * as React from "react";
 import { CssBaseline, ThemeProvider, createMuiTheme } from "@material-ui/core";
 import { App } from "./App";
-import { AppStateContainer } from "./state";
 import { PaletteOptions } from "@material-ui/core/styles/createPalette";
 import { SnackbarProvider } from "notistack";
 
@@ -34,9 +33,7 @@ export const ThemedApp: React.FC<Record<never, never>> = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SnackbarProvider maxSnack={3}>
-        <AppStateContainer.Provider>
-          <App />
-        </AppStateContainer.Provider>
+        <App />
       </SnackbarProvider>
     </ThemeProvider>
   );

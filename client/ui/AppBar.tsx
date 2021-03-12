@@ -9,10 +9,18 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import { AppState } from "../state";
 import { ArrowBack } from "@material-ui/icons";
-import { Link } from "../container/Link";
+import { Link } from "./Link";
 
 export type Props = {
+  /**
+   * アプリの状態
+   */
+  appState: AppState;
+  /**
+   * タイトルの文字
+   */
   title: string;
   /**
    * 右に表示するアカウント. 指定なしで非表示
@@ -23,10 +31,6 @@ export type Props = {
    * @default false
    */
   isHideBack?: boolean;
-  /**
-   * 戻るボタンを押した
-   */
-  onBackClick: () => void;
 };
 
 const useStyles = makeStyles({
@@ -43,7 +47,7 @@ export const AppBar: React.VFC<Props> = (props) => {
         {props.isHideBack ? (
           <></>
         ) : (
-          <IconButton onClick={props.onBackClick}>
+          <IconButton onClick={props.appState.back}>
             <ArrowBack />
           </IconButton>
         )}
@@ -53,7 +57,7 @@ export const AppBar: React.VFC<Props> = (props) => {
         {props.account === undefined ? (
           <></>
         ) : (
-          <Link location="Setting">
+          <Link location="Setting" appState={props.appState}>
             <Avatar
               alt={props.account.name}
               src={commonUrl.imageUrl(props.account.iconHash).toString()}

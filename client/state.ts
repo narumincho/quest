@@ -1,10 +1,20 @@
 import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
+import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
-import { createContainer } from "unstated-next";
-import { useSnackbar } from "notistack";
+
+export type AppState = {
+  loginState: LoginState;
+  accountToken: () => d.AccountToken | undefined;
+  logout: () => void;
+  location: d.QLocation;
+  jump: (newLocation: d.QLocation) => void;
+  /** ページ推移を戻る */
+  back: () => void;
+  addNotification: (message: string, variant: VariantType) => void;
+};
 
 export type LoginState =
   | { tag: "Loading" }
@@ -30,7 +40,7 @@ const getAccountToken = (
   return indexedDb.getAccountToken();
 };
 
-const useAppStateInLocal = () => {
+export const useAppState = (): AppState => {
   const { enqueueSnackbar } = useSnackbar();
   const [loginState, setLoginState] = useState<LoginState>({
     tag: "Loading",
@@ -110,9 +120,13 @@ const useAppStateInLocal = () => {
       );
       setLocation(newLocation);
     },
+    back,
+    addNotification: (text, variant) => {
+      enqueueSnackbar(text, { variant });
+    },
   };
 };
 
-export const AppStateContainer = createContainer(useAppStateInLocal);
-
-export const useAppState = AppStateContainer.useContainer;
+const back = () => {
+  window.history.back();
+};

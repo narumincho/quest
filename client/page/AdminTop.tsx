@@ -1,11 +1,13 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppBar, Link } from "../container";
+import { AppBar, Link } from "../ui";
 import { Box, Fab, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import { AppState } from "../state";
 
-type Props = {
+export type Props = {
   account: d.QAccount;
+  appState: AppState;
 };
 
 const useStyles = makeStyles({
@@ -20,9 +22,14 @@ export const AdminTop: React.VFC<Props> = (props) => {
   const classes = useStyles();
   return (
     <Box>
-      <AppBar title="作成したプログラム" account={props.account} isHideBack />
+      <AppBar
+        title="作成したプログラム"
+        account={props.account}
+        isHideBack
+        appState={props.appState}
+      />
       <Box padding={1}>プログラム一覧を表示したい</Box>
-      <Link location={d.QLocation.NewProgram}>
+      <Link location={d.QLocation.NewProgram} appState={props.appState}>
         <Fab
           color="primary"
           variant="extended"

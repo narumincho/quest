@@ -1,21 +1,22 @@
 import * as React from "react";
 import { CallState, LineLoginButton as Pure } from "../ui/LineLoginButton";
+import { AppState } from "../state";
 import { api } from "../api";
-import { useSnackbar } from "notistack";
 
-type Props = Record<never, never>;
+export type Props = {
+  appState: AppState;
+};
 
-export const LineLogInButton: React.FunctionComponent<Props> = () => {
-  const { enqueueSnackbar } = useSnackbar();
+export const LineLogInButton: React.FunctionComponent<Props> = (props) => {
   const [callState, setCallState] = React.useState<CallState>("notCalled");
 
   const call = () => {
     setCallState("calling");
     api.requestLineLoginUrl(undefined).then((response) => {
       if (response._ === "Error") {
-        enqueueSnackbar(
+        props.appState.addNotification(
           `LINEログインのURLを発行できなかった ${response.error}`,
-          { variant: "error" }
+          "error"
         );
         return;
       }

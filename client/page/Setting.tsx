@@ -2,14 +2,15 @@ import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
 import { Avatar, Box, Button } from "@material-ui/core";
-import { AppBar } from "../container";
-import { useAppState } from "../state";
+import { AppBar } from "../ui";
+import { AppState } from "../state";
 
-export const Setting: React.VFC<{ account: d.QAccount }> = (props) => {
-  const { logout } = useAppState();
+export type Props = { account: d.QAccount; appState: AppState };
+
+export const Setting: React.VFC<Props> = (props) => {
   return (
     <Box>
-      <AppBar title="設定" />
+      <AppBar title="設定" appState={props.appState} />
       <Box padding={1}>
         <Box padding={1}>アカウントID: {props.account.id}</Box>
         <Box padding={1}>
@@ -23,7 +24,7 @@ export const Setting: React.VFC<{ account: d.QAccount }> = (props) => {
           アカウント名:
           {props.account.name}
         </Box>
-        <Button variant="contained" onClick={logout}>
+        <Button variant="contained" onClick={props.appState.logout}>
           ログアウト
         </Button>
       </Box>
