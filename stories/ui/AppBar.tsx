@@ -1,7 +1,7 @@
 import { AppBar, Props } from "../../client/ui/AppBar";
 import { Meta, Story } from "@storybook/react";
 import React from "react";
-import { fakeAppState } from "../fakeState";
+import { mockAppState } from "../mock";
 
 const meta: Meta = {
   title: "ui/AppBar",
@@ -9,8 +9,9 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<Props> = (args) => <AppBar {...args} />;
+export const Default: Story<{ title: string }> = (args) => (
+  <AppBar title={args.title} appState={mockAppState} />
+);
 Default.args = {
   title: "タイトル",
-  appState: fakeAppState,
 };

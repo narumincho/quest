@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { NewProgram, Props } from "../../client/page/NewProgram";
-import { fakeAppState } from "../fakeState";
+import { mockAccount, mockAccountToken, mockAppState } from "../mock";
+import { NewProgram } from "../../client/page/NewProgram";
 
 const meta: Meta = {
   title: "Page/NewProgram",
@@ -9,6 +9,10 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<Props> = (args) => (
-  <NewProgram {...args} appState={fakeAppState} />
+export const Default: Story<never> = () => (
+  <NewProgram
+    account={mockAccount}
+    accountToken={mockAccountToken}
+    appState={mockAppState}
+  />
 );

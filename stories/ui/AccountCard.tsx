@@ -1,6 +1,7 @@
-import { AccountCard, Props } from "../../client/ui/AccountCard";
+import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import React from "react";
+import { mockAccountId, mockAppState } from "../mock";
+import { AccountCard } from "../../client/ui/AccountCard";
 
 const meta: Meta = {
   title: "ui/AccountCard",
@@ -8,4 +9,6 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<Props> = (args) => <AccountCard {...args} />;
+export const Default: Story<never> = () => (
+  <AccountCard accountId={mockAccountId} appState={mockAppState} />
+);

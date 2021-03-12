@@ -1,7 +1,7 @@
 import * as d from "../data";
 import { AppState } from "../client/state";
 
-export const fakeAppState: AppState = {
+export const mockAppState: AppState = {
   loginState: { tag: "NoLogin" },
   jump: (newLocation) => {
     console.log(`${JSON.stringify(newLocation)}に移動しようとした`);
@@ -11,8 +11,10 @@ export const fakeAppState: AppState = {
       `${JSON.stringify(newLocation)}に履歴を置き換える形で移動しようとした`
     );
   },
-  accountToken: () => undefined,
   location: d.QLocation.Top,
+  requestLogin: () => {
+    console.log("ログインURLを発行して, 推移しようとした");
+  },
   logout: () => {
     console.log("ログアウトしようとした");
   },
@@ -32,4 +34,21 @@ export const fakeAppState: AppState = {
       name: "サンプルプログラム名",
     };
   },
+  account: (id) => {
+    return {
+      id,
+      iconHash: "fakeIconHash" as d.ImageHash,
+      name: "サンプルアカウント名",
+    };
+  },
 };
+
+export const mockAccount: d.QAccount = {
+  id: "fakeAccountId" as d.AccountId,
+  iconHash: "fakeIconHash" as d.ImageHash,
+  name: "サンプルアカウント名",
+};
+export const mockAccountId = "mockAccountId" as d.AccountId;
+
+export const mockProgramId = "mockProgramId" as d.QProgramId;
+export const mockAccountToken = "mockAccountToken" as d.AccountToken;

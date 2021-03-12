@@ -7,9 +7,13 @@ import { api } from "./api";
 import { stringToValidProjectName } from "../common/validation";
 
 export type AppState = {
+  /** ログイン状態 */
   loginState: LoginState;
-  accountToken: () => d.AccountToken | undefined;
+  /** ログインページを取得して移動させる */
+  requestLogin: () => void;
+  /** ログアウトする */
   logout: () => void;
+  /** 現在のページの場所 */
   location: d.QLocation;
   /** 指定したページへ移動する */
   jump: (newLocation: d.QLocation) => void;
@@ -17,11 +21,14 @@ export type AppState = {
   changeLocation: (newLocation: d.QLocation) => void;
   /** ページ推移を戻る */
   back: () => void;
+  /** 通知を表示する */
   addNotification: (message: string, variant: VariantType) => void;
   /** プログラムを作成する */
   createProgram: (programName: string) => void;
   /** プログラムの情報を得る */
   program: (id: d.QProgramId) => d.QProgram | undefined;
+  /** アカウントの情報を得る */
+  account: (id: d.AccountId) => d.QAccount | undefined;
 };
 
 export type LoginState =
@@ -37,6 +44,12 @@ export type LoginState =
       tag: "LoggedIn";
       accountToken: d.AccountToken;
       account: d.QAccount;
+    }
+  | {
+      tag: "RequestingLoginUrl";
+    }
+  | {
+      tag: "JumpingPage";
     };
 
 const getAccountTokenFromUrlOrIndexedDb = (
@@ -57,10 +70,19 @@ export const useAppState = (): AppState => {
   const [programMap, setProgramMap] = useState<
     ReadonlyMap<d.QProgramId, d.QProgram>
   >(new Map());
+  const [accountMap, setAccountMap] = useState<
+    ReadonlyMap<d.AccountId, d.QAccount>
+  >(new Map());
 
   const setProgram = (program: d.QProgram): void => {
     setProgramMap((before) => {
       return new Map(before).set(program.id, program);
+    });
+  };
+
+  const setAccount = (account: d.QAccount): void => {
+    setAccountMap((before) => {
+      return new Map(before).set(account.id, account);
     });
   };
 
@@ -106,6 +128,7 @@ export const useAppState = (): AppState => {
           accountToken,
           account: response.ok,
         });
+        setAccount(response.ok);
       });
     });
   }, []);
@@ -132,6 +155,25 @@ export const useAppState = (): AppState => {
     setLocation(newLocation);
   };
 
+  const requestLogin = () => {
+    setLoginState({
+      tag: "RequestingLoginUrl",
+    });
+    api.requestLineLoginUrl(undefined).then((response) => {
+      if (response._ === "Error") {
+        enqueueSnackbar(
+          `LINEログインのURLを発行できなかった ${response.error}`,
+          { variant: "error" }
+        );
+        return;
+      }
+      setLoginState({ tag: "JumpingPage" });
+      requestAnimationFrame(() => {
+        window.location.href = response.ok;
+      });
+    });
+  };
+
   const changeLocation = (newLocation: d.QLocation): void => {
     window.history.replaceState(
       undefined,
@@ -148,8 +190,9 @@ export const useAppState = (): AppState => {
 
   return {
     loginState,
-    accountToken: getAccountToken,
+    requestLogin,
     logout: () => {
+      indexedDb.deleteAccountToken();
       setLoginState({
         tag: "NoLogin",
       });
@@ -186,6 +229,9 @@ export const useAppState = (): AppState => {
     },
     program: (programId) => {
       return programMap.get(programId);
+    },
+    account: (accountId) => {
+      return accountMap.get(accountId);
     },
   };
 };

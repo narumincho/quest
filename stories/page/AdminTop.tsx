@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AdminTop, Props } from "../../client/page/AdminTop";
 import { Meta, Story } from "@storybook/react";
-import { fakeAppState } from "../fakeState";
+import { mockAccount, mockAppState } from "../mock";
 
 const meta: Meta = {
   title: "Page/AdminTop",
@@ -9,6 +9,6 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<Props> = (args) => (
-  <AdminTop {...args} appState={fakeAppState} />
+export const Default: Story<Props> = () => (
+  <AdminTop account={mockAccount} appState={mockAppState} />
 );
