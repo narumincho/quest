@@ -10,7 +10,6 @@ import {
 import { Add } from "@material-ui/icons";
 import { AppBar } from "../ui";
 import { AppState } from "../state";
-import { api } from "../api";
 import { stringToValidProjectName } from "../../common/validation";
 
 export type Props = {

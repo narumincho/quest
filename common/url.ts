@@ -38,6 +38,10 @@ const locationToPathWithoutSlash = (location: d.QLocation): string => {
       return newProgramPath;
     case "Program":
       return programPath + "/" + location.qProgramId;
+    case "NewQuestion":
+      return newQuestionPath;
+    case "Question":
+      return questionPath + "/" + location.qQuestionId;
   }
 };
 
@@ -84,6 +88,13 @@ export const pathToLocation = (path: string): d.QLocation => {
         return d.QLocation.Program(pathList[2] as d.QProgramId);
       }
       return d.QLocation.Top;
+    case newQuestionPath:
+      return d.QLocation.NewQuestion;
+    case questionPath:
+      if (typeof pathList[2] === "string") {
+        return d.QLocation.Question(pathList[2] as d.QQuestionId);
+      }
+      return d.QLocation.Top;
   }
   return d.QLocation.Top;
 };
@@ -98,3 +109,5 @@ export const imageUrl = (imageHash: d.ImageHash): URL =>
 const settingPath = "setting";
 const newProgramPath = "new-program";
 const programPath = "program";
+const newQuestionPath = "new-question";
+const questionPath = "question";

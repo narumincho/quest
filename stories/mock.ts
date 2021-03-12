@@ -75,5 +75,7 @@ export const mockProgramIdA = "mockProgramA" as d.QProgramId;
 export const mockProgramIdB = "mockProgramB" as d.QProgramId;
 export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
 
+export const mockQuestionIdA = "mockQuestionA" as d.QQuestionId;
+
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
