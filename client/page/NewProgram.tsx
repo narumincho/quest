@@ -8,9 +8,16 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import { AppBar } from "../container";
+import { AppBar } from "../ui";
+import { AppState } from "../state";
 import { api } from "../api";
 import { stringToValidProjectName } from "../../common/validation";
+
+export type Props = {
+  readonly accountToken: d.AccountToken;
+  readonly account: d.QAccount;
+  readonly appState: AppState;
+};
 
 const useStyles = makeStyles({
   createButton: {
@@ -18,10 +25,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const NewProject: React.VFC<{
-  accountToken: d.AccountToken;
-  account: d.QAccount;
-}> = (props) => {
+export const NewProgram: React.VFC<Props> = (props) => {
   const classes = useStyles();
   const [projectName, setProjectName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
@@ -38,18 +42,15 @@ export const NewProject: React.VFC<{
       return;
     }
     setIsCreating(true);
-    api
-      .createProgram({
-        accountToken: props.accountToken,
-        programName: projectNameResult.ok,
-      })
-      .then((e) => {
-        console.log("作成された!!", e);
-      });
+    props.appState.createProgram(projectName);
   };
   return (
     <Box>
-      <AppBar title="プログラム作成" account={props.account}></AppBar>
+      <AppBar
+        title="プログラム作成"
+        account={props.account}
+        appState={props.appState}
+      />
       <Box padding={1}>
         <Box padding={1}>
           <TextField
@@ -67,6 +68,9 @@ export const NewProject: React.VFC<{
                 : undefined
             }
             variant="outlined"
+            InputProps={{
+              readOnly: isCreating,
+            }}
           />
         </Box>
         <Box padding={1}>

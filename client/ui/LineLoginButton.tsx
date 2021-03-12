@@ -1,16 +1,11 @@
 import * as React from "react";
-import {
-  Button,
-  CircularProgress,
-  IconButton,
-  makeStyles,
-} from "@material-ui/core";
+import { Button, CircularProgress, makeStyles } from "@material-ui/core";
+import { AppState } from "../state";
 
 export type CallState = "notCalled" | "calling" | "jumping";
 
 export type Props = {
-  callState: CallState;
-  onClick: () => void;
+  readonly appState: AppState;
 };
 
 const useStyle = makeStyles({
@@ -42,19 +37,42 @@ const useStyle = makeStyles({
 
 export const LineLoginButton: React.VFC<Props> = (props) => {
   const classes = useStyle();
-  if (props.callState === "notCalled") {
-    return (
-      <Button
-        variant="contained"
-        onClick={props.onClick}
-        disabled={props.callState !== "notCalled"}
-        className={classes.button}
-      >
-        <img src="/line_icon120.png" className={classes.lineIcon} />
-        <div className={classes.text}>LINE で ログイン</div>
-      </Button>
-    );
+  switch (props.appState.loginState.tag) {
+    case "NoLogin":
+      return (
+        <Button
+          variant="contained"
+          onClick={props.appState.requestLogin}
+          className={classes.button}
+        >
+          <img src="/line_icon120.png" className={classes.lineIcon} />
+          <div className={classes.text}>LINE で ログイン</div>
+        </Button>
+      );
+    case "RequestingLoginUrl":
+      return (
+        <Button
+          variant="contained"
+          disabled
+          className={classes.button}
+          startIcon={<CircularProgress />}
+        >
+          ログイン準備中……
+        </Button>
+      );
+    case "JumpingPage":
+      return (
+        <Button
+          variant="contained"
+          disabled
+          className={classes.button}
+          startIcon={<CircularProgress />}
+        >
+          画面推移中……
+        </Button>
+      );
   }
+
   return (
     <Button
       variant="contained"
@@ -62,7 +80,7 @@ export const LineLoginButton: React.VFC<Props> = (props) => {
       className={classes.button}
       startIcon={<CircularProgress />}
     >
-      ログイン準備中……
+      準備中
     </Button>
   );
 };

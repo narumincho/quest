@@ -1,4 +1,5 @@
 import * as apiCodec from "../common/apiCodec";
+import * as d from "../data";
 import * as firebaseInterface from "./firebaseInterface";
 import * as functions from "firebase-functions";
 import * as lib from "./lib";
@@ -87,7 +88,7 @@ export const lineLoginCallback = functions.https.onRequest(
         301,
         url
           .urlDataToUrl({
-            location: "Top",
+            location: d.QLocation.Top,
             accountToken: undefined,
           })
           .toString()

@@ -1,51 +1,59 @@
 import * as React from "react";
 import * as d from "../data";
-import { Box, CircularProgress } from "@material-ui/core";
+import { AppState, useAppState } from "./state";
 import { AdminTop } from "./page/AdminTop";
+import { Loading } from "./page/Loading";
 import { Login } from "./page/Login";
-import { NewProject } from "./page/NewProject";
+import { NewProgram } from "./page/NewProgram";
+import { Program } from "./page/Program";
 import { Setting } from "./page/Setting";
-import { useAppState } from "./state";
 
 export const App: React.VFC<Record<never, never>> = () => {
-  const { loginState } = useAppState();
-  switch (loginState.tag) {
+  const appState = useAppState();
+
+  switch (appState.loginState.tag) {
     case "LoggedIn":
       return (
         <LoggedIn
-          accountToken={loginState.accountToken}
-          account={loginState.account}
+          accountToken={appState.loginState.accountToken}
+          account={appState.loginState.account}
+          appState={appState}
         />
       );
     case "NoLogin":
-      return <Login />;
+    case "RequestingLoginUrl":
+    case "JumpingPage":
+      return <Login appState={appState} />;
     default:
-      return (
-        <Box
-          alignContent="center"
-          justifyContent="center"
-          width="100%"
-          height="100%"
-        >
-          <CircularProgress />
-        </Box>
-      );
+      return <Loading />;
   }
 };
 
 const LoggedIn: React.VFC<{
   accountToken: d.AccountToken;
   account: d.QAccount;
+  appState: AppState;
 }> = (props) => {
-  const { location } = useAppState();
-  switch (location) {
+  switch (props.appState.location._) {
     case "Top":
-      return <AdminTop account={props.account} />;
+      return <AdminTop account={props.account} appState={props.appState} />;
     case "Setting":
-      return <Setting account={props.account} />;
+      return <Setting account={props.account} appState={props.appState} />;
     case "NewProgram":
       return (
-        <NewProject accountToken={props.accountToken} account={props.account} />
+        <NewProgram
+          accountToken={props.accountToken}
+          account={props.account}
+          appState={props.appState}
+        />
+      );
+    case "Program":
+      return (
+        <Program
+          account={props.account}
+          programId={props.appState.location.qProgramId}
+          appState={props.appState}
+        />
       );
   }
 };

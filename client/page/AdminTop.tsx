@@ -1,11 +1,15 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppBar, Link } from "../container";
-import { Box, Fab, makeStyles } from "@material-ui/core";
+import { AppBar, Link } from "../ui";
+import { Box, Fab, Typography, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import { AppState } from "../state";
+import { ProgramCard } from "../ui/ProgramCard";
+import { Skeleton } from "@material-ui/lab";
 
-type Props = {
+export type Props = {
   account: d.QAccount;
+  appState: AppState;
 };
 
 const useStyles = makeStyles({
@@ -18,11 +22,21 @@ const useStyles = makeStyles({
 
 export const AdminTop: React.VFC<Props> = (props) => {
   const classes = useStyles();
+
+  React.useEffect(() => {
+    props.appState.requestGetCreatedProgram();
+  }, []);
+
   return (
     <Box>
-      <AppBar title="作成したプログラム" account={props.account} isHideBack />
-      <Box padding={1}>プログラム一覧を表示したい</Box>
-      <Link location={d.QLocation.NewProgram}>
+      <AppBar
+        title="作成したプログラム"
+        account={props.account}
+        isHideBack
+        appState={props.appState}
+      />
+      <CreatedProgramList appState={props.appState} />
+      <Link location={d.QLocation.NewProgram} appState={props.appState}>
         <Fab
           color="primary"
           variant="extended"
@@ -35,4 +49,56 @@ export const AdminTop: React.VFC<Props> = (props) => {
       </Link>
     </Box>
   );
+};
+
+const useCreatedProgramListStyles = makeStyles({
+  box: {
+    display: "grid",
+    gap: 8,
+    padding: 8,
+  },
+});
+
+export const CreatedProgramList: React.VFC<{
+  appState: AppState;
+}> = (props) => {
+  const classes = useCreatedProgramListStyles();
+  switch (props.appState.createdProgramListState.tag) {
+    case "None":
+      return (
+        <Box padding={1}>
+          <Typography>取得準備中</Typography>
+        </Box>
+      );
+    case "Requesting":
+      return (
+        <Box className={classes.box}>
+          <Skeleton key="first" variant="rect" width="100%" height={88} />
+          <Skeleton key="second" variant="rect" width="100%" height={88} />
+        </Box>
+      );
+    case "Loaded":
+      if (props.appState.createdProgramListState.projectIdList.length === 0) {
+        return (
+          <Box padding={1} paddingTop={4}>
+            <Typography align="center">
+              作成したプログラムはありません
+            </Typography>
+          </Box>
+        );
+      }
+      return (
+        <Box className={classes.box}>
+          {props.appState.createdProgramListState.projectIdList.map(
+            (programId) => (
+              <ProgramCard
+                key={programId}
+                appState={props.appState}
+                programId={programId}
+              />
+            )
+          )}
+        </Box>
+      );
+  }
 };

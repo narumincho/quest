@@ -25,13 +25,19 @@ export const urlDataToUrl = (urlData: UrlData): URL => {
 
 /** quest 内の場所からURLのパスを得る */
 export const locationToPath = (location: d.QLocation): string => {
-  switch (location) {
+  return "/" + locationToPathWithoutSlash(location);
+};
+
+const locationToPathWithoutSlash = (location: d.QLocation): string => {
+  switch (location._) {
     case "Top":
-      return "/";
+      return "";
     case "Setting":
       return settingPath;
     case "NewProgram":
       return newProgramPath;
+    case "Program":
+      return programPath + "/" + location.qProgramId;
   }
 };
 
@@ -67,11 +73,17 @@ export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
 
 /** パスから quest 内の場所を得る */
 export const pathToLocation = (path: string): d.QLocation => {
-  switch (path) {
+  const pathList = path.split("/");
+  switch (pathList[1]) {
     case settingPath:
       return d.QLocation.Setting;
     case newProgramPath:
       return d.QLocation.NewProgram;
+    case programPath:
+      if (typeof pathList[2] === "string") {
+        return d.QLocation.Program(pathList[2] as d.QProgramId);
+      }
+      return d.QLocation.Top;
   }
   return d.QLocation.Top;
 };
@@ -83,5 +95,6 @@ export const lineLoginCallbackUrl = `${origin}/lineLoginCallback`;
 export const imageUrl = (imageHash: d.ImageHash): URL =>
   new URL(`${origin}/file/${imageHash}`);
 
-const settingPath = "/setting";
-const newProgramPath = "/new-program";
+const settingPath = "setting";
+const newProgramPath = "new-program";
+const programPath = "program";
