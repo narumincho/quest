@@ -24,9 +24,11 @@ export const Setting: React.VFC<Props> = (props) => {
           アカウント名:
           {props.account.name}
         </Box>
-        <Button variant="contained" onClick={props.appState.logout}>
-          ログアウト
-        </Button>
+        <Box padding={1}>
+          <Button fullWidth variant="contained" onClick={props.appState.logout}>
+            ログアウトする
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
