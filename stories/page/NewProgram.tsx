@@ -6,6 +6,9 @@ import { NewProgram } from "../../client/page/NewProgram";
 const meta: Meta = {
   title: "Page/NewProgram",
   component: NewProgram,
+  parameters: {
+    layout: "fullscreen",
+  },
 };
 export default meta;
 

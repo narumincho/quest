@@ -6,6 +6,9 @@ import { mockAccount, mockAppState } from "../mock";
 const meta: Meta = {
   title: "Page/AdminTop",
   component: AdminTop,
+  parameters: {
+    layout: "fullscreen",
+  },
 };
 export default meta;
 

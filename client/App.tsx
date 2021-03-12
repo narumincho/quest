@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as d from "../data";
 import { AppState, useAppState } from "./state";
-import { Box, CircularProgress } from "@material-ui/core";
 import { AdminTop } from "./page/AdminTop";
+import { Loading } from "./page/Loading";
 import { Login } from "./page/Login";
 import { NewProgram } from "./page/NewProgram";
 import { Program } from "./page/Program";
@@ -25,16 +25,7 @@ export const App: React.VFC<Record<never, never>> = () => {
     case "JumpingPage":
       return <Login appState={appState} />;
     default:
-      return (
-        <Box
-          alignContent="center"
-          justifyContent="center"
-          width="100%"
-          height="100%"
-        >
-          <CircularProgress />
-        </Box>
-      );
+      return <Loading />;
   }
 };
 
