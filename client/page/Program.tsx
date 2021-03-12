@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AccountCard, AppBar } from "../ui";
 import { Box, Typography } from "@material-ui/core";
-import { AppBar } from "../ui";
 import { AppState } from "../state";
 
 export type Props = {
@@ -32,8 +32,16 @@ export const Program: React.VFC<Props> = (props) => {
         account={props.account}
         appState={props.appState}
       />
-      <Box></Box>
-      <Typography>{program.name}</Typography>
+      <Box padding={1}>
+        <Typography>{program.name}</Typography>
+        <Box padding={1}>
+          作成者:
+          <AccountCard
+            appState={props.appState}
+            accountId={program.createAccountId}
+          />
+        </Box>
+      </Box>
     </Box>
   );
 };

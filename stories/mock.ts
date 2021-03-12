@@ -49,6 +49,11 @@ export const mockAccount: d.QAccount = {
   name: "サンプルアカウント名",
 };
 export const mockAccountId = "mockAccountId" as d.AccountId;
+export const mockAccountToken = "mockAccountToken" as d.AccountToken;
 
 export const mockProgramId = "mockProgramId" as d.QProgramId;
-export const mockAccountToken = "mockAccountToken" as d.AccountToken;
+export const mockProgram: d.QProgram = {
+  name: "サンプルプログラム名",
+  createAccountId: mockAccountId,
+  id: mockProgramId,
+};
