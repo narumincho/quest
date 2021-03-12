@@ -209,6 +209,29 @@ export const getQuestion = async (
   };
 };
 
+export const getQuestionListByProgramId = async (
+  programId: d.QProgramId
+): Promise<ReadonlyArray<d.QQuestion>> => {
+  const result = await firestore
+    .collection("question")
+    .where("programId", "==", programId)
+    .get();
+  return result.docs.map(
+    (docSnapshot): d.QQuestion => {
+      const document = docSnapshot.data();
+      return {
+        id: docSnapshot.id,
+        name: document.name,
+        parent:
+          document.parent === null
+            ? d.Maybe.Nothing()
+            : d.Maybe.Just(document.parent),
+        programId: document.programId,
+      };
+    }
+  );
+};
+
 const fakeCloudStoragePath = "./fakeCloudStorage";
 
 /**

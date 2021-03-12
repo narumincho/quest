@@ -38,3 +38,14 @@ export const createQuestion: ApiCodec<
   request: d.QCreateQuestionParamter.codec,
   response: d.QQuestion.codec,
 };
+
+/**
+ * 自身が作成したプログラムの質問を取得する
+ */
+export const getQuestionInCreatedProgram: ApiCodec<
+  d.QGetQuestionListByProgramId,
+  d.List<d.QQuestion>
+> = {
+  request: d.QGetQuestionListByProgramId.codec,
+  response: d.List.codec(d.QQuestion.codec),
+};
