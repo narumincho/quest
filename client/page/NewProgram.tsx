@@ -42,14 +42,7 @@ export const NewProgram: React.VFC<Props> = (props) => {
       return;
     }
     setIsCreating(true);
-    api
-      .createProgram({
-        accountToken: props.accountToken,
-        programName: projectNameResult.ok,
-      })
-      .then((e) => {
-        console.log("作成された!!", e);
-      });
+    props.appState.createProgram(projectName);
   };
   return (
     <Box>
@@ -75,6 +68,9 @@ export const NewProgram: React.VFC<Props> = (props) => {
                 : undefined
             }
             variant="outlined"
+            InputProps={{
+              readOnly: isCreating,
+            }}
           />
         </Box>
         <Box padding={1}>

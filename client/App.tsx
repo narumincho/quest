@@ -5,6 +5,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { AdminTop } from "./page/AdminTop";
 import { Login } from "./page/Login";
 import { NewProgram } from "./page/NewProgram";
+import { Program } from "./page/Program";
 import { Setting } from "./page/Setting";
 
 export const App: React.VFC<Record<never, never>> = () => {
@@ -40,7 +41,7 @@ const LoggedIn: React.VFC<{
   account: d.QAccount;
   appState: AppState;
 }> = (props) => {
-  switch (props.appState.location) {
+  switch (props.appState.location._) {
     case "Top":
       return <AdminTop account={props.account} appState={props.appState} />;
     case "Setting":
@@ -50,6 +51,14 @@ const LoggedIn: React.VFC<{
         <NewProgram
           accountToken={props.accountToken}
           account={props.account}
+          appState={props.appState}
+        />
+      );
+    case "Program":
+      return (
+        <Program
+          account={props.account}
+          programId={props.appState.location.qProgramId}
           appState={props.appState}
         />
       );

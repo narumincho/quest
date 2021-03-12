@@ -41,7 +41,7 @@
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
- export type QLocation = "Top" | "Setting" | "NewProgram";
+ export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId };
  
  
  /**
@@ -1580,14 +1580,18 @@
   */
  readonly Top: QLocation; 
  /**
-  * 設定画面. アカウントの情報やログアウトできる
+  * 設定ページ. アカウントの情報やログアウトできる
   */
  readonly Setting: QLocation; 
  /**
-  * プログラム作成画面
+  * プログラム作成ページ
   */
- readonly NewProgram: QLocation } = { Top: "Top", Setting: "Setting", NewProgram: "NewProgram", typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
-   switch (value) {
+ readonly NewProgram: QLocation; 
+ /**
+  * プログラム詳細ページ
+  */
+ readonly Program: (a: QProgramId) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
+   switch (value._) {
      case "Top": {
        return [0];
      }
@@ -1596,6 +1600,9 @@
      }
      case "NewProgram": {
        return [2];
+     }
+     case "Program": {
+       return [3].concat(QProgramId.codec.encode(value.qProgramId));
      }
    }
  }, decode: (index: number, binary: Uint8Array): { readonly result: QLocation; readonly nextIndex: number } => {
@@ -1608,6 +1615,10 @@
    }
    if (patternIndex.result === 2) {
      return { result: QLocation.NewProgram, nextIndex: patternIndex.nextIndex };
+   }
+   if (patternIndex.result === 3) {
+     const result: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(patternIndex.nextIndex, binary);
+     return { result: QLocation.Program(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };

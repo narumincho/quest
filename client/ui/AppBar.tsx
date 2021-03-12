@@ -57,7 +57,7 @@ export const AppBar: React.VFC<Props> = (props) => {
         {props.account === undefined ? (
           <></>
         ) : (
-          <Link location="Setting" appState={props.appState}>
+          <Link location={d.QLocation.Setting} appState={props.appState}>
             <Avatar
               alt={props.account.name}
               src={commonUrl.imageUrl(props.account.iconHash).toString()}
