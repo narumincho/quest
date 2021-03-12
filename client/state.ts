@@ -26,6 +26,14 @@ export type AppState = {
   location: d.QLocation;
   /** 作成したプログラムの取得状態 */
   createdProgramListState: CreatedProgramListState;
+  /** プログラムの情報を得る */
+  program: (id: d.QProgramId) => d.QProgram | undefined;
+  /** アカウントの情報を得る */
+  account: (id: d.AccountId) => d.QAccount | undefined;
+  /** プログラムに属する質問を取得する */
+  questionListInProgram: (id: d.QProgramId) => ReadonlyArray<d.QQuestion>;
+  /** 質問を作成中かどうか */
+  isCreatingQuestion: boolean;
 
   /** ログインページを取得して移動させる */
   requestLogin: () => void;
@@ -41,12 +49,17 @@ export type AppState = {
   addNotification: (message: string, variant: VariantType) => void;
   /** プログラムを作成する */
   createProgram: (programName: string) => void;
-  /** プログラムの情報を得る */
-  program: (id: d.QProgramId) => d.QProgram | undefined;
-  /** アカウントの情報を得る */
-  account: (id: d.AccountId) => d.QAccount | undefined;
+
   /** 作成したプログラムを取得する */
   requestGetCreatedProgram: () => void;
+  /** プログラムに属する質問を取得する */
+  requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
+  /** 質問を作成する */
+  createQuestion: (
+    programId: d.QProgramId,
+    parent: d.QQuestionId | undefined,
+    text: string
+  ) => void;
 };
 
 export type LoginState =
@@ -98,6 +111,7 @@ export const useAppState = (): AppState => {
   const [questionMap, setQuestionMap] = useState<
     ReadonlyMap<d.QQuestionId, d.QQuestion>
   >(new Map());
+  const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
 
   const setProgram = (program: d.QProgram): void => {
     setProgramMap((before) => {
@@ -118,6 +132,21 @@ export const useAppState = (): AppState => {
   const setAccount = (account: d.QAccount): void => {
     setAccountMap((before) => {
       return new Map(before).set(account.id, account);
+    });
+  };
+
+  const setQuestionList = (questionList: ReadonlyArray<d.QQuestion>): void => {
+    setQuestionMap((before) => {
+      const map = new Map(before);
+      for (const question of questionList) {
+        map.set(question.id, question);
+      }
+      return map;
+    });
+  };
+  const setQuestion = (question: d.QQuestion): void => {
+    setQuestionMap((before) => {
+      return new Map(before).set(question.id, question);
     });
   };
 
@@ -237,6 +266,7 @@ export const useAppState = (): AppState => {
     jump,
     changeLocation,
     back,
+    isCreatingQuestion,
     addNotification: (text, variant) => {
       enqueueSnackbar(text, { variant });
     },
@@ -297,6 +327,64 @@ export const useAppState = (): AppState => {
         });
         setProgramList(response.ok);
       });
+    },
+    requestGetQuestionListInProgram: (programId) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        return;
+      }
+      api
+        .getQuestionInCreatedProgram({
+          accountToken,
+          programId,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(`質問の取得に失敗しました ${response.error}`, {
+              variant: "error",
+            });
+            return;
+          }
+          setQuestionList(response.ok);
+        });
+    },
+    questionListInProgram: (programId) => {
+      const list: Array<d.QQuestion> = [];
+      for (const question of questionMap.values()) {
+        if (question.programId === programId) {
+          list.push(question);
+        }
+      }
+      return list;
+    },
+    createQuestion: (programId, parent, questionText) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        return;
+      }
+      setIsCreatingQuestion(true);
+      api
+        .createQuestion({
+          accountToken,
+          programId,
+          parent:
+            parent === undefined ? d.Maybe.Nothing() : d.Maybe.Just(parent),
+          questionText,
+        })
+        .then((response) => {
+          setIsCreatingQuestion(false);
+          if (response._ === "Error") {
+            enqueueSnackbar(`質問の作成に失敗した ${response.error}`, {
+              variant: "error",
+            });
+            return;
+          }
+          enqueueSnackbar(`質問を作成しました`, {
+            variant: "success",
+          });
+          setQuestion(response.ok);
+          setLocation(d.QLocation.Question(response.ok.id));
+        });
     },
   };
 };

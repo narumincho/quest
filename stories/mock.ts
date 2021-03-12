@@ -61,6 +61,20 @@ export const mockAppState: AppState = {
   requestGetCreatedProgram: () => {
     console.log("作成したプログラム一覧を取得しようとした");
   },
+  isCreatingQuestion: false,
+  createQuestion: (
+    programId: d.QProgramId,
+    parent: d.QQuestionId | undefined,
+    text: string
+  ) => {
+    console.log("質問を作成しようとした", programId, parent, text);
+  },
+  questionListInProgram: () => {
+    return [];
+  },
+  requestGetQuestionListInProgram: (programId) => {
+    console.log("プログラムに属している質問を習得しようとした", programId);
+  },
 };
 
 export const mockAccount: d.QAccount = {
