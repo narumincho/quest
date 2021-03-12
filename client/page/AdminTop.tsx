@@ -78,6 +78,15 @@ export const CreatedProgramList: React.VFC<{
         </Box>
       );
     case "Loaded":
+      if (props.appState.createdProgramListState.projectIdList.length === 0) {
+        return (
+          <Box padding={1} paddingTop={4}>
+            <Typography align="center">
+              作成したプログラムはありません
+            </Typography>
+          </Box>
+        );
+      }
       return (
         <Box className={classes.box}>
           {props.appState.createdProgramListState.projectIdList.map(

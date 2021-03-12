@@ -44,3 +44,16 @@ export const Loaded: Story<Props> = () => (
     }}
   />
 );
+
+export const LoadedZero: Story<Props> = () => (
+  <AdminTop
+    account={mockAccount}
+    appState={{
+      ...mockAppState,
+      createdProgramListState: {
+        tag: "Loaded",
+        projectIdList: [],
+      },
+    }}
+  />
+);
