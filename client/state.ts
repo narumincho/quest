@@ -182,14 +182,10 @@ export const useAppState = (): AppState => {
   useEffect(() => {
     // ブラウザで戻るボタンを押したときのイベントを登録
     window.addEventListener("popstate", () => {
-      setLocation(commonUrl.pathToLocation(window.location.pathname));
+      setLocation(commonUrl.urlToLocation(new URL(window.location.href)));
     });
 
-    const nowUrl = new URL(window.location.href);
-    const urlData = commonUrl.pathAndHashToUrlData(
-      nowUrl.pathname,
-      nowUrl.hash
-    );
+    const urlData = commonUrl.urlToUrlData(new URL(window.location.href));
     console.log("urlData", urlData);
     setLocation(urlData.location);
     getAccountTokenFromUrlOrIndexedDb(urlData).then((accountToken) => {
@@ -205,7 +201,7 @@ export const useAppState = (): AppState => {
       history.replaceState(
         undefined,
         "",
-        commonUrl.locationToPath(urlData.location)
+        commonUrl.locationToUrl(urlData.location).toString()
       );
       api.getAccountByAccountToken(accountToken).then((response) => {
         if (response._ === "Error") {

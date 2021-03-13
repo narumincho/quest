@@ -15,45 +15,51 @@ export type UrlData = {
 
 /** アカウントトークンを含んだ パスとハッシュを生成する */
 export const urlDataToUrl = (urlData: UrlData): URL => {
-  const url = new URL(origin);
-  url.pathname = locationToPath(urlData.location);
+  const url = locationToUrl(urlData.location);
   if (typeof urlData.accountToken === "string") {
     url.hash = `account-token=${urlData.accountToken}`;
   }
   return url;
 };
 
-/** quest 内の場所からURLのパスを得る */
-export const locationToPath = (location: d.QLocation): string => {
-  return "/" + locationToPathWithoutSlash(location);
-};
-
-const locationToPathWithoutSlash = (location: d.QLocation): string => {
+export const locationToUrl = (location: d.QLocation): URL => {
   switch (location._) {
     case "Top":
-      return "";
+      return createUrl([]);
     case "Setting":
-      return settingPath;
+      return createUrl([settingPath]);
     case "NewProgram":
-      return newProgramPath;
+      return createUrl([newProgramPath]);
     case "Program":
-      return programPath + "/" + location.qProgramId;
+      return createUrl([programPath, location.qProgramId]);
     case "NewQuestion":
-      return newQuestionPath;
+      return createUrl(
+        [newQuestionPath],
+        new Map<string, string>([
+          [newQuestionProgramId, location.qNewQuestionParameter.programId],
+          ...(location.qNewQuestionParameter.parent._ === "Just"
+            ? ([
+                [
+                  newQuestionParent,
+                  location.qNewQuestionParameter.parent.value,
+                ],
+              ] as const)
+            : []),
+          [newQuestionText, location.qNewQuestionParameter.text],
+        ])
+      );
     case "Question":
-      return questionPath + "/" + location.qQuestionId;
+      return createUrl([questionPath, location.qQuestionId]);
   }
 };
 
 /**
- * URLのパスとハッシュから quest 内の場所と, アカウントトークンを得る
- *
- * @param path URL の `/` からはじまる. パス (`/`を含む)
- * @param hash URL の `#` からはじまる. ハッシュ (`#`を含む)
+ * URLから quest 内の場所と, アカウントトークンを得る
+ * オリジンは無視される
  */
-export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
-  const location: d.QLocation = pathToLocation(path);
-  const accountTokenResult = hash.match(
+export const urlToUrlData = (url: URL): UrlData => {
+  const location: d.QLocation = urlToLocation(url);
+  const accountTokenResult = url.hash.match(
     /account-token=(?<token>[0-9a-f]{64})/u
   );
   if (
@@ -75,9 +81,12 @@ export const pathAndHashToUrlData = (path: string, hash: string): UrlData => {
   };
 };
 
-/** パスから quest 内の場所を得る */
-export const pathToLocation = (path: string): d.QLocation => {
-  const pathList = path.split("/");
+/**
+ * URL から quest 内の場所を得る.
+ * アカウントトークンとオリジンは無視する
+ */
+export const urlToLocation = (url: URL): d.QLocation => {
+  const pathList = url.pathname.split("/");
   switch (pathList[1]) {
     case settingPath:
       return d.QLocation.Setting;
@@ -88,8 +97,22 @@ export const pathToLocation = (path: string): d.QLocation => {
         return d.QLocation.Program(pathList[2] as d.QProgramId);
       }
       return d.QLocation.Top;
-    case newQuestionPath:
-      return d.QLocation.NewQuestion;
+    case newQuestionPath: {
+      const programId = url.searchParams.get(newQuestionProgramId);
+      const parent = url.searchParams.get(newQuestionParent);
+      const text = url.searchParams.get(newQuestionText);
+      if (typeof programId === "string" && typeof text === "string") {
+        return d.QLocation.NewQuestion({
+          programId: programId as d.QProgramId,
+          parent:
+            typeof parent === "string"
+              ? d.Maybe.Just(parent as d.QQuestionId)
+              : d.Maybe.Nothing(),
+          text,
+        });
+      }
+      return d.QLocation.Top;
+    }
     case questionPath:
       if (typeof pathList[2] === "string") {
         return d.QLocation.Question(pathList[2] as d.QQuestionId);
@@ -111,3 +134,30 @@ const newProgramPath = "new-program";
 const programPath = "program";
 const newQuestionPath = "new-question";
 const questionPath = "question";
+const newQuestionProgramId = "programId";
+const newQuestionParent = "parent";
+const newQuestionText = "text";
+
+/**
+ * URLを宣言的に作成する
+ * @param path パス
+ * @param searchParams クエリパラメーター
+ * @param hash `#` を含まれないハッシュ (フラグメント)
+ */
+const createUrl = (
+  path: ReadonlyArray<string>,
+  searchParams?: ReadonlyMap<string, string>,
+  hash?: string
+): URL => {
+  const url = new URL(origin);
+  url.pathname = "/" + path.join("/");
+  if (searchParams !== undefined) {
+    for (const [key, value] of searchParams) {
+      url.searchParams.set(key, value);
+    }
+  }
+  if (typeof hash === "string") {
+    url.hash = hash;
+  }
+  return url;
+};
