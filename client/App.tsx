@@ -36,7 +36,8 @@ const LoggedIn: React.VFC<{
   account: d.QAccount;
   appState: AppState;
 }> = (props) => {
-  switch (props.appState.location._) {
+  const location = props.appState.location;
+  switch (location._) {
     case "Top":
       return <AdminTop appState={props.appState} />;
     case "Setting":
@@ -45,19 +46,23 @@ const LoggedIn: React.VFC<{
       return <NewProgram appState={props.appState} />;
     case "Program":
       return (
-        <Program
-          programId={props.appState.location.qProgramId}
-          appState={props.appState}
-        />
+        <Program programId={location.qProgramId} appState={props.appState} />
       );
     case "NewQuestion":
-      return <NewQuestion appState={props.appState} />;
+      return (
+        <NewQuestion
+          appState={props.appState}
+          programId={location.qNewQuestionParameter.programId}
+          parent={
+            location.qNewQuestionParameter.parent._ === "Just"
+              ? location.qNewQuestionParameter.parent.value
+              : undefined
+          }
+        />
+      );
     case "Question":
       return (
-        <Question
-          questionId={props.appState.location.qQuestionId}
-          appState={props.appState}
-        />
+        <Question questionId={location.qQuestionId} appState={props.appState} />
       );
   }
 };

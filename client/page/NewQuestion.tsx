@@ -1,16 +1,84 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Button, CircularProgress, TextField } from "@material-ui/core";
 import { AppBar } from "../ui";
 import { AppState } from "../state";
+import { ProgramCard } from "../ui/ProgramCard";
+import { QuestionCard } from "../ui/QuestionCard";
+import { stringToValidQuestionText } from "../../common/validation";
 
 export const NewQuestion: React.VFC<{
   appState: AppState;
+  programId: d.QProgramId;
+  parent: d.QQuestionId | undefined;
 }> = (props) => {
+  const [text, setText] = React.useState<string>("");
+  const [isFirst, setIsFirst] = React.useState<boolean>(true);
+  const [isCreating, setIsCreating] = React.useState<boolean>(false);
+
+  const textResult = stringToValidQuestionText(text);
+
+  const createQuestion = () => {
+    setIsFirst(false);
+    if (textResult._ === "Error") {
+      return;
+    }
+    props.appState.createQuestion(props.programId, props.parent, textResult.ok);
+    setIsCreating(true);
+  };
+
   return (
     <Box>
       <AppBar title="質問 新規作成" appState={props.appState} />
-      <Typography>質問作成ページ</Typography>
+      <Box padding={1}>
+        <Box padding={1}>
+          <TextField
+            multiline
+            required
+            fullWidth
+            label="質問文"
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
+            error={!isFirst && textResult._ === "Error"}
+            helperText={
+              !isFirst && textResult._ === "Error"
+                ? textResult.error
+                : undefined
+            }
+            variant="outlined"
+            InputProps={{
+              readOnly: isCreating,
+            }}
+          />
+        </Box>
+        <Box padding={1}>
+          プログラム:
+          <ProgramCard appState={props.appState} programId={props.programId} />
+        </Box>
+        {props.parent === undefined ? (
+          <></>
+        ) : (
+          <Box padding={1}>
+            親の質問:
+            <QuestionCard appState={props.appState} questionId={props.parent} />
+          </Box>
+        )}
+
+        <Box padding={1}>
+          {isCreating ? (
+            <Button fullWidth variant="contained" disabled>
+              <CircularProgress />
+              質問を作成中……
+            </Button>
+          ) : (
+            <Button fullWidth variant="contained" onClick={createQuestion}>
+              質問を作成する
+            </Button>
+          )}
+        </Box>
+      </Box>
     </Box>
   );
 };

@@ -34,7 +34,7 @@ export const Program: React.VFC<Props> = (props) => {
         appState={props.appState}
       />
       <Box padding={1}>
-        <Typography>{program.name}</Typography>
+        <Typography variant="h5">{program.name}</Typography>
         <Box padding={1}>
           <Typography>作成者:</Typography>
           <AccountCard
@@ -48,6 +48,8 @@ export const Program: React.VFC<Props> = (props) => {
             questionList={program.questionList}
             appState={props.appState}
           />
+        </Box>
+        <Box padding={1}>
           <Link
             appState={props.appState}
             location={d.QLocation.NewQuestion({
@@ -60,6 +62,9 @@ export const Program: React.VFC<Props> = (props) => {
               質問を作成する
             </Button>
           </Link>
+        </Box>
+        <Box padding={1}>
+          <Typography>プログラムID: {props.programId}</Typography>
         </Box>
       </Box>
     </Box>
