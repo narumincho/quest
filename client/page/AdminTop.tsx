@@ -8,7 +8,6 @@ import { ProgramCard } from "../ui/ProgramCard";
 import { Skeleton } from "@material-ui/lab";
 
 export type Props = {
-  account: d.QAccount;
   appState: AppState;
 };
 
@@ -29,12 +28,7 @@ export const AdminTop: React.VFC<Props> = (props) => {
 
   return (
     <Box>
-      <AppBar
-        title="作成したプログラム"
-        account={props.account}
-        isHideBack
-        appState={props.appState}
-      />
+      <AppBar title="作成したプログラム" isHideBack appState={props.appState} />
       <CreatedProgramList appState={props.appState} />
       <Link location={d.QLocation.NewProgram} appState={props.appState}>
         <Fab

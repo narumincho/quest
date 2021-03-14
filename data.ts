@@ -41,7 +41,7 @@
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
- export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId };
+ export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId } | { readonly _: "NewQuestion"; readonly qNewQuestionParameter: QNewQuestionParameter } | { readonly _: "Question"; readonly qQuestionId: QQuestionId };
  
  
  /**
@@ -359,6 +359,13 @@
   * @typePartId 4fe2f5da0a887c2a6b33c16c5d52058f
   */
  export type QProgramId = string & { readonly _qProgramId: never };
+ 
+ 
+ /**
+  * クエストの質問 ID
+  * @typePartId 5249c5510c734bbe48e63a23e4e202b3
+  */
+ export type QQuestionId = string & { readonly _qQuestionId: never };
  
  
  /**
@@ -773,6 +780,25 @@
  
  
  /**
+  * 質問を作るページのパラメータ
+  * @typePartId 8960809c7ca4954e9235c197f5d63cdf
+  */
+ export type QNewQuestionParameter = { 
+ /**
+  * 属するプログラム
+  */
+ readonly programId: QProgramId; 
+ /**
+  * 親にする質問
+  */
+ readonly parent: Maybe<QQuestionId>; 
+ /**
+  * 本文. 質問テンプレートにどうぞ
+  */
+ readonly text: String };
+ 
+ 
+ /**
   * JavaScript の 式
   * @typePartId 8b0bdbeae05df3badac2ee69bf22011f
   */
@@ -1026,6 +1052,52 @@
   * プロパティの式
   */
  readonly propertyExpr: TsExpr };
+ 
+ 
+ /**
+  * 質問を作成するときのパラメータ
+  * @typePartId aa65c956d46bd985c325c3567ad65abb
+  */
+ export type QCreateQuestionParamter = { 
+ /**
+  * アカウントトークン
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * プログラムID
+  */
+ readonly programId: QProgramId; 
+ /**
+  * 親の質問ID
+  */
+ readonly parent: Maybe<QQuestionId>; 
+ /**
+  * 質問文
+  */
+ readonly questionText: String };
+ 
+ 
+ /**
+  * 質問
+  * @typePartId ab9150e30802a0e39f7fdca3703da3ab
+  */
+ export type QQuestion = { 
+ /**
+  * 質問
+  */
+ readonly name: String; 
+ /**
+  * 親の質問
+  */
+ readonly parent: Maybe<QQuestionId>; 
+ /**
+  * 所属するプログラム
+  */
+ readonly programId: QProgramId; 
+ /**
+  * 質問を識別するID
+  */
+ readonly id: QQuestionId };
  
  
  /**
@@ -1549,6 +1621,21 @@
  
  
  /**
+  * プロジェクトに属する質問をすべて取得するときに必要なパラメータ
+  * @typePartId f26bc98a33011dd4892a7cdcfb4ccade
+  */
+ export type QGetQuestionListByProgramId = { 
+ /**
+  * アカウントトークン
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * プログラムID
+  */
+ readonly programId: QProgramId };
+ 
+ 
+ /**
   * Elmの型定義
   * @typePartId f4bed793b657b39db5a579c9e158eba5
   */
@@ -1590,7 +1677,15 @@
  /**
   * プログラム詳細ページ
   */
- readonly Program: (a: QProgramId) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
+ readonly Program: (a: QProgramId) => QLocation; 
+ /**
+  * 質問作成ページ
+  */
+ readonly NewQuestion: (a: QNewQuestionParameter) => QLocation; 
+ /**
+  * 質問ページ
+  */
+ readonly Question: (a: QQuestionId) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), NewQuestion: (qNewQuestionParameter: QNewQuestionParameter): QLocation => ({ _: "NewQuestion", qNewQuestionParameter }), Question: (qQuestionId: QQuestionId): QLocation => ({ _: "Question", qQuestionId }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
    switch (value._) {
      case "Top": {
        return [0];
@@ -1603,6 +1698,12 @@
      }
      case "Program": {
        return [3].concat(QProgramId.codec.encode(value.qProgramId));
+     }
+     case "NewQuestion": {
+       return [4].concat(QNewQuestionParameter.codec.encode(value.qNewQuestionParameter));
+     }
+     case "Question": {
+       return [5].concat(QQuestionId.codec.encode(value.qQuestionId));
      }
    }
  }, decode: (index: number, binary: Uint8Array): { readonly result: QLocation; readonly nextIndex: number } => {
@@ -1619,6 +1720,14 @@
    if (patternIndex.result === 3) {
      const result: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(patternIndex.nextIndex, binary);
      return { result: QLocation.Program(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 4) {
+     const result: { readonly result: QNewQuestionParameter; readonly nextIndex: number } = QNewQuestionParameter.codec.decode(patternIndex.nextIndex, binary);
+     return { result: QLocation.NewQuestion(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 5) {
+     const result: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(patternIndex.nextIndex, binary);
+     return { result: QLocation.Question(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };
@@ -3102,6 +3211,21 @@
  
  
  /**
+  * クエストの質問 ID
+  * @typePartId 5249c5510c734bbe48e63a23e4e202b3
+  */
+ export const QQuestionId: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QQuestionId> } = { typePartId: "5249c5510c734bbe48e63a23e4e202b3" as TypePartId, codec: { encode: (value: QQuestionId): ReadonlyArray<number> => (encodeId(value)), decode: (index: number, binary: Uint8Array): { readonly result: QQuestionId; readonly nextIndex: number } => (decodeId(index, binary) as { readonly result: QQuestionId; readonly nextIndex: number }) } };
+ 
+ 
+ /**
   * 関数のパラメーター. パラメーター名, 型
   * @typePartId 5433bade7738da21e7663ff043f588d5
   */
@@ -4075,6 +4199,30 @@
  
  
  /**
+  * 質問を作るページのパラメータ
+  * @typePartId 8960809c7ca4954e9235c197f5d63cdf
+  */
+ export const QNewQuestionParameter: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QNewQuestionParameter>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QNewQuestionParameter) => QNewQuestionParameter } = { typePartId: "8960809c7ca4954e9235c197f5d63cdf" as TypePartId, helper: (qNewQuestionParameter: QNewQuestionParameter): QNewQuestionParameter => qNewQuestionParameter, codec: { encode: (value: QNewQuestionParameter): ReadonlyArray<number> => (QProgramId.codec.encode(value.programId).concat(Maybe.codec(QQuestionId.codec).encode(value.parent)).concat(String.codec.encode(value.text))), decode: (index: number, binary: Uint8Array): { readonly result: QNewQuestionParameter; readonly nextIndex: number } => {
+   const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(index, binary);
+   const parentAndNextIndex: { readonly result: Maybe<QQuestionId>; readonly nextIndex: number } = Maybe.codec(QQuestionId.codec).decode(programIdAndNextIndex.nextIndex, binary);
+   const textAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(parentAndNextIndex.nextIndex, binary);
+   return { result: { programId: programIdAndNextIndex.result, parent: parentAndNextIndex.result, text: textAndNextIndex.result }, nextIndex: textAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
   * JavaScript の 式
   * @typePartId 8b0bdbeae05df3badac2ee69bf22011f
   */
@@ -4824,6 +4972,56 @@
    const exprAndNextIndex: { readonly result: TsExpr; readonly nextIndex: number } = TsExpr.codec.decode(index, binary);
    const propertyExprAndNextIndex: { readonly result: TsExpr; readonly nextIndex: number } = TsExpr.codec.decode(exprAndNextIndex.nextIndex, binary);
    return { result: { expr: exprAndNextIndex.result, propertyExpr: propertyExprAndNextIndex.result }, nextIndex: propertyExprAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
+  * 質問を作成するときのパラメータ
+  * @typePartId aa65c956d46bd985c325c3567ad65abb
+  */
+ export const QCreateQuestionParamter: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QCreateQuestionParamter>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QCreateQuestionParamter) => QCreateQuestionParamter } = { typePartId: "aa65c956d46bd985c325c3567ad65abb" as TypePartId, helper: (qCreateQuestionParamter: QCreateQuestionParamter): QCreateQuestionParamter => qCreateQuestionParamter, codec: { encode: (value: QCreateQuestionParamter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QProgramId.codec.encode(value.programId)).concat(Maybe.codec(QQuestionId.codec).encode(value.parent)).concat(String.codec.encode(value.questionText))), decode: (index: number, binary: Uint8Array): { readonly result: QCreateQuestionParamter; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   const parentAndNextIndex: { readonly result: Maybe<QQuestionId>; readonly nextIndex: number } = Maybe.codec(QQuestionId.codec).decode(programIdAndNextIndex.nextIndex, binary);
+   const questionTextAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(parentAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, programId: programIdAndNextIndex.result, parent: parentAndNextIndex.result, questionText: questionTextAndNextIndex.result }, nextIndex: questionTextAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
+  * 質問
+  * @typePartId ab9150e30802a0e39f7fdca3703da3ab
+  */
+ export const QQuestion: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QQuestion>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QQuestion) => QQuestion } = { typePartId: "ab9150e30802a0e39f7fdca3703da3ab" as TypePartId, helper: (qQuestion: QQuestion): QQuestion => qQuestion, codec: { encode: (value: QQuestion): ReadonlyArray<number> => (String.codec.encode(value.name).concat(Maybe.codec(QQuestionId.codec).encode(value.parent)).concat(QProgramId.codec.encode(value.programId)).concat(QQuestionId.codec.encode(value.id))), decode: (index: number, binary: Uint8Array): { readonly result: QQuestion; readonly nextIndex: number } => {
+   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(index, binary);
+   const parentAndNextIndex: { readonly result: Maybe<QQuestionId>; readonly nextIndex: number } = Maybe.codec(QQuestionId.codec).decode(nameAndNextIndex.nextIndex, binary);
+   const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(parentAndNextIndex.nextIndex, binary);
+   const idAndNextIndex: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(programIdAndNextIndex.nextIndex, binary);
+   return { result: { name: nameAndNextIndex.result, parent: parentAndNextIndex.result, programId: programIdAndNextIndex.result, id: idAndNextIndex.result }, nextIndex: idAndNextIndex.nextIndex };
  } } };
  
  
@@ -5982,6 +6180,29 @@
    const openIdConnectProviderAndNextIndex: { readonly result: OpenIdConnectProvider; readonly nextIndex: number } = OpenIdConnectProvider.codec.decode(index, binary);
    const urlDataAndNextIndex: { readonly result: UrlData; readonly nextIndex: number } = UrlData.codec.decode(openIdConnectProviderAndNextIndex.nextIndex, binary);
    return { result: { openIdConnectProvider: openIdConnectProviderAndNextIndex.result, urlData: urlDataAndNextIndex.result }, nextIndex: urlDataAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
+  * プロジェクトに属する質問をすべて取得するときに必要なパラメータ
+  * @typePartId f26bc98a33011dd4892a7cdcfb4ccade
+  */
+ export const QGetQuestionListByProgramId: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QGetQuestionListByProgramId>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QGetQuestionListByProgramId) => QGetQuestionListByProgramId } = { typePartId: "f26bc98a33011dd4892a7cdcfb4ccade" as TypePartId, helper: (qGetQuestionListByProgramId: QGetQuestionListByProgramId): QGetQuestionListByProgramId => qGetQuestionListByProgramId, codec: { encode: (value: QGetQuestionListByProgramId): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QProgramId.codec.encode(value.programId))), decode: (index: number, binary: Uint8Array): { readonly result: QGetQuestionListByProgramId; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, programId: programIdAndNextIndex.result }, nextIndex: programIdAndNextIndex.nextIndex };
  } } };
  
  

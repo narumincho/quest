@@ -2,7 +2,6 @@ import * as React from "react";
 import { AdminTop, Props } from "../../client/page/AdminTop";
 import { Meta, Story } from "@storybook/react";
 import {
-  mockAccount,
   mockAppState,
   mockProgramIdA,
   mockProgramIdB,
@@ -18,13 +17,10 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Loading: Story<Props> = () => (
-  <AdminTop account={mockAccount} appState={mockAppState} />
-);
+export const Loading: Story<Props> = () => <AdminTop appState={mockAppState} />;
 
 export const Requesting: Story<Props> = () => (
   <AdminTop
-    account={mockAccount}
     appState={{
       ...mockAppState,
       createdProgramListState: { tag: "Requesting" },
@@ -34,7 +30,6 @@ export const Requesting: Story<Props> = () => (
 
 export const Loaded: Story<Props> = () => (
   <AdminTop
-    account={mockAccount}
     appState={{
       ...mockAppState,
       createdProgramListState: {
@@ -47,7 +42,6 @@ export const Loaded: Story<Props> = () => (
 
 export const LoadedZero: Story<Props> = () => (
   <AdminTop
-    account={mockAccount}
     appState={{
       ...mockAppState,
       createdProgramListState: {

@@ -1,21 +1,19 @@
 import * as React from "react";
-import * as d from "../../data";
 import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogTitle,
   TextField,
   makeStyles,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { AppBar } from "../ui";
 import { AppState } from "../state";
-import { api } from "../api";
 import { stringToValidProjectName } from "../../common/validation";
 
 export type Props = {
-  readonly accountToken: d.AccountToken;
-  readonly account: d.QAccount;
   readonly appState: AppState;
 };
 
@@ -46,11 +44,7 @@ export const NewProgram: React.VFC<Props> = (props) => {
   };
   return (
     <Box>
-      <AppBar
-        title="プログラム作成"
-        account={props.account}
-        appState={props.appState}
-      />
+      <AppBar title="プログラム作成" appState={props.appState} />
       <Box padding={1}>
         <Box padding={1}>
           <TextField
@@ -74,36 +68,32 @@ export const NewProgram: React.VFC<Props> = (props) => {
           />
         </Box>
         <Box padding={1}>
-          {isCreating ? (
-            <Button
-              fullWidth
-              variant="contained"
-              disabled
-              className={classes.createButton}
-              startIcon={<CircularProgress />}
-            >
-              「{projectNameResult._ === "Ok" ? projectNameResult.ok : "?????"}
-              」を作成中……
-            </Button>
-          ) : (
-            <Button
-              fullWidth
-              onClick={createProgram}
-              size="large"
-              disabled={!isFirst && projectNameResult._ === "Error"}
-              variant="contained"
-              color="primary"
-              className={classes.createButton}
-              startIcon={<Add />}
-            >
-              {projectNameResult._ === "Ok"
-                ? `「${projectNameResult.ok}」`
-                : "プログラム"}
-              を作成
-            </Button>
-          )}
+          <Button
+            fullWidth
+            onClick={createProgram}
+            size="large"
+            disabled={!isFirst && projectNameResult._ === "Error"}
+            variant="contained"
+            color="primary"
+            className={classes.createButton}
+            startIcon={<Add />}
+          >
+            {projectNameResult._ === "Ok"
+              ? `「${projectNameResult.ok}」`
+              : "プログラム"}
+            を作成
+          </Button>
         </Box>
       </Box>
+      <Dialog open={isCreating}>
+        <DialogTitle>
+          「{projectNameResult._ === "Ok" ? projectNameResult.ok : "?????"}
+          」を作成中
+        </DialogTitle>
+        <Box padding={2} display="grid" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      </Dialog>
     </Box>
   );
 };

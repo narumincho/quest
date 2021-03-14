@@ -58,6 +58,35 @@ export const apiFunc: {
     const account = await validateAndGetAccount(accountToken);
     return firebaseInterface.getProgramListByCreateAccountId(account.id);
   },
+  createQuestion: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const program = await validateAndGetProgram(
+      account.id,
+      parameter.programId
+    );
+    if (parameter.parent._ === "Just") {
+      const parent = await firebaseInterface.getQuestion(
+        parameter.parent.value
+      );
+      if (parent === undefined || program.id !== parent.programId) {
+        throw new Error("親の質問が存在しないか, 違うプログラムの質問");
+      }
+    }
+    const questionId = createRandomId() as d.QQuestionId;
+    const question = {
+      id: questionId,
+      name: parameter.questionText,
+      parent: parameter.parent,
+      programId: parameter.programId,
+    };
+    await firebaseInterface.createQuestion(question);
+    return question;
+  },
+  getQuestionInCreatedProgram: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    await validateAndGetProgram(account.id, parameter.programId);
+    return firebaseInterface.getQuestionListByProgramId(parameter.programId);
+  },
 };
 
 const lineLoginClientId = "1655691758";
@@ -236,4 +265,19 @@ const validateAndGetAccount = async (
     throw new Error("アカウントトークンからアカウントの情報を得られなかった");
   }
   return accountResult;
+};
+
+/**
+ * プログラムの情報を得る
+ * @throws プログラムが存在しなかった場合, 指定したアカウントが取得したプログラムを作っていないとき
+ */
+const validateAndGetProgram = async (
+  accountId: d.AccountId,
+  programId: d.QProgramId
+): Promise<d.QProgram> => {
+  const program = await firebaseInterface.getProgram(programId);
+  if (program === undefined || program.createAccountId !== accountId) {
+    throw new Error("指定したプログラムが存在しないか, 作った本人でない");
+  }
+  return program;
 };

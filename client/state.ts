@@ -19,6 +19,25 @@ export type CreatedProgramListState =
       projectIdList: ReadonlyArray<d.QProgramId>;
     };
 
+export type RequestQuestionListInProgramState =
+  | {
+      tag: "None";
+    }
+  | {
+      tag: "Requesting";
+    }
+  | {
+      tag: "Loaded";
+      questionIdList: ReadonlyArray<d.QQuestionId>;
+    };
+
+export type ProgramWithQuestionIdList = {
+  readonly id: d.QProgramId;
+  readonly name: string;
+  readonly createAccountId: d.AccountId;
+  readonly questionList: RequestQuestionListInProgramState;
+};
+
 export type AppState = {
   /** ログイン状態 */
   loginState: LoginState;
@@ -26,6 +45,14 @@ export type AppState = {
   location: d.QLocation;
   /** 作成したプログラムの取得状態 */
   createdProgramListState: CreatedProgramListState;
+  /** プログラムの情報を得る */
+  program: (id: d.QProgramId) => ProgramWithQuestionIdList | undefined;
+  /** アカウントの情報を得る */
+  account: (id: d.AccountId) => d.QAccount | undefined;
+  /** 質問を取得する */
+  question: (id: d.QQuestionId) => d.QQuestion | undefined;
+  /** 質問を作成中かどうか */
+  isCreatingQuestion: boolean;
 
   /** ログインページを取得して移動させる */
   requestLogin: () => void;
@@ -41,12 +68,17 @@ export type AppState = {
   addNotification: (message: string, variant: VariantType) => void;
   /** プログラムを作成する */
   createProgram: (programName: string) => void;
-  /** プログラムの情報を得る */
-  program: (id: d.QProgramId) => d.QProgram | undefined;
-  /** アカウントの情報を得る */
-  account: (id: d.AccountId) => d.QAccount | undefined;
+
   /** 作成したプログラムを取得する */
   requestGetCreatedProgram: () => void;
+  /** プログラムに属する質問を取得する */
+  requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
+  /** 質問を作成する */
+  createQuestion: (
+    programId: d.QProgramId,
+    parent: d.QQuestionId | undefined,
+    text: string
+  ) => void;
 };
 
 export type LoginState =
@@ -86,7 +118,7 @@ export const useAppState = (): AppState => {
   });
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const [programMap, setProgramMap] = useState<
-    ReadonlyMap<d.QProgramId, d.QProgram>
+    ReadonlyMap<d.QProgramId, ProgramWithQuestionIdList>
   >(new Map());
   const [accountMap, setAccountMap] = useState<
     ReadonlyMap<d.AccountId, d.QAccount>
@@ -95,10 +127,50 @@ export const useAppState = (): AppState => {
     createdProgramList,
     setCreatedProgramList,
   ] = useState<CreatedProgramListState>({ tag: "None" });
+  const [questionMap, setQuestionMap] = useState<
+    ReadonlyMap<d.QQuestionId, d.QQuestion>
+  >(new Map());
+  const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
 
   const setProgram = (program: d.QProgram): void => {
     setProgramMap((before) => {
-      return new Map(before).set(program.id, program);
+      return new Map(before).set(program.id, {
+        id: program.id,
+        name: program.name,
+        createAccountId: program.createAccountId,
+        questionList: { tag: "None" },
+      });
+    });
+  };
+  const setProgramQuestionRequesting = (programId: d.QProgramId) => {
+    setProgramMap((before) => {
+      const beforeProgram = before.get(programId);
+      if (beforeProgram === undefined) {
+        return before;
+      }
+      return new Map(before).set(programId, {
+        id: programId,
+        name: beforeProgram.name,
+        createAccountId: beforeProgram.createAccountId,
+        questionList: { tag: "Requesting" },
+      });
+    });
+  };
+  const setProgramQuestionList = (
+    programId: d.QProgramId,
+    questionIdList: ReadonlyArray<d.QQuestionId>
+  ): void => {
+    setProgramMap((before) => {
+      const beforeProgram = before.get(programId);
+      if (beforeProgram === undefined) {
+        return before;
+      }
+      return new Map(before).set(programId, {
+        id: programId,
+        name: beforeProgram.name,
+        createAccountId: beforeProgram.createAccountId,
+        questionList: { tag: "Loaded", questionIdList },
+      });
     });
   };
 
@@ -106,7 +178,12 @@ export const useAppState = (): AppState => {
     setProgramMap((before) => {
       const map = new Map(before);
       for (const program of programList) {
-        map.set(program.id, program);
+        map.set(program.id, {
+          id: program.id,
+          name: program.name,
+          createAccountId: program.createAccountId,
+          questionList: { tag: "None" },
+        });
       }
       return map;
     });
@@ -118,17 +195,28 @@ export const useAppState = (): AppState => {
     });
   };
 
+  const setQuestionList = (questionList: ReadonlyArray<d.QQuestion>): void => {
+    setQuestionMap((before) => {
+      const map = new Map(before);
+      for (const question of questionList) {
+        map.set(question.id, question);
+      }
+      return map;
+    });
+  };
+  const setQuestion = (question: d.QQuestion): void => {
+    setQuestionMap((before) => {
+      return new Map(before).set(question.id, question);
+    });
+  };
+
   useEffect(() => {
     // ブラウザで戻るボタンを押したときのイベントを登録
     window.addEventListener("popstate", () => {
-      setLocation(commonUrl.pathToLocation(window.location.pathname));
+      setLocation(commonUrl.urlToLocation(new URL(window.location.href)));
     });
 
-    const nowUrl = new URL(window.location.href);
-    const urlData = commonUrl.pathAndHashToUrlData(
-      nowUrl.pathname,
-      nowUrl.hash
-    );
+    const urlData = commonUrl.urlToUrlData(new URL(window.location.href));
     console.log("urlData", urlData);
     setLocation(urlData.location);
     getAccountTokenFromUrlOrIndexedDb(urlData).then((accountToken) => {
@@ -144,7 +232,7 @@ export const useAppState = (): AppState => {
       history.replaceState(
         undefined,
         "",
-        commonUrl.locationToPath(urlData.location)
+        commonUrl.locationToUrl(urlData.location).toString()
       );
       api.getAccountByAccountToken(accountToken).then((response) => {
         if (response._ === "Error") {
@@ -234,6 +322,7 @@ export const useAppState = (): AppState => {
     jump,
     changeLocation,
     back,
+    isCreatingQuestion,
     addNotification: (text, variant) => {
       enqueueSnackbar(text, { variant });
     },
@@ -294,6 +383,63 @@ export const useAppState = (): AppState => {
         });
         setProgramList(response.ok);
       });
+    },
+    requestGetQuestionListInProgram: (programId) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        return;
+      }
+      setProgramQuestionRequesting(programId);
+      api
+        .getQuestionInCreatedProgram({
+          accountToken,
+          programId,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(`質問の取得に失敗しました ${response.error}`, {
+              variant: "error",
+            });
+            return;
+          }
+          setQuestionList(response.ok);
+          setProgramQuestionList(
+            programId,
+            response.ok.map((q) => q.id)
+          );
+        });
+    },
+    createQuestion: (programId, parent, questionText) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        return;
+      }
+      setIsCreatingQuestion(true);
+      api
+        .createQuestion({
+          accountToken,
+          programId,
+          parent:
+            parent === undefined ? d.Maybe.Nothing() : d.Maybe.Just(parent),
+          questionText,
+        })
+        .then((response) => {
+          setIsCreatingQuestion(false);
+          if (response._ === "Error") {
+            enqueueSnackbar(`質問の作成に失敗した ${response.error}`, {
+              variant: "error",
+            });
+            return;
+          }
+          enqueueSnackbar(`質問を作成しました`, {
+            variant: "success",
+          });
+          setQuestion(response.ok);
+          setLocation(d.QLocation.Question(response.ok.id));
+        });
+    },
+    question: (id) => {
+      return questionMap.get(id);
     },
   };
 };

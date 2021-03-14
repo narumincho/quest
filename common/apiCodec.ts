@@ -29,3 +29,23 @@ export const getCreatedProgram: ApiCodec<d.AccountToken, d.List<d.QProgram>> = {
   request: d.AccountToken.codec,
   response: d.List.codec(d.QProgram.codec),
 };
+
+/** 質問を作成する */
+export const createQuestion: ApiCodec<
+  d.QCreateQuestionParamter,
+  d.QQuestion
+> = {
+  request: d.QCreateQuestionParamter.codec,
+  response: d.QQuestion.codec,
+};
+
+/**
+ * 自身が作成したプログラムの質問を取得する
+ */
+export const getQuestionInCreatedProgram: ApiCodec<
+  d.QGetQuestionListByProgramId,
+  d.List<d.QQuestion>
+> = {
+  request: d.QGetQuestionListByProgramId.codec,
+  response: d.List.codec(d.QQuestion.codec),
+};

@@ -5,7 +5,9 @@ import { AdminTop } from "./page/AdminTop";
 import { Loading } from "./page/Loading";
 import { Login } from "./page/Login";
 import { NewProgram } from "./page/NewProgram";
+import { NewQuestion } from "./page/NewQuestion";
 import { Program } from "./page/Program";
+import { Question } from "./page/Question";
 import { Setting } from "./page/Setting";
 
 export const App: React.VFC<Record<never, never>> = () => {
@@ -34,26 +36,33 @@ const LoggedIn: React.VFC<{
   account: d.QAccount;
   appState: AppState;
 }> = (props) => {
-  switch (props.appState.location._) {
+  const location = props.appState.location;
+  switch (location._) {
     case "Top":
-      return <AdminTop account={props.account} appState={props.appState} />;
+      return <AdminTop appState={props.appState} />;
     case "Setting":
       return <Setting account={props.account} appState={props.appState} />;
     case "NewProgram":
-      return (
-        <NewProgram
-          accountToken={props.accountToken}
-          account={props.account}
-          appState={props.appState}
-        />
-      );
+      return <NewProgram appState={props.appState} />;
     case "Program":
       return (
-        <Program
-          account={props.account}
-          programId={props.appState.location.qProgramId}
+        <Program programId={location.qProgramId} appState={props.appState} />
+      );
+    case "NewQuestion":
+      return (
+        <NewQuestion
           appState={props.appState}
+          programId={location.qNewQuestionParameter.programId}
+          parent={
+            location.qNewQuestionParameter.parent._ === "Just"
+              ? location.qNewQuestionParameter.parent.value
+              : undefined
+          }
         />
+      );
+    case "Question":
+      return (
+        <Question questionId={location.qQuestionId} appState={props.appState} />
       );
   }
 };
