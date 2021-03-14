@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogTitle,
   TextField,
   makeStyles,
 } from "@material-ui/core";
@@ -66,36 +68,32 @@ export const NewProgram: React.VFC<Props> = (props) => {
           />
         </Box>
         <Box padding={1}>
-          {isCreating ? (
-            <Button
-              fullWidth
-              variant="contained"
-              disabled
-              className={classes.createButton}
-              startIcon={<CircularProgress />}
-            >
-              「{projectNameResult._ === "Ok" ? projectNameResult.ok : "?????"}
-              」を作成中……
-            </Button>
-          ) : (
-            <Button
-              fullWidth
-              onClick={createProgram}
-              size="large"
-              disabled={!isFirst && projectNameResult._ === "Error"}
-              variant="contained"
-              color="primary"
-              className={classes.createButton}
-              startIcon={<Add />}
-            >
-              {projectNameResult._ === "Ok"
-                ? `「${projectNameResult.ok}」`
-                : "プログラム"}
-              を作成
-            </Button>
-          )}
+          <Button
+            fullWidth
+            onClick={createProgram}
+            size="large"
+            disabled={!isFirst && projectNameResult._ === "Error"}
+            variant="contained"
+            color="primary"
+            className={classes.createButton}
+            startIcon={<Add />}
+          >
+            {projectNameResult._ === "Ok"
+              ? `「${projectNameResult.ok}」`
+              : "プログラム"}
+            を作成
+          </Button>
         </Box>
       </Box>
+      <Dialog open={isCreating}>
+        <DialogTitle>
+          「{projectNameResult._ === "Ok" ? projectNameResult.ok : "?????"}
+          」を作成中
+        </DialogTitle>
+        <Box padding={2} display="grid" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      </Dialog>
     </Box>
   );
 };

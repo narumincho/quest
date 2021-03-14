@@ -1,6 +1,13 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Button, CircularProgress, TextField } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  TextField,
+} from "@material-ui/core";
 import { AppBar } from "../ui";
 import { AppState } from "../state";
 import { ProgramCard } from "../ui/ProgramCard";
@@ -67,18 +74,22 @@ export const NewQuestion: React.VFC<{
         )}
 
         <Box padding={1}>
-          {isCreating ? (
-            <Button fullWidth variant="contained" disabled>
-              <CircularProgress />
-              質問を作成中……
-            </Button>
-          ) : (
-            <Button fullWidth variant="contained" onClick={createQuestion}>
-              質問を作成する
-            </Button>
-          )}
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={createQuestion}
+          >
+            質問を作成する
+          </Button>
         </Box>
       </Box>
+      <Dialog open={isCreating}>
+        <DialogTitle>質問を作成中</DialogTitle>
+        <Box padding={2} display="grid" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      </Dialog>
     </Box>
   );
 };
