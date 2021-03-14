@@ -92,7 +92,7 @@ export const mockAppState: AppState = {
           id: mockQuestionIdB,
           name:
             "幼少期・小学校・中学校・高校それぞれで一番嬉しかったことは何ですか?",
-          parent: d.Maybe.Nothing(),
+          parent: d.Maybe.Just(mockQuestionIdParent),
           programId: mockProgramIdA,
         };
       case mockQuestionIdC:
@@ -102,8 +102,22 @@ export const mockAppState: AppState = {
           parent: d.Maybe.Nothing(),
           programId: mockProgramIdA,
         };
+      case mockQuestionIdParent:
+        return {
+          id: mockQuestionIdParent,
+          name: "あなたにとって幸せとは何ですか?",
+          parent: d.Maybe.Nothing(),
+          programId: mockProgramIdA,
+        };
     }
     return undefined;
+  },
+  questionChildren: (id: d.QQuestionId): ReadonlyArray<d.QQuestionId> => {
+    switch (id) {
+      case mockQuestionIdParent:
+        return [mockQuestionIdB];
+    }
+    return [];
   },
 };
 
@@ -121,7 +135,8 @@ export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
 
 export const mockQuestionIdA = "mockQuestionA" as d.QQuestionId;
 export const mockQuestionIdB = "mockQuestionB" as d.QQuestionId;
-export const mockQuestionIdC = "mockQuestionLong" as d.QQuestionId;
+export const mockQuestionIdC = "mockQuestionC" as d.QQuestionId;
+export const mockQuestionIdParent = "mockQuestionParent" as d.QQuestionId;
 
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";

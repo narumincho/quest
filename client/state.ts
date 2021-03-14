@@ -53,6 +53,8 @@ export type AppState = {
   question: (id: d.QQuestionId) => d.QQuestion | undefined;
   /** 質問を作成中かどうか */
   isCreatingQuestion: boolean;
+  /** 質問の子を取得する */
+  questionChildren: (id: d.QQuestionId) => ReadonlyArray<d.QQuestionId>;
 
   /** ログインページを取得して移動させる */
   requestLogin: () => void;
@@ -440,6 +442,15 @@ export const useAppState = (): AppState => {
     },
     question: (id) => {
       return questionMap.get(id);
+    },
+    questionChildren: (id) => {
+      const result: Array<d.QQuestionId> = [];
+      for (const question of questionMap.values()) {
+        if (question.parent._ === "Just" && question.parent.value === id) {
+          result.push(question.id);
+        }
+      }
+      return result;
     },
   };
 };
