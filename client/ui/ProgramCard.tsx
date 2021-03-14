@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Paper, Typography, makeStyles } from "@material-ui/core";
+import { Paper, Typography, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 import { Link } from "../ui";
 

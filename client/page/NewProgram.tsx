@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as d from "../../data";
 import {
   Box,
   Button,

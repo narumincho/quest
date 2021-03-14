@@ -136,9 +136,40 @@ export const useAppState = (): AppState => {
     setProgramMap((before) => {
       return new Map(before).set(program.id, {
         id: program.id,
-        name: program.id,
+        name: program.name,
         createAccountId: program.createAccountId,
         questionList: { tag: "None" },
+      });
+    });
+  };
+  const setProgramQuestionRequesting = (programId: d.QProgramId) => {
+    setProgramMap((before) => {
+      const beforeProgram = before.get(programId);
+      if (beforeProgram === undefined) {
+        return before;
+      }
+      return new Map(before).set(programId, {
+        id: programId,
+        name: beforeProgram.name,
+        createAccountId: beforeProgram.createAccountId,
+        questionList: { tag: "Requesting" },
+      });
+    });
+  };
+  const setProgramQuestionList = (
+    programId: d.QProgramId,
+    questionIdList: ReadonlyArray<d.QQuestionId>
+  ): void => {
+    setProgramMap((before) => {
+      const beforeProgram = before.get(programId);
+      if (beforeProgram === undefined) {
+        return before;
+      }
+      return new Map(before).set(programId, {
+        id: programId,
+        name: beforeProgram.name,
+        createAccountId: beforeProgram.createAccountId,
+        questionList: { tag: "Loaded", questionIdList },
       });
     });
   };
@@ -149,7 +180,7 @@ export const useAppState = (): AppState => {
       for (const program of programList) {
         map.set(program.id, {
           id: program.id,
-          name: program.id,
+          name: program.name,
           createAccountId: program.createAccountId,
           questionList: { tag: "None" },
         });
@@ -358,6 +389,7 @@ export const useAppState = (): AppState => {
       if (accountToken === undefined) {
         return;
       }
+      setProgramQuestionRequesting(programId);
       api
         .getQuestionInCreatedProgram({
           accountToken,
@@ -371,6 +403,10 @@ export const useAppState = (): AppState => {
             return;
           }
           setQuestionList(response.ok);
+          setProgramQuestionList(
+            programId,
+            response.ok.map((q) => q.id)
+          );
         });
     },
     createQuestion: (programId, parent, questionText) => {

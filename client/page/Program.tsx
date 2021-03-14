@@ -14,7 +14,7 @@ export const Program: React.VFC<Props> = (props) => {
 
   React.useEffect(() => {
     props.appState.requestGetQuestionListInProgram(props.programId);
-  });
+  }, []);
 
   if (program === undefined) {
     return (
