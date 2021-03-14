@@ -22,7 +22,9 @@ export const Question: React.VFC<{
     <Box>
       <AppBar title="質問" appState={props.appState} />
       <Box padding={1}>
-        <Typography variant="h5">{question.name}</Typography>
+        <Box padding={1}>
+          <Typography variant="h5">{question.name}</Typography>
+        </Box>
 
         <Box padding={1}>
           プログラム:

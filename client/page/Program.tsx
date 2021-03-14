@@ -34,7 +34,9 @@ export const Program: React.VFC<Props> = (props) => {
         appState={props.appState}
       />
       <Box padding={1}>
-        <Typography variant="h5">{program.name}</Typography>
+        <Box padding={1}>
+          <Typography variant="h5">{program.name}</Typography>
+        </Box>
         <Box padding={1}>
           <Typography>作成者:</Typography>
           <AccountCard
