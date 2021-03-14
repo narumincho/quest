@@ -2,7 +2,9 @@ import * as React from "react";
 import * as d from "../../data";
 import { AccountCard, AppBar, QuestionCard } from "../ui";
 import { AppState, RequestQuestionListInProgramState } from "../state";
-import { Box, Typography, makeStyles } from "@material-ui/core";
+import { Box, Button, Typography, makeStyles } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
+import { Link } from "../ui/Link";
 
 export type Props = {
   readonly programId: d.QProgramId;
@@ -46,6 +48,18 @@ export const Program: React.VFC<Props> = (props) => {
             questionList={program.questionList}
             appState={props.appState}
           />
+          <Link
+            appState={props.appState}
+            location={d.QLocation.NewQuestion({
+              parent: d.Maybe.Nothing(),
+              programId: props.programId,
+              text: "",
+            })}
+          >
+            <Button fullWidth startIcon={<Add />} variant="contained">
+              質問を作成する
+            </Button>
+          </Link>
         </Box>
       </Box>
     </Box>
