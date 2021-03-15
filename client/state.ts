@@ -81,6 +81,8 @@ export type AppState = {
     parent: d.QQuestionId | undefined,
     text: string
   ) => void;
+  /** 質問の親を取得する. 最初が近い順 */
+  questionParentList: (id: d.QQuestionId) => ReadonlyArray<d.QQuestion>;
 };
 
 export type LoginState =
@@ -451,6 +453,21 @@ export const useAppState = (): AppState => {
         }
       }
       return result;
+    },
+    questionParentList: (id) => {
+      let targetId = id;
+      const result: Array<d.QQuestion> = [];
+      while (true) {
+        const question = questionMap.get(targetId);
+        if (question === undefined) {
+          return result;
+        }
+        result.push(question);
+        if (question.parent._ === "Nothing") {
+          return result;
+        }
+        targetId = question.parent.value;
+      }
     },
   };
 };

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d from "../../data";
 import { AppBar, Link } from "../ui";
-import { Box, Button, Typography } from "@material-ui/core";
+import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { AppState } from "../state";
 import { ProgramCard } from "../ui/ProgramCard";
@@ -22,10 +22,34 @@ export const Question: React.VFC<{
       </Box>
     );
   }
+  const program = props.appState.program(question.programId);
+  const parentList = props.appState.questionParentList(props.questionId);
+
   return (
     <Box>
       <AppBar title="質問" appState={props.appState} />
       <Box padding={1}>
+        <Box padding={1}>
+          <Breadcrumbs>
+            <Link appState={props.appState} location={d.QLocation.Top}>
+              作成したプログラム
+            </Link>
+            <Link
+              appState={props.appState}
+              location={d.QLocation.Program(question.programId)}
+            >
+              {program === undefined ? "プログラム" : program.name}
+            </Link>
+            {[...parentList].reverse().map((parent) => (
+              <Link
+                appState={props.appState}
+                location={d.QLocation.Question(parent.id)}
+              >
+                {parent.name}
+              </Link>
+            ))}
+          </Breadcrumbs>
+        </Box>
         <Box padding={1}>
           <Typography variant="h5">{question.name}</Typography>
         </Box>

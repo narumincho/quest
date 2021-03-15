@@ -1,14 +1,16 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppBar, Link } from "../ui";
 import {
   Box,
+  Breadcrumbs,
   Button,
   CircularProgress,
   Dialog,
   DialogTitle,
   TextField,
+  Typography,
 } from "@material-ui/core";
-import { AppBar } from "../ui";
 import { AppState } from "../state";
 import { ProgramCard } from "../ui/ProgramCard";
 import { QuestionCard } from "../ui/QuestionCard";
@@ -24,6 +26,7 @@ export const NewQuestion: React.VFC<{
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
 
   const textResult = stringToValidQuestionText(text);
+  const program = props.appState.program(props.programId);
 
   const createQuestion = () => {
     setIsFirst(false);
@@ -34,10 +37,40 @@ export const NewQuestion: React.VFC<{
     setIsCreating(true);
   };
 
+  const parentList: ReadonlyArray<d.QQuestion> =
+    props.parent === undefined
+      ? []
+      : [
+          ...getParentQuestion(props.appState, props.parent),
+          ...props.appState.questionParentList(props.parent),
+        ];
+
   return (
     <Box>
-      <AppBar title="質問 新規作成" appState={props.appState} />
+      <AppBar title="質問作成" appState={props.appState} />
       <Box padding={1}>
+        <Box padding={1}>
+          <Breadcrumbs>
+            <Link appState={props.appState} location={d.QLocation.Top}>
+              作成したプログラム
+            </Link>
+            <Link
+              appState={props.appState}
+              location={d.QLocation.Program(props.programId)}
+            >
+              {program === undefined ? "プログラム" : program.name}
+            </Link>
+            {[...parentList].reverse().map((parent) => (
+              <Link
+                appState={props.appState}
+                location={d.QLocation.Question(parent.id)}
+              >
+                {parent.name}
+              </Link>
+            ))}
+            <Typography>質問作成</Typography>
+          </Breadcrumbs>
+        </Box>
         <Box padding={1}>
           <TextField
             multiline
@@ -64,15 +97,14 @@ export const NewQuestion: React.VFC<{
           プログラム:
           <ProgramCard appState={props.appState} programId={props.programId} />
         </Box>
-        {props.parent === undefined ? (
-          <></>
-        ) : (
-          <Box padding={1}>
-            親の質問:
+        <Box padding={1}>
+          親の質問:
+          {props.parent === undefined ? (
+            "指定なし"
+          ) : (
             <QuestionCard appState={props.appState} questionId={props.parent} />
-          </Box>
-        )}
-
+          )}
+        </Box>
         <Box padding={1}>
           <Button
             fullWidth
@@ -92,4 +124,18 @@ export const NewQuestion: React.VFC<{
       </Dialog>
     </Box>
   );
+};
+
+const getParentQuestion = (
+  appState: AppState,
+  parentId: d.QQuestionId | undefined
+): ReadonlyArray<d.QQuestion> => {
+  if (parentId === undefined) {
+    return [];
+  }
+  const parent = appState.question(parentId);
+  if (parent === undefined) {
+    return [];
+  }
+  return [parent];
 };

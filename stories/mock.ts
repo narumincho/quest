@@ -79,43 +79,24 @@ export const mockAppState: AppState = {
     console.log("プログラムに属している質問を習得しようとした", programId);
   },
   question: (id): d.QQuestion | undefined => {
-    switch (id) {
-      case mockQuestionIdA:
-        return {
-          id: mockQuestionIdA,
-          name: "サンプル質問",
-          parent: d.Maybe.Nothing(),
-          programId: mockProgramIdA,
-        };
-      case mockQuestionIdB:
-        return {
-          id: mockQuestionIdB,
-          name:
-            "幼少期・小学校・中学校・高校それぞれで一番嬉しかったことは何ですか?",
-          parent: d.Maybe.Just(mockQuestionIdParent),
-          programId: mockProgramIdA,
-        };
-      case mockQuestionIdC:
-        return {
-          id: mockQuestionIdC,
-          name: "小さい頃の夢はなんですか?",
-          parent: d.Maybe.Nothing(),
-          programId: mockProgramIdA,
-        };
-      case mockQuestionIdParent:
-        return {
-          id: mockQuestionIdParent,
-          name: "あなたにとって幸せとは何ですか?",
-          parent: d.Maybe.Nothing(),
-          programId: mockProgramIdA,
-        };
-    }
-    return undefined;
+    return mockQuestion(id);
   },
   questionChildren: (id: d.QQuestionId): ReadonlyArray<d.QQuestionId> => {
     switch (id) {
       case mockQuestionIdParent:
         return [mockQuestionIdB];
+    }
+    return [];
+  },
+  questionParentList: (id: d.QQuestionId): ReadonlyArray<d.QQuestion> => {
+    switch (id) {
+      case mockQuestionIdB: {
+        const result = mockQuestion(mockQuestionIdParent);
+        if (result === undefined) {
+          return [];
+        }
+        return [result];
+      }
     }
     return [];
   },
@@ -140,3 +121,37 @@ export const mockQuestionIdParent = "mockQuestionParent" as d.QQuestionId;
 
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
+
+const mockQuestion = (id: d.QQuestionId): d.QQuestion | undefined => {
+  switch (id) {
+    case mockQuestionIdA:
+      return {
+        id: mockQuestionIdA,
+        name: "サンプル質問",
+        parent: d.Maybe.Nothing(),
+        programId: mockProgramIdA,
+      };
+    case mockQuestionIdB:
+      return {
+        id: mockQuestionIdB,
+        name:
+          "幼少期・小学校・中学校・高校それぞれで一番嬉しかったことは何ですか?",
+        parent: d.Maybe.Just(mockQuestionIdParent),
+        programId: mockProgramIdA,
+      };
+    case mockQuestionIdC:
+      return {
+        id: mockQuestionIdC,
+        name: "小さい頃の夢はなんですか?",
+        parent: d.Maybe.Nothing(),
+        programId: mockProgramIdA,
+      };
+    case mockQuestionIdParent:
+      return {
+        id: mockQuestionIdParent,
+        name: "あなたにとって幸せとは何ですか?",
+        parent: d.Maybe.Nothing(),
+        programId: mockProgramIdA,
+      };
+  }
+};

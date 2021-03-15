@@ -2,7 +2,13 @@ import * as React from "react";
 import * as d from "../../data";
 import { AccountCard, AppBar, QuestionCard } from "../ui";
 import { AppState, RequestQuestionListInProgramState } from "../state";
-import { Box, Button, Typography, makeStyles } from "@material-ui/core";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { Link } from "../ui/Link";
 
@@ -29,11 +35,16 @@ export const Program: React.VFC<Props> = (props) => {
 
   return (
     <Box>
-      <AppBar
-        title={`${program.name} | プログラム`}
-        appState={props.appState}
-      />
+      <AppBar title={program.name} appState={props.appState} />
       <Box padding={1}>
+        <Box padding={1}>
+          <Breadcrumbs>
+            <Link appState={props.appState} location={d.QLocation.Top}>
+              作成したプログラム
+            </Link>
+            <Typography>{program.name}</Typography>
+          </Breadcrumbs>
+        </Box>
         <Box padding={1}>
           <Typography variant="h5">{program.name}</Typography>
         </Box>
