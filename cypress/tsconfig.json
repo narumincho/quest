@@ -9,7 +9,7 @@
     "jsx": "react",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "exclude": ["./cypress/**"]
+    "forceConsistentCasingInFileNames": true,
+    "types": ["cypress"]
+  }
 }

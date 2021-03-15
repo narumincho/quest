@@ -5,7 +5,18 @@ import * as functions from "firebase-functions";
 import * as lib from "./lib";
 import * as url from "../common/url";
 import { imagePng } from "./mimeType";
+import { nowMode } from "../common/nowMode";
 
+if (nowMode === "development") {
+  firebaseInterface.createAccount({
+    id: "71d21c2b889f7479fc67e1abacb5d16b" as d.AccountId,
+    name: "テスト用アカウント",
+    accountTokenHash:
+      "a565b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955",
+    iconHash: "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955" as d.ImageHash,
+    lineId: "noLineId",
+  });
+}
 /*
  * =====================================================================
  *               api データを取得したり変更したりする

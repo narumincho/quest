@@ -10,7 +10,8 @@
     "typeCheck": "tsc --noEmit",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "generate-graph": "npx depcruise -X node_modules --output-type dot client/main.tsx functions/main.ts | dot -T svg > graph.svg"
+    "generate-graph": "npx depcruise -X node_modules --output-type dot client/main.tsx functions/main.ts | dot -T svg > graph.svg",
+    "cypress-open": "cypress open"
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,7 @@
     "@typescript-eslint/parser": "4.17.0",
     "axios": "0.21.1",
     "babel-loader": "8.2.2",
+    "cypress": "^6.6.0",
     "dependency-cruiser": "9.23.3",
     "esbuild": "0.9.2",
     "eslint": "7.22.0",

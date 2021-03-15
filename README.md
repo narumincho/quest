@@ -40,6 +40,13 @@ npm run start-emulator
 
 でできます. `/distribution/functions/.runtimeconfig.json` に LINE ログインのチャンネルシークレットを事前に入れておく必要があります
 
+### End to End (e2e) テスト
+
+```ps1
+npx cypress open
+```
+で cypress を起動してテストを実行できます. 事前に開発用サーバーを起動しておく必要あり
+
 ## リリース方法
 
 GitHub Actions で Run Workflow ボタンを押して, ビルドとリリースができます.

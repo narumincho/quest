@@ -65,6 +65,7 @@ export const NewProgram: React.VFC<Props> = (props) => {
             InputProps={{
               readOnly: isCreating,
             }}
+            data-cy="programNameInput"
           />
         </Box>
         <Box padding={1}>
@@ -77,6 +78,7 @@ export const NewProgram: React.VFC<Props> = (props) => {
             color="primary"
             className={classes.createButton}
             startIcon={<Add />}
+            data-cy="create"
           >
             {projectNameResult._ === "Ok"
               ? `「${projectNameResult.ok}」`
