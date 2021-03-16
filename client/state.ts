@@ -5,6 +5,7 @@ import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProjectName } from "../common/validation";
+import { useQuestionMap } from "./state/question";
 
 /** 作成したプログラムの取得状態 */
 export type CreatedProgramListState =
@@ -139,9 +140,12 @@ export const useAppState = (): AppState => {
     createdProgramList,
     setCreatedProgramList,
   ] = useState<CreatedProgramListState>({ tag: "None" });
-  const [questionMap, setQuestionMap] = useState<
-    ReadonlyMap<d.QQuestionId, d.QQuestion>
-  >(new Map());
+  const {
+    questionMap,
+    setQuestion,
+    setQuestionList,
+    questionById,
+  } = useQuestionMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
 
   const setProgram = (program: d.QProgram): void => {
@@ -204,21 +208,6 @@ export const useAppState = (): AppState => {
   const setAccount = (account: d.QAccount): void => {
     setAccountMap((before) => {
       return new Map(before).set(account.id, account);
-    });
-  };
-
-  const setQuestionList = (questionList: ReadonlyArray<d.QQuestion>): void => {
-    setQuestionMap((before) => {
-      const map = new Map(before);
-      for (const question of questionList) {
-        map.set(question.id, question);
-      }
-      return map;
-    });
-  };
-  const setQuestion = (question: d.QQuestion): void => {
-    setQuestionMap((before) => {
-      return new Map(before).set(question.id, question);
     });
   };
 
@@ -450,9 +439,7 @@ export const useAppState = (): AppState => {
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
-    question: (id) => {
-      return questionMap.get(id);
-    },
+    question: questionById,
     questionChildren: (id) => questionChildren(id, questionMap),
     questionParentList: (id) => getParentQuestionList(id, questionMap),
     questionTree: (programId): ReadonlyArray<QuestionTree> =>
