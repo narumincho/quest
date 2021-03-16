@@ -1,8 +1,14 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AccountCard, AppBar, QuestionCard } from "../ui";
+import { AccountCard, AppBar, QuestionTreeList } from "../ui";
 import { AppState, RequestQuestionListInProgramState } from "../state";
-import { Box, Button, Typography, makeStyles } from "@material-ui/core";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { Link } from "../ui/Link";
 
@@ -29,11 +35,16 @@ export const Program: React.VFC<Props> = (props) => {
 
   return (
     <Box>
-      <AppBar
-        title={`${program.name} | プログラム`}
-        appState={props.appState}
-      />
+      <AppBar title={program.name} appState={props.appState} />
       <Box padding={1}>
+        <Box padding={1}>
+          <Breadcrumbs>
+            <Link appState={props.appState} location={d.QLocation.Top}>
+              作成したプログラム
+            </Link>
+            <Typography>{program.name}</Typography>
+          </Breadcrumbs>
+        </Box>
         <Box padding={1}>
           <Typography variant="h5">{program.name}</Typography>
         </Box>
@@ -49,6 +60,7 @@ export const Program: React.VFC<Props> = (props) => {
           <QuestionList
             questionList={program.questionList}
             appState={props.appState}
+            programId={props.programId}
           />
         </Box>
         <Box padding={1}>
@@ -83,18 +95,19 @@ const useQuestionListStyles = makeStyles({
 export const QuestionList: React.VFC<{
   questionList: RequestQuestionListInProgramState;
   appState: AppState;
+  programId: d.QProgramId;
 }> = (props) => {
   const classes = useQuestionListStyles();
   if (props.questionList.tag === "None") {
     return (
-      <Box>
+      <Box padding={1}>
         <Typography>リクエスト待ち</Typography>
       </Box>
     );
   }
   if (props.questionList.tag === "Requesting") {
     return (
-      <Box>
+      <Box padding={1}>
         <Typography>読込中</Typography>
       </Box>
     );
@@ -102,20 +115,14 @@ export const QuestionList: React.VFC<{
   const list = props.questionList.questionIdList;
   if (list.length === 0) {
     return (
-      <Box>
+      <Box padding={1}>
         <Typography>質問が1つもありません</Typography>
       </Box>
     );
   }
+  const treeList = props.appState.questionTree(props.programId);
+
   return (
-    <Box className={classes.box}>
-      {list.map((questionId) => (
-        <QuestionCard
-          key={questionId}
-          appState={props.appState}
-          questionId={questionId}
-        />
-      ))}
-    </Box>
+    <QuestionTreeList questionTreeList={treeList} appState={props.appState} />
   );
 };

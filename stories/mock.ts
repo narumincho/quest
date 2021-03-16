@@ -1,5 +1,11 @@
 import * as d from "../data";
-import { AppState } from "../client/state";
+import {
+  AppState,
+  QuestionTree,
+  getParentQuestionList,
+  getQuestionTree,
+  questionChildren,
+} from "../client/state";
 
 export const mockAppState: AppState = {
   loginState: { tag: "NoLogin" },
@@ -37,7 +43,7 @@ export const mockAppState: AppState = {
           id: mockProgramIdA,
           questionList: {
             tag: "Loaded",
-            questionIdList: [mockQuestionIdA, mockQuestionIdB, mockQuestionIdC],
+            questionIdList: [...questionMap.keys()],
           },
         };
       case mockProgramIdB:
@@ -45,7 +51,7 @@ export const mockAppState: AppState = {
           name: "サンプルプログラム名B",
           createAccountId: mockAccountId,
           id: mockProgramIdA,
-          questionList: { tag: "None" },
+          questionList: { tag: "Requesting" },
         };
       case mockProgramIdLong:
         return {
@@ -79,45 +85,15 @@ export const mockAppState: AppState = {
     console.log("プログラムに属している質問を習得しようとした", programId);
   },
   question: (id): d.QQuestion | undefined => {
-    switch (id) {
-      case mockQuestionIdA:
-        return {
-          id: mockQuestionIdA,
-          name: "サンプル質問",
-          parent: d.Maybe.Nothing(),
-          programId: mockProgramIdA,
-        };
-      case mockQuestionIdB:
-        return {
-          id: mockQuestionIdB,
-          name:
-            "幼少期・小学校・中学校・高校それぞれで一番嬉しかったことは何ですか?",
-          parent: d.Maybe.Just(mockQuestionIdParent),
-          programId: mockProgramIdA,
-        };
-      case mockQuestionIdC:
-        return {
-          id: mockQuestionIdC,
-          name: "小さい頃の夢はなんですか?",
-          parent: d.Maybe.Nothing(),
-          programId: mockProgramIdA,
-        };
-      case mockQuestionIdParent:
-        return {
-          id: mockQuestionIdParent,
-          name: "あなたにとって幸せとは何ですか?",
-          parent: d.Maybe.Nothing(),
-          programId: mockProgramIdA,
-        };
-    }
-    return undefined;
+    return questionMap.get(id);
   },
-  questionChildren: (id: d.QQuestionId): ReadonlyArray<d.QQuestionId> => {
-    switch (id) {
-      case mockQuestionIdParent:
-        return [mockQuestionIdB];
-    }
-    return [];
+  questionChildren: (id: d.QQuestionId): ReadonlyArray<d.QQuestionId> =>
+    questionChildren(id, questionMap),
+  questionParentList: (id: d.QQuestionId): ReadonlyArray<d.QQuestion> => {
+    return getParentQuestionList(id, questionMap);
+  },
+  questionTree: (programId: d.QProgramId): ReadonlyArray<QuestionTree> => {
+    return getQuestionTree(programId, questionList);
   },
 };
 
@@ -133,10 +109,110 @@ export const mockProgramIdA = "mockProgramA" as d.QProgramId;
 export const mockProgramIdB = "mockProgramB" as d.QProgramId;
 export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
 
-export const mockQuestionIdA = "mockQuestionA" as d.QQuestionId;
-export const mockQuestionIdB = "mockQuestionB" as d.QQuestionId;
-export const mockQuestionIdC = "mockQuestionC" as d.QQuestionId;
-export const mockQuestionIdParent = "mockQuestionParent" as d.QQuestionId;
-
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
+
+const korekara = "korekara" as d.QQuestionId;
+const zinsei = "zinsei" as d.QQuestionId;
+export const muzintou = "muzintou" as d.QQuestionId;
+const dream = "draem" as d.QQuestionId;
+const happy = "happy" as d.QQuestionId;
+const saketai = "saketai" as d.QQuestionId;
+const yuhan = "yuhan" as d.QQuestionId;
+
+const questionList: ReadonlyArray<d.QQuestion> = [
+  {
+    id: korekara,
+    name: "これから何をしますか",
+    parent: d.Maybe.Nothing(),
+    programId: mockProgramIdA,
+  },
+  {
+    id: zinsei,
+    name: "人生にとって何が大切ですか?",
+    parent: d.Maybe.Just(korekara),
+    programId: mockProgramIdA,
+  },
+  {
+    id: muzintou,
+    name: "無人島に 1つだけ ものを持っていくとしたら何を持っていきますか?",
+    parent: d.Maybe.Just(zinsei),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "takara" as d.QQuestionId,
+    name: "今も持っている宝はありますか?",
+    parent: d.Maybe.Just(muzintou),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "nanisugosu" as d.QQuestionId,
+    name: "時間が余っているときに, 何をして過ごしていますか?",
+    parent: d.Maybe.Just(muzintou),
+    programId: mockProgramIdA,
+  },
+  {
+    id: dream,
+    name: "将来の夢は何ですか?",
+    parent: d.Maybe.Just(zinsei),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "syougakuseiyume" as d.QQuestionId,
+    name: "小学生のときの将来の夢は何ですか",
+    parent: d.Maybe.Just(dream),
+    programId: mockProgramIdA,
+  },
+  {
+    id: happy,
+    name: "今までで, 1番楽しかったことは何ですか?",
+    parent: d.Maybe.Just(zinsei),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "shougakuseitanosikatta" as d.QQuestionId,
+    name: "小学生のとき 1番 楽しかったことは何ですか?",
+    parent: d.Maybe.Just(happy),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "tyougakuseitanosikatta" as d.QQuestionId,
+    name: "中学生のとき 1番 楽しかったことは何ですか?",
+    parent: d.Maybe.Just(happy),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "kouokouseitanosikatta" as d.QQuestionId,
+    name: "高校生のとき 1番 楽しかったことは何ですか?",
+    parent: d.Maybe.Just(happy),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "daigakuseitanosikatta" as d.QQuestionId,
+    name: "大学生のとき 1番 楽しかったことは何ですか?",
+    parent: d.Maybe.Just(happy),
+    programId: mockProgramIdA,
+  },
+  {
+    id: saketai,
+    name: "したくないことは何ですか",
+    parent: d.Maybe.Just(zinsei),
+    programId: mockProgramIdA,
+  },
+  {
+    id: "iyadatta" as d.QQuestionId,
+    name: "今まで嫌だったことは何ですか?",
+    parent: d.Maybe.Just(saketai),
+    programId: mockProgramIdA,
+  },
+  {
+    id: yuhan,
+    name: "関係ないけど, 今日の夕飯は何にしますか?",
+    parent: d.Maybe.Nothing(),
+    programId: mockProgramIdA,
+  },
+];
+
+const questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion> = new Map(
+  questionList.map((question) => [question.id, question] as const)
+);

@@ -1,10 +1,16 @@
 import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
+import {
+  ProgramWithQuestionIdList,
+  RequestQuestionListInProgramState,
+  useProgramMap,
+} from "./state/program";
 import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProjectName } from "../common/validation";
+import { useQuestionMap } from "./state/question";
 
 /** 作成したプログラムの取得状態 */
 export type CreatedProgramListState =
@@ -19,23 +25,12 @@ export type CreatedProgramListState =
       projectIdList: ReadonlyArray<d.QProgramId>;
     };
 
-export type RequestQuestionListInProgramState =
-  | {
-      tag: "None";
-    }
-  | {
-      tag: "Requesting";
-    }
-  | {
-      tag: "Loaded";
-      questionIdList: ReadonlyArray<d.QQuestionId>;
-    };
+export { ProgramWithQuestionIdList, RequestQuestionListInProgramState };
 
-export type ProgramWithQuestionIdList = {
-  readonly id: d.QProgramId;
-  readonly name: string;
-  readonly createAccountId: d.AccountId;
-  readonly questionList: RequestQuestionListInProgramState;
+export type QuestionTree = {
+  id: d.QQuestionId;
+  text: string;
+  children: ReadonlyArray<QuestionTree>;
 };
 
 export type AppState = {
@@ -81,6 +76,10 @@ export type AppState = {
     parent: d.QQuestionId | undefined,
     text: string
   ) => void;
+  /** 質問の親を取得する. 最初が近い順 */
+  questionParentList: (id: d.QQuestionId) => ReadonlyArray<d.QQuestion>;
+  /** 質問の木構造を取得する */
+  questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
 };
 
 export type LoginState =
@@ -119,9 +118,7 @@ export const useAppState = (): AppState => {
     tag: "Loading",
   });
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
-  const [programMap, setProgramMap] = useState<
-    ReadonlyMap<d.QProgramId, ProgramWithQuestionIdList>
-  >(new Map());
+  const programState = useProgramMap();
   const [accountMap, setAccountMap] = useState<
     ReadonlyMap<d.AccountId, d.QAccount>
   >(new Map());
@@ -129,86 +126,12 @@ export const useAppState = (): AppState => {
     createdProgramList,
     setCreatedProgramList,
   ] = useState<CreatedProgramListState>({ tag: "None" });
-  const [questionMap, setQuestionMap] = useState<
-    ReadonlyMap<d.QQuestionId, d.QQuestion>
-  >(new Map());
+  const questionState = useQuestionMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
-
-  const setProgram = (program: d.QProgram): void => {
-    setProgramMap((before) => {
-      return new Map(before).set(program.id, {
-        id: program.id,
-        name: program.name,
-        createAccountId: program.createAccountId,
-        questionList: { tag: "None" },
-      });
-    });
-  };
-  const setProgramQuestionRequesting = (programId: d.QProgramId) => {
-    setProgramMap((before) => {
-      const beforeProgram = before.get(programId);
-      if (beforeProgram === undefined) {
-        return before;
-      }
-      return new Map(before).set(programId, {
-        id: programId,
-        name: beforeProgram.name,
-        createAccountId: beforeProgram.createAccountId,
-        questionList: { tag: "Requesting" },
-      });
-    });
-  };
-  const setProgramQuestionList = (
-    programId: d.QProgramId,
-    questionIdList: ReadonlyArray<d.QQuestionId>
-  ): void => {
-    setProgramMap((before) => {
-      const beforeProgram = before.get(programId);
-      if (beforeProgram === undefined) {
-        return before;
-      }
-      return new Map(before).set(programId, {
-        id: programId,
-        name: beforeProgram.name,
-        createAccountId: beforeProgram.createAccountId,
-        questionList: { tag: "Loaded", questionIdList },
-      });
-    });
-  };
-
-  const setProgramList = (programList: ReadonlyArray<d.QProgram>): void => {
-    setProgramMap((before) => {
-      const map = new Map(before);
-      for (const program of programList) {
-        map.set(program.id, {
-          id: program.id,
-          name: program.name,
-          createAccountId: program.createAccountId,
-          questionList: { tag: "None" },
-        });
-      }
-      return map;
-    });
-  };
 
   const setAccount = (account: d.QAccount): void => {
     setAccountMap((before) => {
       return new Map(before).set(account.id, account);
-    });
-  };
-
-  const setQuestionList = (questionList: ReadonlyArray<d.QQuestion>): void => {
-    setQuestionMap((before) => {
-      const map = new Map(before);
-      for (const question of questionList) {
-        map.set(question.id, question);
-      }
-      return map;
-    });
-  };
-  const setQuestion = (question: d.QQuestion): void => {
-    setQuestionMap((before) => {
-      return new Map(before).set(question.id, question);
     });
   };
 
@@ -219,7 +142,6 @@ export const useAppState = (): AppState => {
     });
 
     const urlData = commonUrl.urlToUrlData(new URL(window.location.href));
-    console.log("urlData", urlData);
     setLocation(urlData.location);
     getAccountTokenFromUrlOrIndexedDb(urlData).then((accountToken) => {
       if (accountToken === undefined) {
@@ -352,13 +274,11 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`プログラム 「${response.ok.name}」を作成しました`, {
             variant: "success",
           });
-          setProgram(response.ok);
+          programState.setProgram(response.ok);
           changeLocation(d.QLocation.Program(response.ok.id));
         });
     },
-    program: (programId) => {
-      return programMap.get(programId);
-    },
+    program: programState.getById,
     account: (accountId) => {
       return accountMap.get(accountId);
     },
@@ -383,7 +303,7 @@ export const useAppState = (): AppState => {
           tag: "Loaded",
           projectIdList: response.ok.map((program) => program.id),
         });
-        setProgramList(response.ok);
+        programState.setProgramList(response.ok);
       });
     },
     requestGetQuestionListInProgram: (programId) => {
@@ -391,7 +311,7 @@ export const useAppState = (): AppState => {
       if (accountToken === undefined) {
         return;
       }
-      setProgramQuestionRequesting(programId);
+      programState.setProgramQuestionRequesting(programId);
       api
         .getQuestionInCreatedProgram({
           accountToken,
@@ -404,8 +324,8 @@ export const useAppState = (): AppState => {
             });
             return;
           }
-          setQuestionList(response.ok);
-          setProgramQuestionList(
+          questionState.setQuestionList(response.ok);
+          programState.setProgramQuestionList(
             programId,
             response.ok.map((q) => q.id)
           );
@@ -436,25 +356,85 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`質問を作成しました`, {
             variant: "success",
           });
-          setQuestion(response.ok);
+          questionState.setQuestion(response.ok);
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
-    question: (id) => {
-      return questionMap.get(id);
-    },
-    questionChildren: (id) => {
-      const result: Array<d.QQuestionId> = [];
-      for (const question of questionMap.values()) {
-        if (question.parent._ === "Just" && question.parent.value === id) {
-          result.push(question.id);
-        }
-      }
-      return result;
-    },
+    question: questionState.questionById,
+    questionChildren: (id) => questionChildren(id, questionState.questionMap),
+    questionParentList: (id) =>
+      getParentQuestionList(id, questionState.questionMap),
+    questionTree: (programId): ReadonlyArray<QuestionTree> =>
+      getQuestionTree(programId, [...questionState.questionMap.values()]),
   };
 };
 
 const back = () => {
   window.history.back();
+};
+
+export const questionChildren = (
+  id: d.QQuestionId,
+  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+): ReadonlyArray<d.QQuestionId> => {
+  const result: Array<d.QQuestionId> = [];
+  for (const question of questionMap.values()) {
+    if (question.parent._ === "Just" && question.parent.value === id) {
+      result.push(question.id);
+    }
+  }
+  return result;
+};
+
+export const getParentQuestionList = (
+  id: d.QQuestionId,
+  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+): ReadonlyArray<d.QQuestion> => {
+  let targetId = id;
+  const result: Array<d.QQuestion> = [];
+  while (true) {
+    const question = questionMap.get(targetId);
+    if (question === undefined) {
+      return result;
+    }
+    result.push(question);
+    if (question.parent._ === "Nothing") {
+      return result;
+    }
+    targetId = question.parent.value;
+  }
+};
+
+export const getQuestionTree = (
+  programId: d.QProgramId,
+  questionList: ReadonlyArray<d.QQuestion>
+): ReadonlyArray<QuestionTree> => {
+  const treeList: Array<QuestionTree> = [];
+  for (const question of questionList) {
+    if (question.programId === programId && question.parent._ === "Nothing") {
+      treeList.push({
+        id: question.id,
+        text: question.name,
+        children: getQuestionChildren(question.id, questionList),
+      });
+    }
+  }
+  return treeList;
+};
+
+const getQuestionChildren = (
+  questionId: d.QQuestionId,
+  questionList: ReadonlyArray<d.QQuestion>
+): ReadonlyArray<QuestionTree> => {
+  const result: Array<QuestionTree> = [];
+  for (const question of questionList) {
+    if (question.parent._ === "Just" && question.parent.value === questionId) {
+      result.push({
+        id: question.id,
+        text: question.name,
+        children: getQuestionChildren(question.id, questionList),
+      });
+    }
+  }
+  return result;
 };

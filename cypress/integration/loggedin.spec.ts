@@ -12,6 +12,6 @@ describe("ログイン後", () => {
     cy.get("[data-cy=create]").click();
     cy.contains("作成しました");
     cy.contains("質問を作成する").click();
-    cy.contains("質問 新規作成");
+    cy.contains("質問作成");
   });
 });

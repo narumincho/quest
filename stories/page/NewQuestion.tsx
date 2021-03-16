@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { mockAppState, mockProgramIdA, mockQuestionIdA } from "../mock";
+import { mockAppState, mockProgramIdA, muzintou } from "../mock";
 import { NewQuestion } from "../../client/page/NewQuestion";
 
 const meta: Meta = {
@@ -24,6 +24,6 @@ export const WithParent: Story<never> = () => (
   <NewQuestion
     appState={mockAppState}
     programId={mockProgramIdA}
-    parent={mockQuestionIdA}
+    parent={muzintou}
   />
 );

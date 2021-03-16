@@ -1,8 +1,14 @@
 import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
-import { Avatar, Box, Button } from "@material-ui/core";
-import { AppBar } from "../ui";
+import { AppBar, Link } from "../ui";
+import {
+  Avatar,
+  Box,
+  Breadcrumbs,
+  Button,
+  Typography,
+} from "@material-ui/core";
 import { AppState } from "../state";
 
 export type Props = { account: d.QAccount; appState: AppState };
@@ -12,6 +18,14 @@ export const Setting: React.VFC<Props> = (props) => {
     <Box>
       <AppBar title="設定" appState={props.appState} />
       <Box padding={1}>
+        <Box padding={1}>
+          <Breadcrumbs>
+            <Link appState={props.appState} location={d.QLocation.Top}>
+              作成したプログラム
+            </Link>
+            <Typography>設定</Typography>
+          </Breadcrumbs>
+        </Box>
         <Box padding={1}>アカウントID: {props.account.id}</Box>
         <Box padding={1}>
           アカウント画像:
