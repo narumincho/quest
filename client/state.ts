@@ -142,7 +142,6 @@ export const useAppState = (): AppState => {
     });
 
     const urlData = commonUrl.urlToUrlData(new URL(window.location.href));
-    console.log("urlData", urlData);
     setLocation(urlData.location);
     getAccountTokenFromUrlOrIndexedDb(urlData).then((accountToken) => {
       if (accountToken === undefined) {
@@ -366,7 +365,7 @@ export const useAppState = (): AppState => {
     questionParentList: (id) =>
       getParentQuestionList(id, questionState.questionMap),
     questionTree: (programId): ReadonlyArray<QuestionTree> =>
-      getQuestionTree(programId, questionState.questionMap.values()),
+      getQuestionTree(programId, [...questionState.questionMap.values()]),
   };
 };
 
@@ -408,7 +407,7 @@ export const getParentQuestionList = (
 
 export const getQuestionTree = (
   programId: d.QProgramId,
-  questionList: Iterable<d.QQuestion>
+  questionList: ReadonlyArray<d.QQuestion>
 ): ReadonlyArray<QuestionTree> => {
   const treeList: Array<QuestionTree> = [];
   for (const question of questionList) {
@@ -425,7 +424,7 @@ export const getQuestionTree = (
 
 const getQuestionChildren = (
   questionId: d.QQuestionId,
-  questionList: Iterable<d.QQuestion>
+  questionList: ReadonlyArray<d.QQuestion>
 ): ReadonlyArray<QuestionTree> => {
   const result: Array<QuestionTree> = [];
   for (const question of questionList) {
