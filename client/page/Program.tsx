@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AccountCard, AppBar, QuestionCard } from "../ui";
+import { AccountCard, AppBar, QuestionTreeList } from "../ui";
 import { AppState, RequestQuestionListInProgramState } from "../state";
 import {
   Box,
@@ -60,6 +60,7 @@ export const Program: React.VFC<Props> = (props) => {
           <QuestionList
             questionList={program.questionList}
             appState={props.appState}
+            programId={props.programId}
           />
         </Box>
         <Box padding={1}>
@@ -94,18 +95,19 @@ const useQuestionListStyles = makeStyles({
 export const QuestionList: React.VFC<{
   questionList: RequestQuestionListInProgramState;
   appState: AppState;
+  programId: d.QProgramId;
 }> = (props) => {
   const classes = useQuestionListStyles();
   if (props.questionList.tag === "None") {
     return (
-      <Box>
+      <Box padding={1}>
         <Typography>リクエスト待ち</Typography>
       </Box>
     );
   }
   if (props.questionList.tag === "Requesting") {
     return (
-      <Box>
+      <Box padding={1}>
         <Typography>読込中</Typography>
       </Box>
     );
@@ -113,20 +115,14 @@ export const QuestionList: React.VFC<{
   const list = props.questionList.questionIdList;
   if (list.length === 0) {
     return (
-      <Box>
+      <Box padding={1}>
         <Typography>質問が1つもありません</Typography>
       </Box>
     );
   }
+  const treeList = props.appState.questionTree(props.programId);
+
   return (
-    <Box className={classes.box}>
-      {list.map((questionId) => (
-        <QuestionCard
-          key={questionId}
-          appState={props.appState}
-          questionId={questionId}
-        />
-      ))}
-    </Box>
+    <QuestionTreeList questionTreeList={treeList} appState={props.appState} />
   );
 };

@@ -167,6 +167,7 @@
       "prefer-destructuring": [
         "off"
       ],
+      "no-continue": "off",
       "@typescript-eslint/restrict-plus-operands": [
         "error",
         {

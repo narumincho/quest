@@ -38,6 +38,12 @@ export type ProgramWithQuestionIdList = {
   readonly questionList: RequestQuestionListInProgramState;
 };
 
+export type QuestionTree = {
+  id: d.QQuestionId;
+  text: string;
+  children: ReadonlyArray<QuestionTree>;
+};
+
 export type AppState = {
   /** ログイン状態 */
   loginState: LoginState;
@@ -83,6 +89,8 @@ export type AppState = {
   ) => void;
   /** 質問の親を取得する. 最初が近い順 */
   questionParentList: (id: d.QQuestionId) => ReadonlyArray<d.QQuestion>;
+  /** 質問の木構造を取得する */
+  questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
 };
 
 export type LoginState =
@@ -445,33 +453,79 @@ export const useAppState = (): AppState => {
     question: (id) => {
       return questionMap.get(id);
     },
-    questionChildren: (id) => {
-      const result: Array<d.QQuestionId> = [];
-      for (const question of questionMap.values()) {
-        if (question.parent._ === "Just" && question.parent.value === id) {
-          result.push(question.id);
-        }
-      }
-      return result;
-    },
-    questionParentList: (id) => {
-      let targetId = id;
-      const result: Array<d.QQuestion> = [];
-      while (true) {
-        const question = questionMap.get(targetId);
-        if (question === undefined) {
-          return result;
-        }
-        result.push(question);
-        if (question.parent._ === "Nothing") {
-          return result;
-        }
-        targetId = question.parent.value;
-      }
-    },
+    questionChildren: (id) => questionChildren(id, questionMap),
+    questionParentList: (id) => getParentQuestionList(id, questionMap),
+    questionTree: (programId): ReadonlyArray<QuestionTree> =>
+      getQuestionTree(programId, questionMap.values()),
   };
 };
 
 const back = () => {
   window.history.back();
+};
+
+export const questionChildren = (
+  id: d.QQuestionId,
+  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+): ReadonlyArray<d.QQuestionId> => {
+  const result: Array<d.QQuestionId> = [];
+  for (const question of questionMap.values()) {
+    if (question.parent._ === "Just" && question.parent.value === id) {
+      result.push(question.id);
+    }
+  }
+  return result;
+};
+
+export const getParentQuestionList = (
+  id: d.QQuestionId,
+  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+): ReadonlyArray<d.QQuestion> => {
+  let targetId = id;
+  const result: Array<d.QQuestion> = [];
+  while (true) {
+    const question = questionMap.get(targetId);
+    if (question === undefined) {
+      return result;
+    }
+    result.push(question);
+    if (question.parent._ === "Nothing") {
+      return result;
+    }
+    targetId = question.parent.value;
+  }
+};
+
+export const getQuestionTree = (
+  programId: d.QProgramId,
+  questionList: Iterable<d.QQuestion>
+): ReadonlyArray<QuestionTree> => {
+  const treeList: Array<QuestionTree> = [];
+  for (const question of questionList) {
+    if (question.programId === programId && question.parent._ === "Nothing") {
+      treeList.push({
+        id: question.id,
+        text: question.name,
+        children: getQuestionChildren(question.id, questionList),
+      });
+    }
+  }
+  return treeList;
+};
+
+const getQuestionChildren = (
+  questionId: d.QQuestionId,
+  questionList: Iterable<d.QQuestion>
+): ReadonlyArray<QuestionTree> => {
+  const result: Array<QuestionTree> = [];
+  for (const question of questionList) {
+    if (question.parent._ === "Just" && question.parent.value === questionId) {
+      result.push({
+        id: question.id,
+        text: question.name,
+        children: getQuestionChildren(question.id, questionList),
+      });
+    }
+  }
+  return result;
 };
