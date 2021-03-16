@@ -1,6 +1,11 @@
 import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
+import {
+  ProgramWithQuestionIdList,
+  RequestQuestionListInProgramState,
+  useProgramMap,
+} from "./state/program";
 import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
@@ -20,24 +25,7 @@ export type CreatedProgramListState =
       projectIdList: ReadonlyArray<d.QProgramId>;
     };
 
-export type RequestQuestionListInProgramState =
-  | {
-      tag: "None";
-    }
-  | {
-      tag: "Requesting";
-    }
-  | {
-      tag: "Loaded";
-      questionIdList: ReadonlyArray<d.QQuestionId>;
-    };
-
-export type ProgramWithQuestionIdList = {
-  readonly id: d.QProgramId;
-  readonly name: string;
-  readonly createAccountId: d.AccountId;
-  readonly questionList: RequestQuestionListInProgramState;
-};
+export { ProgramWithQuestionIdList, RequestQuestionListInProgramState };
 
 export type QuestionTree = {
   id: d.QQuestionId;
@@ -130,9 +118,7 @@ export const useAppState = (): AppState => {
     tag: "Loading",
   });
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
-  const [programMap, setProgramMap] = useState<
-    ReadonlyMap<d.QProgramId, ProgramWithQuestionIdList>
-  >(new Map());
+  const programState = useProgramMap();
   const [accountMap, setAccountMap] = useState<
     ReadonlyMap<d.AccountId, d.QAccount>
   >(new Map());
@@ -140,70 +126,8 @@ export const useAppState = (): AppState => {
     createdProgramList,
     setCreatedProgramList,
   ] = useState<CreatedProgramListState>({ tag: "None" });
-  const {
-    questionMap,
-    setQuestion,
-    setQuestionList,
-    questionById,
-  } = useQuestionMap();
+  const questionState = useQuestionMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
-
-  const setProgram = (program: d.QProgram): void => {
-    setProgramMap((before) => {
-      return new Map(before).set(program.id, {
-        id: program.id,
-        name: program.name,
-        createAccountId: program.createAccountId,
-        questionList: { tag: "None" },
-      });
-    });
-  };
-  const setProgramQuestionRequesting = (programId: d.QProgramId) => {
-    setProgramMap((before) => {
-      const beforeProgram = before.get(programId);
-      if (beforeProgram === undefined) {
-        return before;
-      }
-      return new Map(before).set(programId, {
-        id: programId,
-        name: beforeProgram.name,
-        createAccountId: beforeProgram.createAccountId,
-        questionList: { tag: "Requesting" },
-      });
-    });
-  };
-  const setProgramQuestionList = (
-    programId: d.QProgramId,
-    questionIdList: ReadonlyArray<d.QQuestionId>
-  ): void => {
-    setProgramMap((before) => {
-      const beforeProgram = before.get(programId);
-      if (beforeProgram === undefined) {
-        return before;
-      }
-      return new Map(before).set(programId, {
-        id: programId,
-        name: beforeProgram.name,
-        createAccountId: beforeProgram.createAccountId,
-        questionList: { tag: "Loaded", questionIdList },
-      });
-    });
-  };
-
-  const setProgramList = (programList: ReadonlyArray<d.QProgram>): void => {
-    setProgramMap((before) => {
-      const map = new Map(before);
-      for (const program of programList) {
-        map.set(program.id, {
-          id: program.id,
-          name: program.name,
-          createAccountId: program.createAccountId,
-          questionList: { tag: "None" },
-        });
-      }
-      return map;
-    });
-  };
 
   const setAccount = (account: d.QAccount): void => {
     setAccountMap((before) => {
@@ -351,13 +275,11 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`プログラム 「${response.ok.name}」を作成しました`, {
             variant: "success",
           });
-          setProgram(response.ok);
+          programState.setProgram(response.ok);
           changeLocation(d.QLocation.Program(response.ok.id));
         });
     },
-    program: (programId) => {
-      return programMap.get(programId);
-    },
+    program: programState.getById,
     account: (accountId) => {
       return accountMap.get(accountId);
     },
@@ -382,7 +304,7 @@ export const useAppState = (): AppState => {
           tag: "Loaded",
           projectIdList: response.ok.map((program) => program.id),
         });
-        setProgramList(response.ok);
+        programState.setProgramList(response.ok);
       });
     },
     requestGetQuestionListInProgram: (programId) => {
@@ -390,7 +312,7 @@ export const useAppState = (): AppState => {
       if (accountToken === undefined) {
         return;
       }
-      setProgramQuestionRequesting(programId);
+      programState.setProgramQuestionRequesting(programId);
       api
         .getQuestionInCreatedProgram({
           accountToken,
@@ -403,8 +325,8 @@ export const useAppState = (): AppState => {
             });
             return;
           }
-          setQuestionList(response.ok);
-          setProgramQuestionList(
+          questionState.setQuestionList(response.ok);
+          programState.setProgramQuestionList(
             programId,
             response.ok.map((q) => q.id)
           );
@@ -435,15 +357,16 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`質問を作成しました`, {
             variant: "success",
           });
-          setQuestion(response.ok);
+          questionState.setQuestion(response.ok);
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
-    question: questionById,
-    questionChildren: (id) => questionChildren(id, questionMap),
-    questionParentList: (id) => getParentQuestionList(id, questionMap),
+    question: questionState.questionById,
+    questionChildren: (id) => questionChildren(id, questionState.questionMap),
+    questionParentList: (id) =>
+      getParentQuestionList(id, questionState.questionMap),
     questionTree: (programId): ReadonlyArray<QuestionTree> =>
-      getQuestionTree(programId, questionMap.values()),
+      getQuestionTree(programId, questionState.questionMap.values()),
   };
 };
 

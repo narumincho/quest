@@ -14,13 +14,13 @@ export const useQuestionMap = () => {
         )
       );
     },
-    /** 質問を保存する */
+    /** 質問をリロードするまで保存する */
     setQuestion: (question: d.QQuestion): void => {
       setQuestionMap((before) => {
         return new Map(before).set(question.id, question);
       });
     },
-    /** 複数の質問を一度に保存する */
+    /** 複数の質問を一度にリロードするまで保存する */
     setQuestionList: (questionList: ReadonlyArray<d.QQuestion>): void => {
       setQuestionMap((before) => {
         const map = new Map(before);
