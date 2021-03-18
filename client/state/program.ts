@@ -26,7 +26,16 @@ export const useProgramMap = () => {
   >(new Map());
   return {
     /** プログラムをリロードするまで保存する */
-    setProgram: (program: d.QProgram): void => {},
+    setProgram: (program: d.QProgram): void => {
+      setProgramMap((before) => {
+        return new Map(before).set(program.id, {
+          id: program.id,
+          name: program.name,
+          createAccountId: program.createAccountId,
+          questionList: { tag: "None" },
+        });
+      });
+    },
     /** 1度にプログラムをリロードするまで保存する */
     setProgramList: (programList: ReadonlyArray<d.QProgram>): void => {
       setProgramMap((before) => {

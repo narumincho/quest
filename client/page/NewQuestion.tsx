@@ -40,14 +40,10 @@ export const NewQuestion: React.VFC<{
   const parentList: ReadonlyArray<d.QQuestion> =
     props.parent === undefined
       ? []
-      : [
-          ...getParentQuestion(props.appState, props.parent),
-          ...props.appState.questionParentList(props.parent),
-        ];
-
+      : props.appState.questionParentList(d.Maybe.Just(props.parent));
   return (
     <Box>
-      <AppBar title="質問作成" appState={props.appState} />
+      <AppBar appState={props.appState} />
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -68,8 +64,11 @@ export const NewQuestion: React.VFC<{
                 {parent.name}
               </Link>
             ))}
-            <Typography>質問作成</Typography>
+            <div></div>
           </Breadcrumbs>
+        </Box>
+        <Box padding={1}>
+          <Typography variant="h5">質問作成</Typography>
         </Box>
         <Box padding={1}>
           <TextField

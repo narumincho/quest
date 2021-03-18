@@ -19,10 +19,6 @@ export type Props = {
    */
   appState: AppState;
   /**
-   * タイトルの文字
-   */
-  title: string;
-  /**
    * 戻るボタンを隠すか
    * @default false
    */
@@ -48,7 +44,7 @@ export const AppBar: React.VFC<Props> = (props) => {
           </IconButton>
         )}
         <Typography variant="h6" className={classes.title}>
-          {props.title}
+          クエスト
         </Typography>
         {props.appState.loginState.tag === "LoggedIn" ? (
           <Link location={d.QLocation.Setting} appState={props.appState}>

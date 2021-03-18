@@ -10,7 +10,7 @@ export type Props = {
 export const Login: React.VFC<Props> = (props) => {
   return (
     <Box>
-      <AppBar title="ログイン" appState={props.appState} isHideBack />
+      <AppBar appState={props.appState} isHideBack />
       <Box padding={1}>
         <Typography variant="body1">
           クエストを使うためにはLINEログインが必要です

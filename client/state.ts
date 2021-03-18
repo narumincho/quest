@@ -77,7 +77,9 @@ export type AppState = {
     text: string
   ) => void;
   /** 質問の親を取得する. 最初が近い順 */
-  questionParentList: (id: d.QQuestionId) => ReadonlyArray<d.QQuestion>;
+  questionParentList: (
+    id: d.Maybe<d.QQuestionId>
+  ) => ReadonlyArray<d.QQuestion>;
   /** 質問の木構造を取得する */
   questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
 };
@@ -237,6 +239,9 @@ export const useAppState = (): AppState => {
     requestLogin,
     createdProgramListState: createdProgramList,
     logout: () => {
+      enqueueSnackbar(`ログアウトしました`, {
+        variant: "success",
+      });
       indexedDb.deleteAccountToken();
       setLoginState({
         tag: "NoLogin",
@@ -362,8 +367,12 @@ export const useAppState = (): AppState => {
     },
     question: questionState.questionById,
     questionChildren: (id) => questionChildren(id, questionState.questionMap),
-    questionParentList: (id) =>
-      getParentQuestionList(id, questionState.questionMap),
+    questionParentList: (id) => {
+      if (id._ === "Nothing") {
+        return [];
+      }
+      return getParentQuestionList(id.value, questionState.questionMap);
+    },
     questionTree: (programId): ReadonlyArray<QuestionTree> =>
       getQuestionTree(programId, [...questionState.questionMap.values()]),
   };
