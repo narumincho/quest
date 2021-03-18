@@ -9,9 +9,4 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<{ title: string }> = (args) => (
-  <AppBar title={args.title} appState={mockAppState} />
-);
-Default.args = {
-  title: "タイトル",
-};
+export const Default: Story<never> = () => <AppBar appState={mockAppState} />;
