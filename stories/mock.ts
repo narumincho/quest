@@ -89,8 +89,13 @@ export const mockAppState: AppState = {
   },
   questionChildren: (id: d.QQuestionId): ReadonlyArray<d.QQuestionId> =>
     questionChildren(id, questionMap),
-  questionParentList: (id: d.QQuestionId): ReadonlyArray<d.QQuestion> => {
-    return getParentQuestionList(id, questionMap);
+  questionParentList: (
+    id: d.Maybe<d.QQuestionId>
+  ): ReadonlyArray<d.QQuestion> => {
+    if (id._ === "Nothing") {
+      return [];
+    }
+    return getParentQuestionList(id.value, questionMap);
   },
   questionTree: (programId: d.QProgramId): ReadonlyArray<QuestionTree> => {
     return getQuestionTree(programId, questionList);

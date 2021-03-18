@@ -27,7 +27,7 @@ export const Program: React.VFC<Props> = (props) => {
   if (program === undefined) {
     return (
       <Box>
-        <AppBar title="プログラム読み込み中" appState={props.appState} />
+        <AppBar appState={props.appState} />
         <Box></Box>
       </Box>
     );
@@ -35,14 +35,14 @@ export const Program: React.VFC<Props> = (props) => {
 
   return (
     <Box>
-      <AppBar title={program.name} appState={props.appState} />
+      <AppBar appState={props.appState} />
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
             <Link appState={props.appState} location={d.QLocation.Top}>
               作成したプログラム
             </Link>
-            <Typography>{program.name}</Typography>
+            <div></div>
           </Breadcrumbs>
         </Box>
         <Box padding={1}>

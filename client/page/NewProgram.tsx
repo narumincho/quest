@@ -47,15 +47,18 @@ export const NewProgram: React.VFC<Props> = (props) => {
   };
   return (
     <Box>
-      <AppBar title="プログラム作成" appState={props.appState} />
+      <AppBar appState={props.appState} />
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
             <Link appState={props.appState} location={d.QLocation.Top}>
               作成したプログラム
             </Link>
-            <Typography>プログラム作成</Typography>
+            <div></div>
           </Breadcrumbs>
+        </Box>
+        <Box padding={1}>
+          <Typography variant="h5">プログラム作成</Typography>
         </Box>
         <Box padding={1}>
           <TextField

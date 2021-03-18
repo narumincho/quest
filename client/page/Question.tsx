@@ -17,17 +17,17 @@ export const Question: React.VFC<{
   if (question === undefined) {
     return (
       <Box padding={1}>
-        <AppBar title="質問 読み込み中" appState={props.appState} />
+        <AppBar appState={props.appState} />
         <Box></Box>
       </Box>
     );
   }
   const program = props.appState.program(question.programId);
-  const parentList = props.appState.questionParentList(props.questionId);
+  const parentList = props.appState.questionParentList(question.parent);
 
   return (
     <Box>
-      <AppBar title="質問" appState={props.appState} />
+      <AppBar appState={props.appState} />
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -48,22 +48,12 @@ export const Question: React.VFC<{
                 {parent.name}
               </Link>
             ))}
+            <div></div>
           </Breadcrumbs>
         </Box>
         <Box padding={1}>
           <Typography variant="h5">{question.name}</Typography>
         </Box>
-        {question.parent._ === "Just" ? (
-          <Box padding={1}>
-            親:
-            <QuestionCard
-              appState={props.appState}
-              questionId={question.parent.value}
-            />
-          </Box>
-        ) : (
-          <></>
-        )}
         <Box padding={1}>
           子:
           {children.map((child) => (

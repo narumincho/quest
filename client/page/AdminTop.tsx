@@ -28,7 +28,10 @@ export const AdminTop: React.VFC<Props> = (props) => {
 
   return (
     <Box>
-      <AppBar title="作成したプログラム" isHideBack appState={props.appState} />
+      <AppBar isHideBack appState={props.appState} />
+      <Box padding={1}>
+        <Typography variant="h5">作成したプログラム</Typography>
+      </Box>
       <CreatedProgramList appState={props.appState} />
       <Link location={d.QLocation.NewProgram} appState={props.appState}>
         <Fab
