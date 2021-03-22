@@ -6,34 +6,19 @@ import {
   getQuestionTree,
   questionChildren,
 } from "../client/state";
+import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {
   loginState: { tag: "NoLogin" },
   createdProgramListState: { tag: "None" },
-  jump: (newLocation) => {
-    console.log(`${JSON.stringify(newLocation)}に移動しようとした`);
-  },
-  changeLocation: (newLocation) => {
-    console.log(
-      `${JSON.stringify(newLocation)}に履歴を置き換える形で移動しようとした`
-    );
-  },
+  jump: action("移動しようとした"),
+  changeLocation: action("履歴を置き換える形で移動しようとした"),
   location: d.QLocation.Top,
-  requestLogin: () => {
-    console.log("ログインURLを発行して, 推移しようとした");
-  },
-  logout: () => {
-    console.log("ログアウトしようとした");
-  },
-  addNotification: (message, variant) => {
-    console.log(`「${message}」(${variant})という通知を追加しようとした`);
-  },
-  back: () => {
-    console.log("戻ろうとした");
-  },
-  createProgram: (projectName) => {
-    console.log(`${projectName} というプログラムを作ろうとした`);
-  },
+  requestLogin: action("ログインURLを発行して, 推移しようとした"),
+  logout: action("ログアウトしようとした"),
+  addNotification: action("通知を追加しようとした"),
+  back: action("戻ろうとした"),
+  createProgram: action("プログラムを作ろうとした"),
   program: (id) => {
     switch (id) {
       case mockProgramIdA:
@@ -70,20 +55,13 @@ export const mockAppState: AppState = {
       name: "サンプルアカウント名",
     };
   },
-  requestGetCreatedProgram: () => {
-    console.log("作成したプログラム一覧を取得しようとした");
-  },
+  requestGetCreatedProgram: action("作成したプログラム一覧を取得しようとした"),
   isCreatingQuestion: false,
-  createQuestion: (
-    programId: d.QProgramId,
-    parent: d.QQuestionId | undefined,
-    text: string
-  ) => {
-    console.log("質問を作成しようとした", programId, parent, text);
-  },
-  requestGetQuestionListInProgram: (programId) => {
-    console.log("プログラムに属している質問を習得しようとした", programId);
-  },
+  createQuestion: action("質問を作成しようとした"),
+  requestGetQuestionListInProgram: action(
+    "プログラムに属している質問を習得しようとした"
+  ),
+
   question: (id): d.QQuestion | undefined => {
     return questionMap.get(id);
   },
