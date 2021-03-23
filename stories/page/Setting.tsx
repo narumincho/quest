@@ -2,6 +2,7 @@ import * as React from "react";
 import { Meta, Story } from "@storybook/react";
 import { mockAccount, mockAppState } from "../mock";
 import { Setting } from "../../client/page/Setting";
+import { fullScreen } from "../../.storybook/decorators";
 
 const meta: Meta = {
   title: "Page/Setting",
@@ -9,6 +10,7 @@ const meta: Meta = {
   parameters: {
     layout: "fullscreen",
   },
+  decorators: [fullScreen],
 };
 export default meta;
 
