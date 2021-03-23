@@ -1,9 +1,11 @@
 import * as esbuild from "esbuild";
 import * as fileSystem from "fs-extra";
-import * as jsTsCodeGen from "js-ts-code-generator";
-import * as jsTsData from "js-ts-code-generator/data";
-import * as jsTsIndenter from "js-ts-code-generator/identifer";
 import * as ts from "typescript";
+import {
+  generateCodeAsString,
+  identifer,
+  d as jsTsData,
+} from "js-ts-code-generator";
 import { Mode } from "../common/mode";
 
 const clientSourceEntryPath = "./client/main.tsx";
@@ -162,17 +164,17 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
 
 /** `common/origin` のファイルを出力する. modeによって出力されるオリジンが変更される. */
 const outputCommonOrigin = (mode: Mode): Promise<void> => {
-  const modeIdentifer = jsTsIndenter.fromString("Mode");
+  const modeIdentifer = identifer.fromString("Mode");
   return fileSystem.outputFile(
     "./common/nowMode.ts",
-    jsTsCodeGen.generateCodeAsString(
+    generateCodeAsString(
       {
         exportDefinitionList: [
           jsTsData.ExportDefinition.Variable({
-            name: jsTsIndenter.fromString("nowMode"),
+            name: identifer.fromString("nowMode"),
             document: "現在のビルドの動作モード",
-            expr: jsTsData.Expr.StringLiteral(mode),
-            type: jsTsData.Type.ImportedType({
+            expr: jsTsData.TsExpr.StringLiteral(mode),
+            type: jsTsData.TsType.ImportedType({
               moduleName: "./mode",
               name: modeIdentifer,
             }),

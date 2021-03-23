@@ -7,6 +7,7 @@ import {
   mockProgramIdB,
   mockProgramIdLong,
 } from "../mock";
+import { fullScreen } from "../../.storybook/decorators";
 
 const meta: Meta = {
   title: "Page/AdminTop",
@@ -14,6 +15,7 @@ const meta: Meta = {
   parameters: {
     layout: "fullscreen",
   },
+  decorators: [fullScreen],
 };
 export default meta;
 
