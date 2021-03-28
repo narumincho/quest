@@ -67,7 +67,7 @@ const LoggedIn: React.VFC<{
         <Question questionId={location.qQuestionId} appState={props.appState} />
       );
     case "NewClass":
-      return <NewClass programId={location.qProgramId} />;
+      return <NewClass a={props.appState} programId={location.qProgramId} />;
     case "Class":
       return <Class classId={location.qClassId} />;
   }

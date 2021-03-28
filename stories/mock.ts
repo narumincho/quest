@@ -78,6 +78,7 @@ export const mockAppState: AppState = {
   questionTree: (programId: d.QProgramId): ReadonlyArray<QuestionTree> => {
     return getQuestionTree(programId, questionList);
   },
+  createClass: action("createClass"),
 };
 
 export const mockAccount: d.QAccount = {
