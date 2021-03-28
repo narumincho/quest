@@ -9,7 +9,6 @@
     "start-emulator": "firebase emulators:start --project north-quest",
     "typeCheck": "tsc --noEmit",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
     "generate-graph": "npx depcruise -X node_modules --output-type dot client/main.tsx functions/main.ts | dot -T svg > graph.svg",
     "cypress-open": "cypress open"
   },

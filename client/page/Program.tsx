@@ -1,7 +1,12 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AccountCard, AppBar, QuestionTreeList } from "../ui";
-import { AppState, RequestQuestionListInProgramState } from "../state";
+import { AccountCard, AppBar, ClassCard, QuestionTreeList } from "../ui";
+import {
+  AppState,
+  ProgramWithQuestionIdListAndClassIdList,
+  RequestClassListInProgramState,
+  RequestQuestionListInProgramState,
+} from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -22,6 +27,7 @@ export const Program: React.VFC<Props> = (props) => {
 
   React.useEffect(() => {
     props.appState.requestGetQuestionListInProgram(props.programId);
+    props.appState.requestGetClassListInProgram(props.programId);
   }, []);
 
   if (program === undefined) {
@@ -71,35 +77,42 @@ export const Program: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>質問:</Typography>
           <QuestionList
-            questionList={program.questionList}
+            questionList={program.questionIdList}
             appState={props.appState}
             programId={props.programId}
           />
+          <Box padding={1}>
+            <Link
+              appState={props.appState}
+              location={d.QLocation.NewQuestion({
+                parent: d.Maybe.Nothing(),
+                programId: props.programId,
+                text: "",
+              })}
+            >
+              <Button fullWidth startIcon={<Add />} variant="contained">
+                質問を作成する
+              </Button>
+            </Link>
+          </Box>
         </Box>
         <Box padding={1}>
-          <Link
-            appState={props.appState}
-            location={d.QLocation.NewQuestion({
-              parent: d.Maybe.Nothing(),
-              programId: props.programId,
-              text: "",
-            })}
-          >
-            <Button fullWidth startIcon={<Add />} variant="contained">
-              質問を作成する
-            </Button>
-          </Link>
-        </Box>
-        <Box>ここにクラスの一覧を表示する</Box>
-        <Box>
-          <Link
-            appState={props.appState}
-            location={d.QLocation.NewClass(props.programId)}
-          >
-            <Button fullWidth startIcon={<Add />} variant="contained">
-              クラスを作成する
-            </Button>
-          </Link>
+          <Typography>クラス:</Typography>
+          <ClassList
+            requestCLassListInProgramState={program.classIdList}
+            a={props.appState}
+            programId={props.programId}
+          />
+          <Box padding={1}>
+            <Link
+              appState={props.appState}
+              location={d.QLocation.NewClass(props.programId)}
+            >
+              <Button fullWidth startIcon={<Add />} variant="contained">
+                クラスを作成する
+              </Button>
+            </Link>
+          </Box>
         </Box>
         <Box padding={1}>
           <Typography>プログラムID: {props.programId}</Typography>
@@ -140,5 +153,50 @@ export const QuestionList: React.VFC<{
 
   return (
     <QuestionTreeList questionTreeList={treeList} appState={props.appState} />
+  );
+};
+
+const useStyle = makeStyles({
+  list: {
+    padding: 8,
+    display: "grid",
+    gap: 8,
+  },
+});
+
+const ClassList: React.VFC<{
+  requestCLassListInProgramState: RequestClassListInProgramState;
+  a: AppState;
+  programId: d.QProgramId;
+}> = (props) => {
+  const classes = useStyle();
+  if (props.requestCLassListInProgramState.tag === "None") {
+    return (
+      <Box padding={1}>
+        <Typography>リクエスト待ち</Typography>
+      </Box>
+    );
+  }
+  if (props.requestCLassListInProgramState.tag === "Requesting") {
+    return (
+      <Box padding={1}>
+        <Typography>読込中</Typography>
+      </Box>
+    );
+  }
+  const list = props.requestCLassListInProgramState.classIdList;
+  if (list.length === 0) {
+    return (
+      <Box padding={1}>
+        <Typography>クラスが1つもありません</Typography>
+      </Box>
+    );
+  }
+  return (
+    <Box className={classes.list}>
+      {list.map((classId) => (
+        <ClassCard a={props.a} classId={classId} key={classId} />
+      ))}
+    </Box>
   );
 };

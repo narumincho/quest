@@ -1,11 +1,19 @@
 import * as React from "react";
 import * as d from "../../data";
 import { AppBar, Link } from "../ui";
-import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
+import { Box, Breadcrumbs, Button, makeStyles, Typography } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { AppState } from "../state";
 import { ProgramCard } from "../ui/ProgramCard";
 import { QuestionCard } from "../ui/QuestionCard";
+
+const useStyle = makeStyles({
+  childCardList: {
+    padding: 8,
+    display: "grid",
+    gap: 8
+  }
+})
 
 export const Question: React.VFC<{
   appState: AppState;
@@ -13,6 +21,7 @@ export const Question: React.VFC<{
 }> = (props) => {
   const question = props.appState.question(props.questionId);
   const children = props.appState.questionChildren(props.questionId);
+  const classes = useStyle();
 
   if (question === undefined) {
     return (
@@ -68,7 +77,7 @@ export const Question: React.VFC<{
         <Box padding={1}>
           <Typography variant="h5">{question.name}</Typography>
         </Box>
-        <Box padding={1}>
+        <Box className={classes.childCardList}>
           子:
           {children.map((child) => (
             <QuestionCard

@@ -2,7 +2,8 @@ import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
 import {
-  ProgramWithQuestionIdList,
+  ProgramWithQuestionIdListAndClassIdList,
+  RequestClassListInProgramState,
   RequestQuestionListInProgramState,
   useProgramMap,
 } from "./state/program";
@@ -27,9 +28,12 @@ export type CreatedProgramListState =
       projectIdList: ReadonlyArray<d.QProgramId>;
     };
 
-export { ProgramWithQuestionIdList, RequestQuestionListInProgramState };
-
-export type { QuestionTree };
+export type {
+  RequestQuestionListInProgramState,
+  RequestClassListInProgramState,
+  ProgramWithQuestionIdListAndClassIdList,
+  QuestionTree,
+};
 
 export type AppState = {
   /** ログイン状態 */
@@ -39,7 +43,9 @@ export type AppState = {
   /** 作成したプログラムの取得状態 */
   createdProgramListState: CreatedProgramListState;
   /** プログラムの情報を得る */
-  program: (id: d.QProgramId) => ProgramWithQuestionIdList | undefined;
+  program: (
+    id: d.QProgramId
+  ) => ProgramWithQuestionIdListAndClassIdList | undefined;
   /** アカウントの情報を得る */
   account: (id: d.AccountId) => d.QAccount | undefined;
   /** 質問を取得する */
@@ -70,6 +76,8 @@ export type AppState = {
   requestGetCreatedProgram: () => void;
   /** プログラムに属する質問を取得する */
   requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
+  /** プログラムに属するクラスを取得する */
+  requestGetClassListInProgram: (programId: d.QProgramId) => void;
   /** 質問を作成する */
   createQuestion: (
     programId: d.QProgramId,
@@ -122,7 +130,7 @@ export const useAppState = (): AppState => {
     tag: "Loading",
   });
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
-  const programState = useProgramMap();
+  const useProgramMapResult = useProgramMap();
   const useClassMapResult = useClassMap();
   const useAccountMapResult = useAccountMap();
   const [
@@ -277,7 +285,7 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`プログラム 「${response.ok.name}」を作成しました`, {
             variant: "success",
           });
-          programState.setProgram(response.ok);
+          useProgramMapResult.setProgram(response.ok);
           changeLocation(d.QLocation.Program(response.ok.id));
         });
     },
@@ -309,7 +317,7 @@ export const useAppState = (): AppState => {
           changeLocation(d.QLocation.Class(response.ok.id));
         });
     },
-    program: programState.getById,
+    program: useProgramMapResult.getById,
     account: useAccountMapResult.getById,
     requestGetCreatedProgram: () => {
       const accountToken = getAccountToken();
@@ -335,15 +343,21 @@ export const useAppState = (): AppState => {
           tag: "Loaded",
           projectIdList: response.ok.map((program) => program.id),
         });
-        programState.setProgramList(response.ok);
+        useProgramMapResult.setProgramList(response.ok);
       });
     },
     requestGetQuestionListInProgram: (programId) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
+        enqueueSnackbar(
+          `プログラムに属している質問の取得にはログインが必要です`,
+          {
+            variant: "warning",
+          }
+        );
         return;
       }
-      programState.setProgramQuestionRequesting(programId);
+      useProgramMapResult.setQuestionInProgramRequesting(programId);
       api
         .getQuestionInCreatedProgram({
           accountToken,
@@ -351,15 +365,54 @@ export const useAppState = (): AppState => {
         })
         .then((response) => {
           if (response._ === "Error") {
-            enqueueSnackbar(`質問の取得に失敗しました ${response.error}`, {
-              variant: "error",
-            });
+            useProgramMapResult.setQuestionInProgramError(programId);
+            enqueueSnackbar(
+              `プログラムに属している質問の取得に失敗しました ${response.error}`,
+              {
+                variant: "error",
+              }
+            );
             return;
           }
           questionState.setQuestionList(response.ok);
-          programState.setProgramQuestionList(
+          useProgramMapResult.setProgramQuestionList(
             programId,
             response.ok.map((q) => q.id)
+          );
+        });
+    },
+    requestGetClassListInProgram: (programId) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        enqueueSnackbar(
+          `プログラムに属しているクラスの取得にはログインが必要です`,
+          {
+            variant: "warning",
+          }
+        );
+        return;
+      }
+      useProgramMapResult.setClassInProgramRequesting(programId);
+      api
+        .getClassListInProgram({
+          programId,
+          accountToken,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            useProgramMapResult.setClassInProgramError(programId);
+            enqueueSnackbar(
+              `プログラムに属しているクラスの取得にに失敗しました ${response.error}`,
+              {
+                variant: "error",
+              }
+            );
+            return;
+          }
+          useClassMapResult.setClassList(response.ok);
+          useProgramMapResult.setClassIdList(
+            programId,
+            response.ok.map((c) => c.id)
           );
         });
     },

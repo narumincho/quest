@@ -5,8 +5,8 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 
 export type Props = {
-  readonly questionId: d.QQuestionId;
-  readonly appState: AppState;
+  readonly classId: d.QClassId;
+  readonly a: AppState;
 };
 
 const useStyles = makeStyles({
@@ -18,19 +18,16 @@ const useStyles = makeStyles({
   },
 });
 
-export const QuestionCard: React.VFC<Props> = (props) => {
+export const ClassCard: React.VFC<Props> = (props) => {
   const classes = useStyles();
-  const question = props.appState.question(props.questionId);
-  if (question === undefined) {
-    return <Box>質問の情報を読込中</Box>;
+  const qClass = props.a.getClass(props.classId);
+  if (qClass === undefined) {
+    return <Box>クラスの情報を読込中</Box>;
   }
   return (
-    <Link
-      appState={props.appState}
-      location={d.QLocation.Question(props.questionId)}
-    >
+    <Link appState={props.a} location={d.QLocation.Class(props.classId)}>
       <Paper className={classes.card}>
-        <Typography>{question.name}</Typography>
+        <Typography>{qClass.name}</Typography>
       </Paper>
     </Link>
   );
