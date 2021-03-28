@@ -44,6 +44,14 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     };
     subCollections: Record<never, never>;
   };
+  class: {
+    key: d.QClassId;
+    value: {
+      name: string;
+      programId: d.QProgramId;
+    };
+    subCollections: Record<never, never>;
+  };
 }>;
 const cloudStorageBucket = app.storage().bucket();
 
@@ -230,6 +238,13 @@ export const getQuestionListByProgramId = async (
       };
     }
   );
+};
+
+export const createClass = async (qClass: d.QClass): Promise<void> => {
+  await firestore.collection("class").doc(qClass.id).create({
+    name: qClass.name,
+    programId: qClass.programId,
+  });
 };
 
 const fakeCloudStoragePath = "./fakeCloudStorage";

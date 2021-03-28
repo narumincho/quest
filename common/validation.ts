@@ -3,7 +3,7 @@ import * as d from "../data";
 /**
  * プログラム名を正規化, 検証する
  */
-export const stringToValidProjectName = (
+export const stringToValidProgramName = (
   text: string
 ): d.Result<string, string> => {
   const normalized = normalizeOneLineString(text);

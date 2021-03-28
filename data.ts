@@ -1657,6 +1657,44 @@
  
  
  /**
+  * クラスを作成するためのパラメータ
+  * @typePartId 4d9e178c23a42a4dc2e2b68270d50363
+  */
+ export type QCreateClassParameter = { 
+ /**
+  * クラスを作成するアカウントのアカウントトークン
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * プログラムID
+  */
+ readonly programId: QProgramId; 
+ /**
+  * クラス名
+  */
+ readonly className: String };
+ 
+ 
+ /**
+  * questの クラス
+  * @typePartId cf779792c0201a3874f77765b063b64b
+  */
+ export type QClass = { 
+ /**
+  * クラスID
+  */
+ readonly id: QClassId; 
+ /**
+  * クラス名
+  */
+ readonly name: String; 
+ /**
+  * 属するプログラムID
+  */
+ readonly programId: QProgramId };
+ 
+ 
+ /**
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
@@ -6323,6 +6361,54 @@
   * 独自のバイナリ形式の変換処理ができるコーデック
   */
  readonly codec: Codec<QClassId> } = { typePartId: "624e37b7230f763e6318c627c2c728ec" as TypePartId, codec: { encode: (value: QClassId): ReadonlyArray<number> => (encodeId(value)), decode: (index: number, binary: Uint8Array): { readonly result: QClassId; readonly nextIndex: number } => (decodeId(index, binary) as { readonly result: QClassId; readonly nextIndex: number }) } };
+ 
+ 
+ /**
+  * クラスを作成するためのパラメータ
+  * @typePartId 4d9e178c23a42a4dc2e2b68270d50363
+  */
+ export const QCreateClassParameter: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QCreateClassParameter>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QCreateClassParameter) => QCreateClassParameter } = { typePartId: "4d9e178c23a42a4dc2e2b68270d50363" as TypePartId, helper: (qCreateClassParameter: QCreateClassParameter): QCreateClassParameter => qCreateClassParameter, codec: { encode: (value: QCreateClassParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QProgramId.codec.encode(value.programId)).concat(String.codec.encode(value.className))), decode: (index: number, binary: Uint8Array): { readonly result: QCreateClassParameter; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   const classNameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(programIdAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, programId: programIdAndNextIndex.result, className: classNameAndNextIndex.result }, nextIndex: classNameAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
+  * questの クラス
+  * @typePartId cf779792c0201a3874f77765b063b64b
+  */
+ export const QClass: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QClass>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QClass) => QClass } = { typePartId: "cf779792c0201a3874f77765b063b64b" as TypePartId, helper: (qClass: QClass): QClass => qClass, codec: { encode: (value: QClass): ReadonlyArray<number> => (QClassId.codec.encode(value.id).concat(String.codec.encode(value.name)).concat(QProgramId.codec.encode(value.programId))), decode: (index: number, binary: Uint8Array): { readonly result: QClass; readonly nextIndex: number } => {
+   const idAndNextIndex: { readonly result: QClassId; readonly nextIndex: number } = QClassId.codec.decode(index, binary);
+   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(idAndNextIndex.nextIndex, binary);
+   const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(nameAndNextIndex.nextIndex, binary);
+   return { result: { id: idAndNextIndex.result, name: nameAndNextIndex.result, programId: programIdAndNextIndex.result }, nextIndex: programIdAndNextIndex.nextIndex };
+ } } };
  
  
  

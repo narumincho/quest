@@ -49,3 +49,11 @@ export const getQuestionInCreatedProgram: ApiCodec<
   request: d.QGetQuestionListByProgramId.codec,
   response: d.List.codec(d.QQuestion.codec),
 };
+
+/**
+ * クラスを作成する
+ */
+export const createClass: ApiCodec<d.QCreateClassParameter, d.QClass> = {
+  request: d.QCreateClassParameter.codec,
+  response: d.QClass.codec,
+};

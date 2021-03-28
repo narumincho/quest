@@ -43,7 +43,7 @@ export const NewClass: React.VFC<{ a: AppState; programId: d.QProgramId }> = (
       return;
     }
     setIsCreating(true);
-    props.a.createProgram(className);
+    props.a.createClass({ className, programId: props.programId });
   };
   return (
     <Box>

@@ -9,7 +9,7 @@ import {
 import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
-import { stringToValidProjectName } from "../common/validation";
+import { stringToValidProgramName } from "../common/validation";
 import { useQuestionMap } from "./state/question";
 
 /** 作成したプログラムの取得状態 */
@@ -66,7 +66,7 @@ export type AppState = {
   /** プログラムを作成する */
   createProgram: (programName: string) => void;
   /** クラスを作成する */
-  createClass: (option: { name: string; programId: d.QProgramId }) => void;
+  createClass: (option: { className: string; programId: d.QProgramId }) => void;
 
   /** 作成したプログラムを取得する */
   requestGetCreatedProgram: () => void;
@@ -210,7 +210,7 @@ export const useAppState = (): AppState => {
     api.requestLineLoginUrl(undefined).then((response) => {
       if (response._ === "Error") {
         enqueueSnackbar(
-          `LINEログインのURLを発行できなかった ${response.error}`,
+          `LINEログインのURLを発行できませんでした ${response.error}`,
           { variant: "error" }
         );
         return;
@@ -260,9 +260,12 @@ export const useAppState = (): AppState => {
     createProgram: (programName) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
+        enqueueSnackbar(`プログラムの作成にはログインが必要です`, {
+          variant: "error",
+        });
         return;
       }
-      const projectNameResult = stringToValidProjectName(programName);
+      const projectNameResult = stringToValidProgramName(programName);
       if (projectNameResult._ === "Error") {
         return;
       }
@@ -273,7 +276,7 @@ export const useAppState = (): AppState => {
         })
         .then((response) => {
           if (response._ === "Error") {
-            enqueueSnackbar(`プログラム作成に失敗した ${response.error}`, {
+            enqueueSnackbar(`プログラム作成に失敗しました ${response.error}`, {
               variant: "error",
             });
             return;
@@ -286,6 +289,31 @@ export const useAppState = (): AppState => {
         });
     },
     createClass: (option) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        enqueueSnackbar(`クラスの作成にはログインが必要です`, {
+          variant: "error",
+        });
+        return;
+      }
+      api
+        .createClass({
+          accountToken,
+          className: option.className,
+          programId: option.programId,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(`クラスの作成に失敗しました ${response.error}`, {
+              variant: "error",
+            });
+            return;
+          }
+          enqueueSnackbar(`クラス 「${response.ok.name}」を作成しました`, {
+            variant: "success",
+          });
+          changeLocation(d.QLocation.Class(response.ok.id));
+        });
       console.log("クラスを作成する処理は作成途中");
     },
     program: programState.getById,
@@ -295,6 +323,9 @@ export const useAppState = (): AppState => {
     requestGetCreatedProgram: () => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
+        enqueueSnackbar(`作成したプログラムの取得にはログインが必要です`, {
+          variant: "warning",
+        });
         return;
       }
       setCreatedProgramList({ tag: "Requesting" });
