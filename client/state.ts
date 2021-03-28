@@ -82,6 +82,8 @@ export type AppState = {
   ) => ReadonlyArray<d.QQuestion>;
   /** 質問の木構造を取得する */
   questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
+  /** クラスを取得する */
+  getClass: (id: d.QClassId) => d.QClass | undefined;
 };
 
 export type LoginState =
@@ -399,6 +401,7 @@ export const useAppState = (): AppState => {
       return questionState.getParentQuestionList(id.value);
     },
     questionTree: questionState.questionTree,
+    getClass: useClassMapResult.getById,
   };
 };
 

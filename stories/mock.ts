@@ -78,6 +78,13 @@ export const mockAppState: AppState = {
     return getQuestionTree(programId, questionList);
   },
   createClass: action("createClass"),
+  getClass: () => {
+    return {
+      id: mockClassId,
+      name: "サンプルクラス",
+      programId: mockProgramIdA,
+    };
+  },
 };
 
 export const mockAccount: d.QAccount = {
