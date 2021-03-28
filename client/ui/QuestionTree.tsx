@@ -11,8 +11,12 @@ export const QuestionTreeList: React.VFC<{
 }> = (props) => {
   return (
     <Box>
-      {props.questionTreeList.map((questionTree) => (
-        <QuestionTree questionTree={questionTree} appState={props.appState} />
+      {props.questionTreeList.map((questionTree, index) => (
+        <QuestionTree
+          key={index}
+          questionTree={questionTree}
+          appState={props.appState}
+        />
       ))}
     </Box>
   );

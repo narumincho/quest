@@ -43,9 +43,28 @@ export const createQuestion: ApiCodec<
  * 自身が作成したプログラムの質問を取得する
  */
 export const getQuestionInCreatedProgram: ApiCodec<
-  d.QGetQuestionListByProgramId,
+  d.QAccountTokenAndProgramId,
   d.List<d.QQuestion>
 > = {
-  request: d.QGetQuestionListByProgramId.codec,
+  request: d.QAccountTokenAndProgramId.codec,
   response: d.List.codec(d.QQuestion.codec),
+};
+
+/**
+ * クラスを作成する
+ */
+export const createClass: ApiCodec<d.QCreateClassParameter, d.QClass> = {
+  request: d.QCreateClassParameter.codec,
+  response: d.QClass.codec,
+};
+
+/**
+ * プログラムに存在するクラスを取得する
+ */
+export const getClassListInProgram: ApiCodec<
+  d.QAccountTokenAndProgramId,
+  d.List<d.QClass>
+> = {
+  request: d.QAccountTokenAndProgramId.codec,
+  response: d.List.codec(d.QClass.codec),
 };

@@ -44,6 +44,14 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     };
     subCollections: Record<never, never>;
   };
+  class: {
+    key: d.QClassId;
+    value: {
+      name: string;
+      programId: d.QProgramId;
+    };
+    subCollections: Record<never, never>;
+  };
 }>;
 const cloudStorageBucket = app.storage().bucket();
 
@@ -227,6 +235,32 @@ export const getQuestionListByProgramId = async (
             ? d.Maybe.Nothing()
             : d.Maybe.Just(document.parent),
         programId: document.programId,
+      };
+    }
+  );
+};
+
+export const createClass = async (qClass: d.QClass): Promise<void> => {
+  await firestore.collection("class").doc(qClass.id).create({
+    name: qClass.name,
+    programId: qClass.programId,
+  });
+};
+
+export const getClassListInProgram = async (
+  programId: d.QProgramId
+): Promise<ReadonlyArray<d.QClass>> => {
+  const snapshot = await firestore
+    .collection("class")
+    .where("programId", "==", programId)
+    .get();
+  return snapshot.docs.map(
+    (doc): d.QClass => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name,
+        programId: data.programId,
       };
     }
   );

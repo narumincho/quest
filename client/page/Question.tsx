@@ -16,9 +16,22 @@ export const Question: React.VFC<{
 
   if (question === undefined) {
     return (
-      <Box padding={1}>
+      <Box>
         <AppBar appState={props.appState} />
-        <Box></Box>
+        <Box padding={1}>
+          <Box padding={1}>
+            <Breadcrumbs>
+              <Link appState={props.appState} location={d.QLocation.Top}>
+                作成したプログラム
+              </Link>
+              <div></div>
+            </Breadcrumbs>
+          </Box>
+        </Box>
+        <Box>質問読み込み準備中</Box>
+        <Box padding={1}>
+          <Typography>質問ID: {props.questionId}</Typography>
+        </Box>
       </Box>
     );
   }
@@ -44,6 +57,7 @@ export const Question: React.VFC<{
               <Link
                 appState={props.appState}
                 location={d.QLocation.Question(parent.id)}
+                key={parent.id}
               >
                 {parent.name}
               </Link>

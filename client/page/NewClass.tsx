@@ -43,7 +43,7 @@ export const NewClass: React.VFC<{ a: AppState; programId: d.QProgramId }> = (
       return;
     }
     setIsCreating(true);
-    props.a.createProgram(className);
+    props.a.createClass({ className, programId: props.programId });
   };
   return (
     <Box>
@@ -70,7 +70,7 @@ export const NewClass: React.VFC<{ a: AppState; programId: d.QProgramId }> = (
           <TextField
             required
             fullWidth
-            label="プログラム名"
+            label="クラス名"
             value={className}
             onChange={(e) => {
               setClassName(e.target.value);
@@ -102,7 +102,7 @@ export const NewClass: React.VFC<{ a: AppState; programId: d.QProgramId }> = (
           >
             {projectNameResult._ === "Ok"
               ? `「${projectNameResult.ok}」`
-              : "プログラム"}
+              : "クラス"}
             を作成
           </Button>
         </Box>

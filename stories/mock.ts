@@ -1,11 +1,10 @@
 import * as d from "../data";
+import { AppState, QuestionTree } from "../client/state";
 import {
-  AppState,
-  QuestionTree,
   getParentQuestionList,
   getQuestionTree,
   questionChildren,
-} from "../client/state";
+} from "../client/state/question";
 import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {
@@ -79,6 +78,13 @@ export const mockAppState: AppState = {
     return getQuestionTree(programId, questionList);
   },
   createClass: action("createClass"),
+  getClass: () => {
+    return {
+      id: mockClassId,
+      name: "サンプルクラス",
+      programId: mockProgramIdA,
+    };
+  },
 };
 
 export const mockAccount: d.QAccount = {

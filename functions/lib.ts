@@ -4,10 +4,10 @@ import * as d from "../data";
 import * as firebaseInterface from "./firebaseInterface";
 import * as jimp from "jimp";
 import * as jsonWebToken from "jsonwebtoken";
+import * as validation from "../common/validation";
 import { UrlData, lineLoginCallbackUrl } from "../common/url";
 import axios from "axios";
 import { imagePng } from "./mimeType";
-import { stringToValidProjectName as stringToValidProgramName } from "../common/validation";
 
 type ApiCodecType = typeof apiCodec;
 
@@ -38,7 +38,9 @@ export const apiFunc: {
   },
   createProgram: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
-    const programNameResult = stringToValidProgramName(parameter.programName);
+    const programNameResult = validation.stringToValidProgramName(
+      parameter.programName
+    );
     if (programNameResult._ === "Error") {
       throw new Error(programNameResult.error);
     }
@@ -64,6 +66,12 @@ export const apiFunc: {
       account.id,
       parameter.programId
     );
+    const questionTextResult = validation.stringToValidQuestionText(
+      parameter.questionText
+    );
+    if (questionTextResult._ === "Error") {
+      throw new Error(questionTextResult.error);
+    }
     if (parameter.parent._ === "Just") {
       const parent = await firebaseInterface.getQuestion(
         parameter.parent.value
@@ -75,7 +83,7 @@ export const apiFunc: {
     const questionId = createRandomId() as d.QQuestionId;
     const question = {
       id: questionId,
-      name: parameter.questionText,
+      name: questionTextResult.ok,
       parent: parameter.parent,
       programId: parameter.programId,
     };
@@ -86,6 +94,31 @@ export const apiFunc: {
     const account = await validateAndGetAccount(parameter.accountToken);
     await validateAndGetProgram(account.id, parameter.programId);
     return firebaseInterface.getQuestionListByProgramId(parameter.programId);
+  },
+  createClass: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    await validateAndGetProgram(account.id, parameter.programId);
+    const classNameResult = validation.stringToValidClassName(
+      parameter.className
+    );
+    if (classNameResult._ === "Error") {
+      throw new Error(classNameResult.error);
+    }
+    const qClass: d.QClass = {
+      id: createRandomId() as d.QClassId,
+      name: classNameResult.ok,
+      programId: parameter.programId,
+    };
+    await firebaseInterface.createClass(qClass);
+    return qClass;
+  },
+  getClassListInProgram: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const program = await validateAndGetProgram(
+      account.id,
+      parameter.programId
+    );
+    return firebaseInterface.getClassListInProgram(program.id);
   },
 };
 

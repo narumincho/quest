@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
+import { mockAppState, mockClassId } from "../mock";
 import { Class } from "../../client/page/Class";
 import { fullScreen } from "../../.storybook/decorators";
-import { mockClassId } from "../mock";
 
 const meta: Meta = {
   title: "Page/Class",
@@ -14,4 +14,6 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<never> = () => <Class classId={mockClassId} />;
+export const Default: Story<never> = () => (
+  <Class a={mockAppState} classId={mockClassId} />
+);

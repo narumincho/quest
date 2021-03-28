@@ -28,7 +28,20 @@ export const Program: React.VFC<Props> = (props) => {
     return (
       <Box>
         <AppBar appState={props.appState} />
-        <Box></Box>
+        <Box padding={1}>
+          <Box padding={1}>
+            <Breadcrumbs>
+              <Link appState={props.appState} location={d.QLocation.Top}>
+                作成したプログラム
+              </Link>
+              <div></div>
+            </Breadcrumbs>
+          </Box>
+        </Box>
+        <Box>プログラム読み込み準備中</Box>
+        <Box padding={1}>
+          <Typography>プログラムID: {props.programId}</Typography>
+        </Box>
       </Box>
     );
   }

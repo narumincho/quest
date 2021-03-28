@@ -20,7 +20,20 @@ export type ProgramWithQuestionIdList = {
   readonly questionList: RequestQuestionListInProgramState;
 };
 
-export const useProgramMap = () => {
+export type UseProgramMapResult = {
+  /** プログラムをリロードするまで保存する */
+  setProgram: (program: d.QProgram) => void;
+  /** 1度にプログラムをリロードするまで保存する */
+  setProgramList: (programList: ReadonlyArray<d.QProgram>) => void;
+  getById: (id: d.QProgramId) => ProgramWithQuestionIdList | undefined;
+  setProgramQuestionRequesting: (programId: d.QProgramId) => void;
+  setProgramQuestionList: (
+    programId: d.QProgramId,
+    questionIdList: ReadonlyArray<d.QQuestionId>
+  ) => void;
+};
+
+export const useProgramMap = (): UseProgramMapResult => {
   const [programMap, setProgramMap] = useState<
     ReadonlyMap<d.QProgramId, ProgramWithQuestionIdList>
   >(new Map());
@@ -51,12 +64,10 @@ export const useProgramMap = () => {
         return map;
       });
     },
-    getById: (
-      programId: d.QProgramId
-    ): ProgramWithQuestionIdList | undefined => {
+    getById: (programId) => {
       return programMap.get(programId);
     },
-    setProgramQuestionRequesting: (programId: d.QProgramId) => {
+    setProgramQuestionRequesting: (programId: d.QProgramId): void => {
       setProgramMap((before) => {
         const beforeProgram = before.get(programId);
         if (beforeProgram === undefined) {

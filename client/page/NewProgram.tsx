@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { AppState } from "../state";
-import { stringToValidProjectName } from "../../common/validation";
+import { stringToValidProgramName } from "../../common/validation";
 
 export type Props = {
   readonly appState: AppState;
@@ -32,7 +32,7 @@ export const NewProgram: React.VFC<Props> = (props) => {
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
 
-  const projectNameResult = stringToValidProjectName(projectName);
+  const projectNameResult = stringToValidProgramName(projectName);
 
   const createProgram = () => {
     setIsFirst(false);
