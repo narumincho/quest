@@ -247,6 +247,25 @@ export const createClass = async (qClass: d.QClass): Promise<void> => {
   });
 };
 
+export const getClassListInProgram = async (
+  programId: d.QProgramId
+): Promise<ReadonlyArray<d.QClass>> => {
+  const snapshot = await firestore
+    .collection("class")
+    .where("programId", "==", programId)
+    .get();
+  return snapshot.docs.map(
+    (doc): d.QClass => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name,
+        programId: data.programId,
+      };
+    }
+  );
+};
+
 const fakeCloudStoragePath = "./fakeCloudStorage";
 
 /**

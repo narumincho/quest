@@ -112,6 +112,14 @@ export const apiFunc: {
     await firebaseInterface.createClass(qClass);
     return qClass;
   },
+  getClassListInProgram: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const program = await validateAndGetProgram(
+      account.id,
+      parameter.programId
+    );
+    return firebaseInterface.getClassListInProgram(program.id);
+  },
 };
 
 const lineLoginClientId = "1655691758";
