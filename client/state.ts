@@ -6,11 +6,13 @@ import {
   RequestQuestionListInProgramState,
   useProgramMap,
 } from "./state/program";
+import { QuestionTree, useQuestionMap } from "./state/question";
 import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
-import { useQuestionMap } from "./state/question";
+import { useAccountMap } from "./state/account";
+import { useClassMap } from "./state/class";
 
 /** 作成したプログラムの取得状態 */
 export type CreatedProgramListState =
@@ -27,11 +29,7 @@ export type CreatedProgramListState =
 
 export { ProgramWithQuestionIdList, RequestQuestionListInProgramState };
 
-export type QuestionTree = {
-  id: d.QQuestionId;
-  text: string;
-  children: ReadonlyArray<QuestionTree>;
-};
+export type { QuestionTree };
 
 export type AppState = {
   /** ログイン状態 */
@@ -123,21 +121,14 @@ export const useAppState = (): AppState => {
   });
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const programState = useProgramMap();
-  const [accountMap, setAccountMap] = useState<
-    ReadonlyMap<d.AccountId, d.QAccount>
-  >(new Map());
+  const useClassMapResult = useClassMap();
+  const useAccountMapResult = useAccountMap();
   const [
     createdProgramList,
     setCreatedProgramList,
   ] = useState<CreatedProgramListState>({ tag: "None" });
   const questionState = useQuestionMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
-
-  const setAccount = (account: d.QAccount): void => {
-    setAccountMap((before) => {
-      return new Map(before).set(account.id, account);
-    });
-  };
 
   useEffect(() => {
     // ブラウザで戻るボタンを押したときのイベントを登録
@@ -176,7 +167,7 @@ export const useAppState = (): AppState => {
           accountToken,
           account: response.ok,
         });
-        setAccount(response.ok);
+        useAccountMapResult.set(response.ok);
       });
     });
   }, []);
@@ -312,14 +303,12 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`クラス 「${response.ok.name}」を作成しました`, {
             variant: "success",
           });
+          useClassMapResult.setClass(response.ok);
           changeLocation(d.QLocation.Class(response.ok.id));
         });
-      console.log("クラスを作成する処理は作成途中");
     },
     program: programState.getById,
-    account: (accountId) => {
-      return accountMap.get(accountId);
-    },
+    account: useAccountMapResult.getById,
     requestGetCreatedProgram: () => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
@@ -402,84 +391,17 @@ export const useAppState = (): AppState => {
         });
     },
     question: questionState.questionById,
-    questionChildren: (id) => questionChildren(id, questionState.questionMap),
+    questionChildren: questionState.questionChildren,
     questionParentList: (id) => {
       if (id._ === "Nothing") {
         return [];
       }
-      return getParentQuestionList(id.value, questionState.questionMap);
+      return questionState.getParentQuestionList(id.value);
     },
-    questionTree: (programId): ReadonlyArray<QuestionTree> =>
-      getQuestionTree(programId, [...questionState.questionMap.values()]),
+    questionTree: questionState.questionTree,
   };
 };
 
 const back = () => {
   window.history.back();
-};
-
-export const questionChildren = (
-  id: d.QQuestionId,
-  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
-): ReadonlyArray<d.QQuestionId> => {
-  const result: Array<d.QQuestionId> = [];
-  for (const question of questionMap.values()) {
-    if (question.parent._ === "Just" && question.parent.value === id) {
-      result.push(question.id);
-    }
-  }
-  return result;
-};
-
-export const getParentQuestionList = (
-  id: d.QQuestionId,
-  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
-): ReadonlyArray<d.QQuestion> => {
-  let targetId = id;
-  const result: Array<d.QQuestion> = [];
-  while (true) {
-    const question = questionMap.get(targetId);
-    if (question === undefined) {
-      return result;
-    }
-    result.push(question);
-    if (question.parent._ === "Nothing") {
-      return result;
-    }
-    targetId = question.parent.value;
-  }
-};
-
-export const getQuestionTree = (
-  programId: d.QProgramId,
-  questionList: ReadonlyArray<d.QQuestion>
-): ReadonlyArray<QuestionTree> => {
-  const treeList: Array<QuestionTree> = [];
-  for (const question of questionList) {
-    if (question.programId === programId && question.parent._ === "Nothing") {
-      treeList.push({
-        id: question.id,
-        text: question.name,
-        children: getQuestionChildren(question.id, questionList),
-      });
-    }
-  }
-  return treeList;
-};
-
-const getQuestionChildren = (
-  questionId: d.QQuestionId,
-  questionList: ReadonlyArray<d.QQuestion>
-): ReadonlyArray<QuestionTree> => {
-  const result: Array<QuestionTree> = [];
-  for (const question of questionList) {
-    if (question.parent._ === "Just" && question.parent.value === questionId) {
-      result.push({
-        id: question.id,
-        text: question.name,
-        children: getQuestionChildren(question.id, questionList),
-      });
-    }
-  }
-  return result;
 };
