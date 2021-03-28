@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d from "../../data";
 import { AppBar, Link } from "../ui";
-import { Box, Breadcrumbs, Typography } from "@material-ui/core";
+import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
 import { AppState } from "../state";
 
 export type Props = {
@@ -54,6 +54,18 @@ export const Class: React.VFC<Props> = (props) => {
         </Box>
         <Box padding={1}>
           <Typography variant="h5">{qClass.name}</Typography>
+        </Box>
+        <Box padding={1}>
+          <Button
+            variant="contained"
+            fullWidth
+            color="primary"
+            onClick={() => {
+              props.a.shareClassInviteLink(props.classId);
+            }}
+          >
+            招待URLをシェアする
+          </Button>
         </Box>
         <Box padding={1}>
           <Typography>クラスID: {props.classId}</Typography>

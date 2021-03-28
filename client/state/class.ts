@@ -16,11 +16,7 @@ export const useClassMap = (): UseClassMapResult => {
   return {
     setClass: (qClass) => {
       setClassMap((before) => {
-        return new Map(before).set(qClass.id, {
-          id: qClass.id,
-          name: qClass.name,
-          programId: qClass.programId,
-        });
+        return new Map(before).set(qClass.id, qClass);
       });
     },
     getById: (id) => {
@@ -30,11 +26,7 @@ export const useClassMap = (): UseClassMapResult => {
       setClassMap((before) => {
         const map = new Map(before);
         for (const qClass of classList) {
-          map.set(qClass.id, {
-            id: qClass.id,
-            name: qClass.name,
-            programId: qClass.programId,
-          });
+          map.set(qClass.id, qClass);
         }
         return map;
       });

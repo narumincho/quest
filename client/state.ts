@@ -92,6 +92,8 @@ export type AppState = {
   questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
   /** クラスを取得する */
   getClass: (id: d.QClassId) => d.QClass | undefined;
+  /** 招待URLをシェアする */
+  shareClassInviteLink: (classId: d.QClassId) => void;
 };
 
 export type LoginState =
@@ -143,7 +145,9 @@ export const useAppState = (): AppState => {
   useEffect(() => {
     // ブラウザで戻るボタンを押したときのイベントを登録
     window.addEventListener("popstate", () => {
-      setLocation(commonUrl.urlToLocation(new URL(window.location.href)));
+      setLocation(
+        commonUrl.urlToUrlData(new URL(window.location.href)).location
+      );
     });
 
     const urlData = commonUrl.urlToUrlData(new URL(window.location.href));
@@ -455,6 +459,22 @@ export const useAppState = (): AppState => {
     },
     questionTree: questionState.questionTree,
     getClass: useClassMapResult.getById,
+    shareClassInviteLink: (classId) => {
+      const qClass = useClassMapResult.getById(classId);
+      if (qClass === undefined) {
+        return;
+      }
+      navigator
+        .share({
+          url: commonUrl
+            .locationToUrl(d.QLocation.ClassInvitation(qClass.invitationToken))
+            .toString(),
+          title: `${qClass.name}の招待リンク`,
+        })
+        .then((e) => {
+          console.log(e);
+        });
+    },
   };
 };
 

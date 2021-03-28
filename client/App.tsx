@@ -3,6 +3,7 @@ import * as d from "../data";
 import { AppState, useAppState } from "./state";
 import { AdminTop } from "./page/AdminTop";
 import { Class } from "./page/Class";
+import { ClassInvitation } from "./page/ClassInvitation";
 import { Loading } from "./page/Loading";
 import { Login } from "./page/Login";
 import { NewClass } from "./page/NewClass";
@@ -70,5 +71,11 @@ const LoggedIn: React.VFC<{
       return <NewClass a={props.appState} programId={location.qProgramId} />;
     case "Class":
       return <Class a={props.appState} classId={location.qClassId} />;
+    case "ClassInvitation":
+      return (
+        <ClassInvitation
+          classInvitationToken={location.qClassInvitationToken}
+        />
+      );
   }
 };

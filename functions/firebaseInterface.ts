@@ -49,6 +49,7 @@ const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
     value: {
       name: string;
       programId: d.QProgramId;
+      invitationToken: d.QClassInvitationToken;
     };
     subCollections: Record<never, never>;
   };
@@ -244,6 +245,7 @@ export const createClass = async (qClass: d.QClass): Promise<void> => {
   await firestore.collection("class").doc(qClass.id).create({
     name: qClass.name,
     programId: qClass.programId,
+    invitationToken: qClass.invitationToken,
   });
 };
 
@@ -261,6 +263,7 @@ export const getClassListInProgram = async (
         id: doc.id,
         name: data.name,
         programId: data.programId,
+        invitationToken: data.invitationToken,
       };
     }
   );
