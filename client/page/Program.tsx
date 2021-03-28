@@ -77,6 +77,17 @@ export const Program: React.VFC<Props> = (props) => {
             </Button>
           </Link>
         </Box>
+        <Box>ここにクラスの一覧を表示する</Box>
+        <Box>
+          <Link
+            appState={props.appState}
+            location={d.QLocation.NewClass(props.programId)}
+          >
+            <Button fullWidth startIcon={<Add />} variant="contained">
+              クラスを作成する
+            </Button>
+          </Link>
+        </Box>
         <Box padding={1}>
           <Typography>プログラムID: {props.programId}</Typography>
         </Box>
@@ -85,19 +96,11 @@ export const Program: React.VFC<Props> = (props) => {
   );
 };
 
-const useQuestionListStyles = makeStyles({
-  box: {
-    display: "grid",
-    gap: 8,
-  },
-});
-
 export const QuestionList: React.VFC<{
   questionList: RequestQuestionListInProgramState;
   appState: AppState;
   programId: d.QProgramId;
 }> = (props) => {
-  const classes = useQuestionListStyles();
   if (props.questionList.tag === "None") {
     return (
       <Box padding={1}>

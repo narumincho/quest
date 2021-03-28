@@ -41,7 +41,7 @@
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
- export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId } | { readonly _: "NewQuestion"; readonly qNewQuestionParameter: QNewQuestionParameter } | { readonly _: "Question"; readonly qQuestionId: QQuestionId };
+ export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId } | { readonly _: "NewQuestion"; readonly qNewQuestionParameter: QNewQuestionParameter } | { readonly _: "Question"; readonly qQuestionId: QQuestionId } | { readonly _: "Class"; readonly qClassId: QClassId } | { readonly _: "NewClass"; readonly qProgramId: QProgramId };
  
  
  /**
@@ -1167,7 +1167,7 @@
   * DefinyWebアプリ内での場所を示すもの. URLから求められる. URLに変換できる
   * @typePartId bbcb8e43df8afff9fe24b001c66fb065
   */
- export type Location = { readonly _: "Home" } | { readonly _: "CreateProject" } | { readonly _: "Project"; readonly projectId: ProjectId } | { readonly _: "Account"; readonly accountId: AccountId } | { readonly _: "Setting" } | { readonly _: "About" } | { readonly _: "Debug" } | { readonly _: "TypePart"; readonly typePartId: TypePartId };
+ export type Location = { readonly _: "Home" } | { readonly _: "CreateProject" } | { readonly _: "Project"; readonly projectId: ProjectId } | { readonly _: "Account"; readonly accountId: AccountId } | { readonly _: "Setting" } | { readonly _: "About" } | { readonly _: "TypePart"; readonly typePartId: TypePartId };
  
  
  /**
@@ -1226,7 +1226,7 @@
   * definy.app の ログイン状態
   * @typePartId c4b574e3ca8bad17022054d5e77fd3d0
   */
- export type LogInState = { readonly _: "LoadingAccountTokenFromIndexedDB" } | { readonly _: "Guest" } | { readonly _: "RequestingLogInUrl"; readonly openIdConnectProvider: OpenIdConnectProvider } | { readonly _: "JumpingToLogInPage"; readonly string: String } | { readonly _: "VerifyingAccountToken"; readonly accountToken: AccountToken } | { readonly _: "LoggedIn"; readonly accountTokenAndUserId: AccountTokenAndUserId };
+ export type LogInState = { readonly _: "LoadingAccountTokenFromIndexedDB" } | { readonly _: "Guest" } | { readonly _: "RequestingLogInUrl"; readonly openIdConnectProvider: OpenIdConnectProvider } | { readonly _: "JumpingToLogInPage" } | { readonly _: "VerifyingAccountToken"; readonly accountToken: AccountToken } | { readonly _: "LoggedIn"; readonly accountTokenAndUserId: AccountTokenAndUserId };
  
  
  /**
@@ -1650,6 +1650,13 @@
  
  
  /**
+  * QUEST. クラスのID
+  * @typePartId 624e37b7230f763e6318c627c2c728ec
+  */
+ export type QClassId = string & { readonly _qClassId: never };
+ 
+ 
+ /**
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
@@ -1685,7 +1692,15 @@
  /**
   * 質問ページ
   */
- readonly Question: (a: QQuestionId) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), NewQuestion: (qNewQuestionParameter: QNewQuestionParameter): QLocation => ({ _: "NewQuestion", qNewQuestionParameter }), Question: (qQuestionId: QQuestionId): QLocation => ({ _: "Question", qQuestionId }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
+ readonly Question: (a: QQuestionId) => QLocation; 
+ /**
+  * クラス詳細ページ
+  */
+ readonly Class: (a: QClassId) => QLocation; 
+ /**
+  * クラス作成ページ
+  */
+ readonly NewClass: (a: QProgramId) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), NewQuestion: (qNewQuestionParameter: QNewQuestionParameter): QLocation => ({ _: "NewQuestion", qNewQuestionParameter }), Question: (qQuestionId: QQuestionId): QLocation => ({ _: "Question", qQuestionId }), Class: (qClassId: QClassId): QLocation => ({ _: "Class", qClassId }), NewClass: (qProgramId: QProgramId): QLocation => ({ _: "NewClass", qProgramId }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
    switch (value._) {
      case "Top": {
        return [0];
@@ -1704,6 +1719,12 @@
      }
      case "Question": {
        return [5].concat(QQuestionId.codec.encode(value.qQuestionId));
+     }
+     case "Class": {
+       return [6].concat(QClassId.codec.encode(value.qClassId));
+     }
+     case "NewClass": {
+       return [7].concat(QProgramId.codec.encode(value.qProgramId));
      }
    }
  }, decode: (index: number, binary: Uint8Array): { readonly result: QLocation; readonly nextIndex: number } => {
@@ -1728,6 +1749,14 @@
    if (patternIndex.result === 5) {
      const result: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(patternIndex.nextIndex, binary);
      return { result: QLocation.Question(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 6) {
+     const result: { readonly result: QClassId; readonly nextIndex: number } = QClassId.codec.decode(patternIndex.nextIndex, binary);
+     return { result: QLocation.Class(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 7) {
+     const result: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(patternIndex.nextIndex, binary);
+     return { result: QLocation.NewClass(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };
@@ -5199,13 +5228,9 @@
   */
  readonly About: Location; 
  /**
-  * デバッグページ
-  */
- readonly Debug: Location; 
- /**
   * 型パーツ編集ページ
   */
- readonly TypePart: (a: TypePartId) => Location } = { Home: { _: "Home" }, CreateProject: { _: "CreateProject" }, Project: (projectId: ProjectId): Location => ({ _: "Project", projectId }), Account: (accountId: AccountId): Location => ({ _: "Account", accountId }), Setting: { _: "Setting" }, About: { _: "About" }, Debug: { _: "Debug" }, TypePart: (typePartId: TypePartId): Location => ({ _: "TypePart", typePartId }), typePartId: "bbcb8e43df8afff9fe24b001c66fb065" as TypePartId, codec: { encode: (value: Location): ReadonlyArray<number> => {
+ readonly TypePart: (a: TypePartId) => Location } = { Home: { _: "Home" }, CreateProject: { _: "CreateProject" }, Project: (projectId: ProjectId): Location => ({ _: "Project", projectId }), Account: (accountId: AccountId): Location => ({ _: "Account", accountId }), Setting: { _: "Setting" }, About: { _: "About" }, TypePart: (typePartId: TypePartId): Location => ({ _: "TypePart", typePartId }), typePartId: "bbcb8e43df8afff9fe24b001c66fb065" as TypePartId, codec: { encode: (value: Location): ReadonlyArray<number> => {
    switch (value._) {
      case "Home": {
        return [0];
@@ -5225,11 +5250,8 @@
      case "About": {
        return [5];
      }
-     case "Debug": {
-       return [6];
-     }
      case "TypePart": {
-       return [7].concat(TypePartId.codec.encode(value.typePartId));
+       return [6].concat(TypePartId.codec.encode(value.typePartId));
      }
    }
  }, decode: (index: number, binary: Uint8Array): { readonly result: Location; readonly nextIndex: number } => {
@@ -5255,9 +5277,6 @@
      return { result: Location.About, nextIndex: patternIndex.nextIndex };
    }
    if (patternIndex.result === 6) {
-     return { result: Location.Debug, nextIndex: patternIndex.nextIndex };
-   }
-   if (patternIndex.result === 7) {
      const result: { readonly result: TypePartId; readonly nextIndex: number } = TypePartId.codec.decode(patternIndex.nextIndex, binary);
      return { result: Location.TypePart(result.result), nextIndex: result.nextIndex };
    }
@@ -5387,7 +5406,7 @@
  /**
   * ログインURLを受け取り,ログイン画面へ移行中
   */
- readonly JumpingToLogInPage: (a: String) => LogInState; 
+ readonly JumpingToLogInPage: LogInState; 
  /**
   * アカウントトークンの検証とログインしているユーザーの情報を取得している状態
   */
@@ -5395,7 +5414,7 @@
  /**
   * ログインしている状態
   */
- readonly LoggedIn: (a: AccountTokenAndUserId) => LogInState } = { LoadingAccountTokenFromIndexedDB: { _: "LoadingAccountTokenFromIndexedDB" }, Guest: { _: "Guest" }, RequestingLogInUrl: (openIdConnectProvider: OpenIdConnectProvider): LogInState => ({ _: "RequestingLogInUrl", openIdConnectProvider }), JumpingToLogInPage: (string_: String): LogInState => ({ _: "JumpingToLogInPage", string: string_ }), VerifyingAccountToken: (accountToken: AccountToken): LogInState => ({ _: "VerifyingAccountToken", accountToken }), LoggedIn: (accountTokenAndUserId: AccountTokenAndUserId): LogInState => ({ _: "LoggedIn", accountTokenAndUserId }), typePartId: "c4b574e3ca8bad17022054d5e77fd3d0" as TypePartId, codec: { encode: (value: LogInState): ReadonlyArray<number> => {
+ readonly LoggedIn: (a: AccountTokenAndUserId) => LogInState } = { LoadingAccountTokenFromIndexedDB: { _: "LoadingAccountTokenFromIndexedDB" }, Guest: { _: "Guest" }, RequestingLogInUrl: (openIdConnectProvider: OpenIdConnectProvider): LogInState => ({ _: "RequestingLogInUrl", openIdConnectProvider }), JumpingToLogInPage: { _: "JumpingToLogInPage" }, VerifyingAccountToken: (accountToken: AccountToken): LogInState => ({ _: "VerifyingAccountToken", accountToken }), LoggedIn: (accountTokenAndUserId: AccountTokenAndUserId): LogInState => ({ _: "LoggedIn", accountTokenAndUserId }), typePartId: "c4b574e3ca8bad17022054d5e77fd3d0" as TypePartId, codec: { encode: (value: LogInState): ReadonlyArray<number> => {
    switch (value._) {
      case "LoadingAccountTokenFromIndexedDB": {
        return [0];
@@ -5407,7 +5426,7 @@
        return [2].concat(OpenIdConnectProvider.codec.encode(value.openIdConnectProvider));
      }
      case "JumpingToLogInPage": {
-       return [3].concat(String.codec.encode(value.string));
+       return [3];
      }
      case "VerifyingAccountToken": {
        return [4].concat(AccountToken.codec.encode(value.accountToken));
@@ -5429,8 +5448,7 @@
      return { result: LogInState.RequestingLogInUrl(result.result), nextIndex: result.nextIndex };
    }
    if (patternIndex.result === 3) {
-     const result: { readonly result: String; readonly nextIndex: number } = String.codec.decode(patternIndex.nextIndex, binary);
-     return { result: LogInState.JumpingToLogInPage(result.result), nextIndex: result.nextIndex };
+     return { result: LogInState.JumpingToLogInPage, nextIndex: patternIndex.nextIndex };
    }
    if (patternIndex.result === 4) {
      const result: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(patternIndex.nextIndex, binary);
@@ -6290,6 +6308,21 @@
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };
+ 
+ 
+ /**
+  * QUEST. クラスのID
+  * @typePartId 624e37b7230f763e6318c627c2c728ec
+  */
+ export const QClassId: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QClassId> } = { typePartId: "624e37b7230f763e6318c627c2c728ec" as TypePartId, codec: { encode: (value: QClassId): ReadonlyArray<number> => (encodeId(value)), decode: (index: number, binary: Uint8Array): { readonly result: QClassId; readonly nextIndex: number } => (decodeId(index, binary) as { readonly result: QClassId; readonly nextIndex: number }) } };
  
  
  
