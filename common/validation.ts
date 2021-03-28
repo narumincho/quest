@@ -1,7 +1,7 @@
 import * as d from "../data";
 
 /**
- * プログラム名を正規化する.
+ * プログラム名を正規化, 検証する
  */
 export const stringToValidProjectName = (
   text: string
@@ -27,6 +27,23 @@ export const stringToValidQuestionText = (
   }
   if (length > 1000) {
     return d.Result.Error("質問文は1000文字以内である必要があります");
+  }
+  return d.Result.Ok(normalized);
+};
+
+/**
+ * クラス名を正規化, 検証する
+ */
+export const stringToValidClassName = (
+  text: string
+): d.Result<string, string> => {
+  const normalized = normalizeOneLineString(text);
+  const { length } = [...normalized];
+  if (length <= 0) {
+    return d.Result.Error("クラス名が空です");
+  }
+  if (length > 100) {
+    return d.Result.Error("クラス名は100文字以内である必要があります");
   }
   return d.Result.Ok(normalized);
 };

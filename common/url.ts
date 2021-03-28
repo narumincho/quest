@@ -50,6 +50,13 @@ export const locationToUrl = (location: d.QLocation): URL => {
       );
     case "Question":
       return createUrl([questionPath, location.qQuestionId]);
+    case "NewClass":
+      return createUrl(
+        [newClassPath],
+        new Map([[newClassProgramId, location.qProgramId]])
+      );
+    case "Class":
+      return createUrl([classPath]);
   }
 };
 
@@ -81,6 +88,7 @@ export const urlToUrlData = (url: URL): UrlData => {
   };
 };
 
+const defaultLocation: d.QLocation = d.QLocation.Top;
 /**
  * URL から quest 内の場所を得る.
  * アカウントトークンとオリジンは無視する
@@ -96,7 +104,7 @@ export const urlToLocation = (url: URL): d.QLocation => {
       if (typeof pathList[2] === "string") {
         return d.QLocation.Program(pathList[2] as d.QProgramId);
       }
-      return d.QLocation.Top;
+      return defaultLocation;
     case newQuestionPath: {
       const programId = url.searchParams.get(newQuestionProgramId);
       const parent = url.searchParams.get(newQuestionParent);
@@ -111,15 +119,27 @@ export const urlToLocation = (url: URL): d.QLocation => {
           text,
         });
       }
-      return d.QLocation.Top;
+      return defaultLocation;
     }
     case questionPath:
       if (typeof pathList[2] === "string") {
         return d.QLocation.Question(pathList[2] as d.QQuestionId);
       }
-      return d.QLocation.Top;
+      return defaultLocation;
+    case classPath:
+      if (typeof pathList[2] === "string") {
+        return d.QLocation.Class(pathList[2] as d.QClassId);
+      }
+      return defaultLocation;
+    case newClassPath: {
+      const programId = url.searchParams.get(newClassProgramId);
+      if (typeof programId === "string") {
+        return d.QLocation.NewClass(programId as d.QProgramId);
+      }
+      return defaultLocation;
+    }
   }
-  return d.QLocation.Top;
+  return defaultLocation;
 };
 
 /** LINEログインで指定する. コールバックURL */
@@ -129,14 +149,19 @@ export const lineLoginCallbackUrl = `${origin}/lineLoginCallback`;
 export const imageUrl = (imageHash: d.ImageHash): URL =>
   new URL(`${origin}/file/${imageHash}`);
 
+const newAddPrefix = (path: string): string => "new-" + path;
+
 const settingPath = "setting";
-const newProgramPath = "new-program";
 const programPath = "program";
-const newQuestionPath = "new-question";
+const newProgramPath = newAddPrefix(programPath);
 const questionPath = "question";
+const newQuestionPath = newAddPrefix(questionPath);
 const newQuestionProgramId = "programId";
 const newQuestionParent = "parent";
 const newQuestionText = "text";
+const classPath = "class";
+const newClassPath = newAddPrefix(classPath);
+const newClassProgramId = "programId";
 
 /**
  * URLを宣言的に作成する

@@ -65,6 +65,8 @@ export type AppState = {
   addNotification: (message: string, variant: VariantType) => void;
   /** プログラムを作成する */
   createProgram: (programName: string) => void;
+  /** クラスを作成する */
+  createClass: (option: { name: string; programId: d.QProgramId }) => void;
 
   /** 作成したプログラムを取得する */
   requestGetCreatedProgram: () => void;
@@ -282,6 +284,9 @@ export const useAppState = (): AppState => {
           programState.setProgram(response.ok);
           changeLocation(d.QLocation.Program(response.ok.id));
         });
+    },
+    createClass: (option) => {
+      console.log("クラスを作成する処理は作成途中");
     },
     program: programState.getById,
     account: (accountId) => {

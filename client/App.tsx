@@ -2,8 +2,10 @@ import * as React from "react";
 import * as d from "../data";
 import { AppState, useAppState } from "./state";
 import { AdminTop } from "./page/AdminTop";
+import { Class } from "./page/Class";
 import { Loading } from "./page/Loading";
 import { Login } from "./page/Login";
+import { NewClass } from "./page/NewClass";
 import { NewProgram } from "./page/NewProgram";
 import { NewQuestion } from "./page/NewQuestion";
 import { Program } from "./page/Program";
@@ -64,5 +66,9 @@ const LoggedIn: React.VFC<{
       return (
         <Question questionId={location.qQuestionId} appState={props.appState} />
       );
+    case "NewClass":
+      return <NewClass a={props.appState} programId={location.qProgramId} />;
+    case "Class":
+      return <Class classId={location.qClassId} />;
   }
 };
