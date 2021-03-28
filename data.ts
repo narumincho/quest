@@ -41,7 +41,7 @@
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
- export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId } | { readonly _: "NewQuestion"; readonly qNewQuestionParameter: QNewQuestionParameter } | { readonly _: "Question"; readonly qQuestionId: QQuestionId } | { readonly _: "Class"; readonly qClassId: QClassId } | { readonly _: "NewClass"; readonly qProgramId: QProgramId };
+ export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId } | { readonly _: "NewQuestion"; readonly qNewQuestionParameter: QNewQuestionParameter } | { readonly _: "Question"; readonly qQuestionId: QQuestionId } | { readonly _: "Class"; readonly qClassId: QClassId } | { readonly _: "NewClass"; readonly qProgramId: QProgramId } | { readonly _: "ClassInvitation"; readonly qClassInvitationToken: QClassInvitationToken };
  
  
  /**
@@ -1347,7 +1347,11 @@
  /**
   * 属するプログラムID
   */
- readonly programId: QProgramId };
+ readonly programId: QProgramId; 
+ /**
+  * 招待トークン
+  */
+ readonly invitationToken: QClassInvitationToken };
  
  
  /**
@@ -1695,6 +1699,13 @@
  
  
  /**
+  * questのクラス招待トークン
+  * @typePartId a5f14e3ce94846347dc38bc1fb29ba7f
+  */
+ export type QClassInvitationToken = string & { readonly _qClassInvitationToken: never };
+ 
+ 
+ /**
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
@@ -1738,7 +1749,11 @@
  /**
   * クラス作成ページ
   */
- readonly NewClass: (a: QProgramId) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), NewQuestion: (qNewQuestionParameter: QNewQuestionParameter): QLocation => ({ _: "NewQuestion", qNewQuestionParameter }), Question: (qQuestionId: QQuestionId): QLocation => ({ _: "Question", qQuestionId }), Class: (qClassId: QClassId): QLocation => ({ _: "Class", qClassId }), NewClass: (qProgramId: QProgramId): QLocation => ({ _: "NewClass", qProgramId }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
+ readonly NewClass: (a: QProgramId) => QLocation; 
+ /**
+  * クラスの招待URL
+  */
+ readonly ClassInvitation: (a: QClassInvitationToken) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), NewQuestion: (qNewQuestionParameter: QNewQuestionParameter): QLocation => ({ _: "NewQuestion", qNewQuestionParameter }), Question: (qQuestionId: QQuestionId): QLocation => ({ _: "Question", qQuestionId }), Class: (qClassId: QClassId): QLocation => ({ _: "Class", qClassId }), NewClass: (qProgramId: QProgramId): QLocation => ({ _: "NewClass", qProgramId }), ClassInvitation: (qClassInvitationToken: QClassInvitationToken): QLocation => ({ _: "ClassInvitation", qClassInvitationToken }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
    switch (value._) {
      case "Top": {
        return [0];
@@ -1763,6 +1778,9 @@
      }
      case "NewClass": {
        return [7].concat(QProgramId.codec.encode(value.qProgramId));
+     }
+     case "ClassInvitation": {
+       return [8].concat(QClassInvitationToken.codec.encode(value.qClassInvitationToken));
      }
    }
  }, decode: (index: number, binary: Uint8Array): { readonly result: QLocation; readonly nextIndex: number } => {
@@ -1795,6 +1813,10 @@
    if (patternIndex.result === 7) {
      const result: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(patternIndex.nextIndex, binary);
      return { result: QLocation.NewClass(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 8) {
+     const result: { readonly result: QClassInvitationToken; readonly nextIndex: number } = QClassInvitationToken.codec.decode(patternIndex.nextIndex, binary);
+     return { result: QLocation.ClassInvitation(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };
@@ -5651,11 +5673,12 @@
  /**
   * 型を合わせる上で便利なヘルパー関数
   */
- readonly helper: (a: QClass) => QClass } = { typePartId: "cf779792c0201a3874f77765b063b64b" as TypePartId, helper: (qClass: QClass): QClass => qClass, codec: { encode: (value: QClass): ReadonlyArray<number> => (QClassId.codec.encode(value.id).concat(String.codec.encode(value.name)).concat(QProgramId.codec.encode(value.programId))), decode: (index: number, binary: Uint8Array): { readonly result: QClass; readonly nextIndex: number } => {
+ readonly helper: (a: QClass) => QClass } = { typePartId: "cf779792c0201a3874f77765b063b64b" as TypePartId, helper: (qClass: QClass): QClass => qClass, codec: { encode: (value: QClass): ReadonlyArray<number> => (QClassId.codec.encode(value.id).concat(String.codec.encode(value.name)).concat(QProgramId.codec.encode(value.programId)).concat(QClassInvitationToken.codec.encode(value.invitationToken))), decode: (index: number, binary: Uint8Array): { readonly result: QClass; readonly nextIndex: number } => {
    const idAndNextIndex: { readonly result: QClassId; readonly nextIndex: number } = QClassId.codec.decode(index, binary);
    const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(idAndNextIndex.nextIndex, binary);
    const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(nameAndNextIndex.nextIndex, binary);
-   return { result: { id: idAndNextIndex.result, name: nameAndNextIndex.result, programId: programIdAndNextIndex.result }, nextIndex: programIdAndNextIndex.nextIndex };
+   const invitationTokenAndNextIndex: { readonly result: QClassInvitationToken; readonly nextIndex: number } = QClassInvitationToken.codec.decode(programIdAndNextIndex.nextIndex, binary);
+   return { result: { id: idAndNextIndex.result, name: nameAndNextIndex.result, programId: programIdAndNextIndex.result, invitationToken: invitationTokenAndNextIndex.result }, nextIndex: invitationTokenAndNextIndex.nextIndex };
  } } };
  
  
@@ -6409,6 +6432,21 @@
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };
+ 
+ 
+ /**
+  * questのクラス招待トークン
+  * @typePartId a5f14e3ce94846347dc38bc1fb29ba7f
+  */
+ export const QClassInvitationToken: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QClassInvitationToken> } = { typePartId: "a5f14e3ce94846347dc38bc1fb29ba7f" as TypePartId, codec: { encode: (value: QClassInvitationToken): ReadonlyArray<number> => (encodeToken(value)), decode: (index: number, binary: Uint8Array): { readonly result: QClassInvitationToken; readonly nextIndex: number } => (decodeToken(index, binary) as { readonly result: QClassInvitationToken; readonly nextIndex: number }) } };
  
  
  

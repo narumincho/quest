@@ -15,27 +15,47 @@ export type UrlData = {
 
 /** アカウントトークンを含んだ パスとハッシュを生成する */
 export const urlDataToUrl = (urlData: UrlData): URL => {
-  const url = locationToUrl(urlData.location);
+  const url = locationToStructuredUrl(urlData.location);
   if (typeof urlData.accountToken === "string") {
-    url.hash = `account-token=${urlData.accountToken}`;
+    return structuredUrlToUrl({
+      ...url,
+      hash: new Map([[accountTokenKey, urlData.accountToken]]),
+    });
   }
-  return url;
+  return structuredUrlToUrl(url);
 };
 
 export const locationToUrl = (location: d.QLocation): URL => {
+  return structuredUrlToUrl(locationToStructuredUrl(location));
+};
+
+const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
   switch (location._) {
     case "Top":
-      return createUrl([]);
+      return { resourceName: "", searchParams: new Map(), hash: new Map() };
     case "Setting":
-      return createUrl([settingPath]);
+      return {
+        resourceName: settingPath,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
     case "NewProgram":
-      return createUrl([newProgramPath]);
+      return {
+        resourceName: newProgramPath,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
     case "Program":
-      return createUrl([programPath, location.qProgramId]);
+      return {
+        resourceName: programPath,
+        resourceId: location.qProgramId,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
     case "NewQuestion":
-      return createUrl(
-        [newQuestionPath],
-        new Map<string, string>([
+      return {
+        resourceName: newQuestionPath,
+        searchParams: new Map<string, string>([
           [newQuestionProgramId, location.qNewQuestionParameter.programId],
           ...(location.qNewQuestionParameter.parent._ === "Just"
             ? ([
@@ -46,17 +66,37 @@ export const locationToUrl = (location: d.QLocation): URL => {
               ] as const)
             : []),
           [newQuestionText, location.qNewQuestionParameter.text],
-        ])
-      );
+        ]),
+        hash: new Map(),
+      };
     case "Question":
-      return createUrl([questionPath, location.qQuestionId]);
+      return {
+        resourceName: questionPath,
+        resourceId: location.qQuestionId,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
     case "NewClass":
-      return createUrl(
-        [newClassPath],
-        new Map([[newClassProgramId, location.qProgramId]])
-      );
+      return {
+        resourceName: newClassPath,
+        searchParams: new Map([[newClassProgramId, location.qProgramId]]),
+        hash: new Map(),
+      };
     case "Class":
-      return createUrl([classPath]);
+      return {
+        resourceName: classPath,
+        resourceId: location.qClassId,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
+    case "ClassInvitation":
+      return {
+        resourceName: classInvitationPath,
+        searchParams: new Map(),
+        hash: new Map([
+          [classInvitationTokenKey, location.qClassInvitationToken],
+        ]),
+      };
   }
 };
 
@@ -65,22 +105,14 @@ export const locationToUrl = (location: d.QLocation): URL => {
  * オリジンは無視される
  */
 export const urlToUrlData = (url: URL): UrlData => {
-  const location: d.QLocation = urlToLocation(url);
-  const accountTokenResult = url.hash.match(
-    /account-token=(?<token>[0-9a-f]{64})/u
-  );
-  if (
-    accountTokenResult !== null &&
-    accountTokenResult.groups !== undefined &&
-    typeof accountTokenResult.groups.token === "string"
-  ) {
-    const accountTokenAsString = accountTokenResult.groups.token;
-    if (typeof accountTokenAsString === "string") {
-      return {
-        accountToken: accountTokenAsString as d.AccountToken,
-        location,
-      };
-    }
+  const structuredUrl = urlToStructuredUrl(url);
+  const location: d.QLocation = structuredUrlToLocation(structuredUrl);
+  const accountTokenResult = structuredUrl.hash.get(accountTokenKey);
+  if (typeof accountTokenResult === "string") {
+    return {
+      accountToken: accountTokenResult as d.AccountToken,
+      location,
+    };
   }
   return {
     location,
@@ -93,22 +125,21 @@ const defaultLocation: d.QLocation = d.QLocation.Top;
  * URL から quest 内の場所を得る.
  * アカウントトークンとオリジンは無視する
  */
-export const urlToLocation = (url: URL): d.QLocation => {
-  const pathList = url.pathname.split("/");
-  switch (pathList[1]) {
+const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.QLocation => {
+  switch (structuredUrl.resourceName) {
     case settingPath:
       return d.QLocation.Setting;
     case newProgramPath:
       return d.QLocation.NewProgram;
     case programPath:
-      if (typeof pathList[2] === "string") {
-        return d.QLocation.Program(pathList[2] as d.QProgramId);
+      if (typeof structuredUrl.resourceId === "string") {
+        return d.QLocation.Program(structuredUrl.resourceId as d.QProgramId);
       }
       return defaultLocation;
     case newQuestionPath: {
-      const programId = url.searchParams.get(newQuestionProgramId);
-      const parent = url.searchParams.get(newQuestionParent);
-      const text = url.searchParams.get(newQuestionText);
+      const programId = structuredUrl.searchParams.get(newQuestionProgramId);
+      const parent = structuredUrl.searchParams.get(newQuestionParent);
+      const text = structuredUrl.searchParams.get(newQuestionText);
       if (typeof programId === "string" && typeof text === "string") {
         return d.QLocation.NewQuestion({
           programId: programId as d.QProgramId,
@@ -122,19 +153,30 @@ export const urlToLocation = (url: URL): d.QLocation => {
       return defaultLocation;
     }
     case questionPath:
-      if (typeof pathList[2] === "string") {
-        return d.QLocation.Question(pathList[2] as d.QQuestionId);
+      if (typeof structuredUrl.resourceId === "string") {
+        return d.QLocation.Question(structuredUrl.resourceId as d.QQuestionId);
       }
       return defaultLocation;
     case classPath:
-      if (typeof pathList[2] === "string") {
-        return d.QLocation.Class(pathList[2] as d.QClassId);
+      if (typeof structuredUrl.resourceId === "string") {
+        return d.QLocation.Class(structuredUrl.resourceId as d.QClassId);
       }
       return defaultLocation;
     case newClassPath: {
-      const programId = url.searchParams.get(newClassProgramId);
+      const programId = structuredUrl.searchParams.get(newClassProgramId);
       if (typeof programId === "string") {
         return d.QLocation.NewClass(programId as d.QProgramId);
+      }
+      return defaultLocation;
+    }
+    case classInvitationPath: {
+      const classInvitationToken = structuredUrl.hash.get(
+        classInvitationTokenKey
+      );
+      if (typeof classInvitationToken === "string") {
+        return d.QLocation.ClassInvitation(
+          classInvitationToken as d.QClassInvitationToken
+        );
       }
       return defaultLocation;
     }
@@ -151,6 +193,7 @@ export const imageUrl = (imageHash: d.ImageHash): URL =>
 
 const newAddPrefix = (path: string): string => "new-" + path;
 
+const accountTokenKey = "account-token";
 const settingPath = "setting";
 const programPath = "program";
 const newProgramPath = newAddPrefix(programPath);
@@ -162,27 +205,49 @@ const newQuestionText = "text";
 const classPath = "class";
 const newClassPath = newAddPrefix(classPath);
 const newClassProgramId = "programId";
+const classInvitationPath = "class-invitation";
+const classInvitationTokenKey = "class-invitation-token";
 
 /**
- * URLを宣言的に作成する
- * @param path パス
- * @param searchParams クエリパラメーター
- * @param hash `#` を含まれないハッシュ (フラグメント)
+ * 構造化されたURL
+ * フラグメントは クエリパラメータのような出力がされる
  */
-const createUrl = (
-  path: ReadonlyArray<string>,
-  searchParams?: ReadonlyMap<string, string>,
-  hash?: string
-): URL => {
+type StructuredUrl = {
+  /** リソース名 `/{question}` */
+  readonly resourceName: string;
+  /** リソースID `/question/{id}` */
+  readonly resourceId?: string;
+  /** クエリパラメーター */
+  readonly searchParams: ReadonlyMap<string, string>;
+  /** ハッシュ (フラグメント) サーバーへのリクエストに含まれない */
+  readonly hash: ReadonlyMap<string, string>;
+};
+
+const structuredUrlToUrl = (structuredUrl: StructuredUrl): URL => {
   const url = new URL(origin);
-  url.pathname = "/" + path.join("/");
-  if (searchParams !== undefined) {
-    for (const [key, value] of searchParams) {
+  url.pathname =
+    "/" +
+    structuredUrl.resourceName +
+    (typeof structuredUrl.resourceId === "string"
+      ? "/" + structuredUrl.resourceId
+      : "");
+  if (structuredUrl.searchParams !== undefined) {
+    for (const [key, value] of structuredUrl.searchParams) {
       url.searchParams.set(key, value);
     }
   }
-  if (typeof hash === "string") {
-    url.hash = hash;
+  if (structuredUrl.hash !== undefined) {
+    url.hash = new URLSearchParams([...structuredUrl.hash]).toString();
   }
   return url;
+};
+
+const urlToStructuredUrl = (url: URL): StructuredUrl => {
+  const pathList = url.pathname.split("/");
+  return {
+    resourceName: typeof pathList[1] === "string" ? pathList[1] : "",
+    resourceId: pathList[2],
+    searchParams: new Map([...url.searchParams]),
+    hash: new Map([...new URLSearchParams(url.hash.slice(1))]),
+  };
 };

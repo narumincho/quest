@@ -108,6 +108,7 @@ export const apiFunc: {
       id: createRandomId() as d.QClassId,
       name: classNameResult.ok,
       programId: parameter.programId,
+      invitationToken: createRandomToken() as d.QClassInvitationToken,
     };
     await firebaseInterface.createClass(qClass);
     return qClass;
@@ -241,11 +242,15 @@ const issueAccessToken = (): {
   accountToken: d.AccountToken;
   accountTokenHash: d.AccountTokenHash;
 } => {
-  const accountToken = crypto.randomBytes(32).toString("hex") as d.AccountToken;
+  const accountToken = createRandomToken() as d.AccountToken;
   return {
     accountToken,
     accountTokenHash: hashAccountToken(accountToken),
   };
+};
+
+const createRandomToken = (): string => {
+  return crypto.randomBytes(32).toString("hex");
 };
 
 const hashAccountToken = (accountToken: d.AccountToken): d.AccountTokenHash =>
