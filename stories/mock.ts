@@ -25,9 +25,13 @@ export const mockAppState: AppState = {
           name: "サンプルプログラム名A",
           createAccountId: mockAccountId,
           id: mockProgramIdA,
-          questionList: {
+          questionIdList: {
             tag: "Loaded",
             questionIdList: [...questionMap.keys()],
+          },
+          classIdList: {
+            tag: "Loaded",
+            classIdList: [mockClassId],
           },
         };
       case mockProgramIdB:
@@ -35,14 +39,20 @@ export const mockAppState: AppState = {
           name: "サンプルプログラム名B",
           createAccountId: mockAccountId,
           id: mockProgramIdA,
-          questionList: { tag: "Requesting" },
+          questionIdList: { tag: "Requesting" },
+          classIdList: {
+            tag: "None",
+          },
         };
       case mockProgramIdLong:
         return {
           name: lorem,
           createAccountId: mockAccountId,
           id: mockProgramIdA,
-          questionList: { tag: "None" },
+          questionIdList: { tag: "None" },
+          classIdList: {
+            tag: "None",
+          },
         };
     }
     return undefined;
@@ -85,6 +95,7 @@ export const mockAppState: AppState = {
       programId: mockProgramIdA,
     };
   },
+  requestGetClassListInProgram: action("requestGetClassListInProgram"),
 };
 
 export const mockAccount: d.QAccount = {
