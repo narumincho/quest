@@ -25,6 +25,7 @@ export const build = async (mode: Mode): Promise<void> => {
 
   /** staticなファイルのコピー */
   await fileSystem.copy("./static", hostingDistributionPath);
+  console.log("staticなファイルのコピーが完了!");
 
   await esbuild.build({
     entryPoints: [clientSourceEntryPath],
@@ -37,8 +38,10 @@ export const build = async (mode: Mode): Promise<void> => {
     minify: true,
     target: ["chrome88", "firefox85", "safari14"],
   });
+  console.log("ブラウザ向けのプログラムのビルドが完了!");
 
   buildFunctionsTypeScript();
+  console.log("Cloud Functions for Firebase 向けのプログラムのビルドが完了!");
   console.log(
     `やったー ${distributionPath}に${
       mode === "development" ? "開発" : "本番"
