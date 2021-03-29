@@ -44,7 +44,7 @@
     "babel-loader": "8.2.2",
     "cypress": "6.8.0",
     "dependency-cruiser": "9.24.0",
-    "esbuild": "0.10.2",
+    "esbuild": "0.11.0",
     "eslint": "7.23.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-prettier": "3.3.1",
