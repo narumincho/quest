@@ -4,6 +4,7 @@ import { AppState, useAppState } from "./state";
 import { AdminTop } from "./page/AdminTop";
 import { Class } from "./page/Class";
 import { ClassInvitation } from "./page/ClassInvitation";
+import { EditQuestion } from "./page/EditQuestion";
 import { Loading } from "./page/Loading";
 import { Login } from "./page/Login";
 import { NewClass } from "./page/NewClass";
@@ -75,6 +76,13 @@ const LoggedIn: React.VFC<{
       return (
         <ClassInvitation
           classInvitationToken={location.qClassInvitationToken}
+        />
+      );
+    case "EditQuestion":
+      return (
+        <EditQuestion
+          appState={props.appState}
+          questionId={location.qQuestionId}
         />
       );
   }

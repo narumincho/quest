@@ -97,6 +97,13 @@ const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
           [classInvitationTokenKey, location.qClassInvitationToken],
         ]),
       };
+    case "EditQuestion":
+      return {
+        resourceName: editQuestionPath,
+        resourceId: location.qQuestionId,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
   }
 };
 
@@ -191,22 +198,24 @@ export const lineLoginCallbackUrl = `${origin}/lineLoginCallback`;
 export const imageUrl = (imageHash: d.ImageHash): URL =>
   new URL(`${origin}/file/${imageHash}`);
 
-const newAddPrefix = (path: string): string => "new-" + path;
+const addNewPrefix = (path: string): string => "new-" + path;
+const addEditPrefix = (path: string): string => "edit-" + path;
 
 const accountTokenKey = "account-token";
 const settingPath = "setting";
 const programPath = "program";
-const newProgramPath = newAddPrefix(programPath);
+const newProgramPath = addNewPrefix(programPath);
 const questionPath = "question";
-const newQuestionPath = newAddPrefix(questionPath);
+const newQuestionPath = addNewPrefix(questionPath);
 const newQuestionProgramId = "programId";
 const newQuestionParent = "parent";
 const newQuestionText = "text";
 const classPath = "class";
-const newClassPath = newAddPrefix(classPath);
+const newClassPath = addNewPrefix(classPath);
 const newClassProgramId = "programId";
 const classInvitationPath = "class-invitation";
 const classInvitationTokenKey = "class-invitation-token";
+const editQuestionPath = addEditPrefix(questionPath);
 
 /**
  * 構造化されたURL
