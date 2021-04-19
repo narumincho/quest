@@ -7,16 +7,25 @@ export type ApiCodec<Request, Response> = {
   response: d.Codec<Response>;
 };
 
+/**
+ * LINE ログインの URL を生成して取得する
+ */
 export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
   request: d.Unit.codec,
   response: d.String.codec,
 };
 
+/**
+ * アカウントトークンからアカウントを作成する
+ */
 export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.QAccount> = {
   request: d.AccountToken.codec,
   response: d.QAccount.codec,
 };
 
+/**
+ * プログラムを作成する
+ */
 export const createProgram: ApiCodec<d.QCreateProgramParameter, d.QProgram> = {
   request: d.QCreateProgramParameter.codec,
   response: d.QProgram.codec,
@@ -67,4 +76,12 @@ export const getClassListInProgram: ApiCodec<
 > = {
   request: d.QAccountTokenAndProgramId.codec,
   response: d.List.codec(d.QClass.codec),
+};
+
+/**
+ * 質問を編集する
+ */
+export const editQuestion: ApiCodec<d.QEditQuestion, d.QQuestion> = {
+  request: d.QEditQuestion.codec,
+  response: d.QQuestion.codec,
 };

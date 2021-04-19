@@ -94,6 +94,8 @@ export type AppState = {
   getClass: (id: d.QClassId) => d.QClass | undefined;
   /** 招待URLをシェアする */
   shareClassInviteLink: (classId: d.QClassId) => void;
+  /** 質問を編集する */
+  editQuestion: (questionId: d.QQuestionId, name: string) => void;
 };
 
 export type LoginState =
@@ -473,6 +475,31 @@ export const useAppState = (): AppState => {
         })
         .then((e) => {
           console.log(e);
+        });
+    },
+    editQuestion: (questionId, name) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        return;
+      }
+      api
+        .editQuestion({
+          accountToken,
+          questionId,
+          name,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(`質問の編集に失敗した ${response.error}`, {
+              variant: "error",
+            });
+            return;
+          }
+          enqueueSnackbar(`質問を編集しました`, {
+            variant: "success",
+          });
+          questionState.setQuestion(response.ok);
+          setLocation(d.QLocation.Question(response.ok.id));
         });
     },
   };

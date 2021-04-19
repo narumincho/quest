@@ -59,6 +59,7 @@ const EditQuestionLoaded: React.VFC<{
     if (textResult._ === "Error") {
       return;
     }
+    props.appState.editQuestion(props.question.id, textResult.ok);
     setIsRequesting(true);
   };
   return (

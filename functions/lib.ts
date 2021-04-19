@@ -121,6 +121,25 @@ export const apiFunc: {
     );
     return firebaseInterface.getClassListInProgram(program.id);
   },
+  editQuestion: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const question = await firebaseInterface.getQuestion(parameter.questionId);
+    if (question === undefined) {
+      throw new Error("編集する質問を見つけられなかった");
+    }
+    await validateAndGetProgram(account.id, question.programId);
+    const questionTextResult = validation.stringToValidQuestionText(
+      parameter.name
+    );
+    if (questionTextResult._ === "Error") {
+      throw new Error(questionTextResult.error);
+    }
+    firebaseInterface.setQuestion(parameter.questionId, questionTextResult.ok);
+    return {
+      ...question,
+      name: questionTextResult.ok,
+    };
+  },
 };
 
 const lineLoginClientId = "1655691758";

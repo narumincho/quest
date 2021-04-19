@@ -1706,6 +1706,25 @@
  
  
  /**
+  * 質問を編集する
+  * @typePartId 98bc46a897ffdb9d86782890776c9221
+  */
+ export type QEditQuestion = { 
+ /**
+  * accountToken
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * questionId
+  */
+ readonly questionId: QQuestionId; 
+ /**
+  * 新たな質問文
+  */
+ readonly name: String };
+ 
+ 
+ /**
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
@@ -6457,6 +6476,30 @@
      return { result: TsMember.KeyValue(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
+ } } };
+ 
+ 
+ /**
+  * 質問を編集する
+  * @typePartId 98bc46a897ffdb9d86782890776c9221
+  */
+ export const QEditQuestion: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QEditQuestion>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QEditQuestion) => QEditQuestion } = { typePartId: "98bc46a897ffdb9d86782890776c9221" as TypePartId, helper: (qEditQuestion: QEditQuestion): QEditQuestion => qEditQuestion, codec: { encode: (value: QEditQuestion): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QQuestionId.codec.encode(value.questionId)).concat(String.codec.encode(value.name))), decode: (index: number, binary: Uint8Array): { readonly result: QEditQuestion; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const questionIdAndNextIndex: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(questionIdAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, name: nameAndNextIndex.result }, nextIndex: nameAndNextIndex.nextIndex };
  } } };
  
  
