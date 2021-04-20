@@ -13,17 +13,34 @@ const functionsSourceEntryPath = "./functions/main.ts";
 const distributionPath = "./distribution";
 const functionsDistributionPath = `${distributionPath}/functions`;
 const hostingDistributionPath = `${distributionPath}/hosting`;
+const firestoreRulesFilePath = `${distributionPath}/firestore.rules`;
 
 /**
  * Firebase へ デプロイするためにやビルドする
  */
 export const build = async (mode: Mode): Promise<void> => {
-  await outputPackageJsonForFunctions();
-  await outputCommonOrigin(mode);
+  await fileSystem.remove(distributionPath);
+  console.log(`${distributionPath}をすべて削除完了!`);
+  if (mode === "development") {
+    await fileSystem.copy(
+      "../secret/quest.json",
+      `${functionsDistributionPath}/.runtimeconfig.json`
+    );
+    console.log(
+      `.runtimeconfig.json サーバーの秘密情報をローカルファイルからコピー完了`
+    );
+  }
 
+  await outputPackageJsonForFunctions();
+  console.log(`package.json を出力完了!`);
+  await outputCommonOrigin(mode);
+  console.log(`common/origin.ts を出力完了!`);
+  await generateFirestoreRules();
+  console.log(
+    `Firestore 向けセキュリティールール (${firestoreRulesFilePath}) を出力完了!`
+  );
   await generateFirebaseJson(mode);
 
-  /** staticなファイルのコピー */
   await fileSystem.copy("./static", hostingDistributionPath);
   console.log("staticなファイルのコピーが完了!");
 
@@ -36,7 +53,7 @@ export const build = async (mode: Mode): Promise<void> => {
     },
     sourcemap: true,
     minify: true,
-    target: ["chrome88", "firefox85", "safari14"],
+    target: ["chrome90", "firefox88", "safari14"],
   });
   console.log("ブラウザ向けのプログラムのビルドが完了!");
 
@@ -55,6 +72,9 @@ const generateFirebaseJson = (clientMode: Mode): Promise<void> => {
     JSON.stringify({
       functions: {
         source: functionsDistributionPath,
+      },
+      firestore: {
+        rules: firestoreRulesFilePath,
       },
       hosting: {
         public: hostingDistributionPath,
@@ -97,6 +117,21 @@ const generateFirebaseJson = (clientMode: Mode): Promise<void> => {
               },
             },
     })
+  );
+};
+
+const generateFirestoreRules = (): Promise<void> => {
+  return fileSystem.outputFile(
+    firestoreRulesFilePath,
+    `
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+`
   );
 };
 

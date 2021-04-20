@@ -7,7 +7,7 @@ import {
   mockProgramIdB,
   mockProgramIdLong,
 } from "../mock";
-import { fullScreen } from "../../.storybook/decorators";
+import { fullScreen } from "../decorators";
 
 const meta: Meta = {
   title: "Page/AdminTop",

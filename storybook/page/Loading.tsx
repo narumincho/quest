@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
 import { Loading } from "../../client/page/Loading";
-import { fullScreen } from "../../.storybook/decorators";
+import { fullScreen } from "../decorators";
 
 const meta: Meta = {
   title: "Page/Loading",
