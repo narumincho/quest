@@ -16,6 +16,12 @@
       "problemMatcher": [],
       "label": "npm: start-emulator",
       "detail": "firebase emulators:start --project north-quest"
+    },
+    {
+      "type": "npm",
+      "script": "storybook",
+      "problemMatcher": [],
+      "label": "npm: storybook"
     }
   ]
 }
