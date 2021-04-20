@@ -13,7 +13,7 @@ export type Props = {
 
 const useStyles = makeStyles({
   fab: {
-    position: "absolute",
+    position: "fixed",
     bottom: 16,
     right: 16,
   },

@@ -98,6 +98,7 @@ export const mockAppState: AppState = {
   },
   requestGetClassListInProgram: action("requestGetClassListInProgram"),
   shareClassInviteLink: action("shareClassInviteLink"),
+  editQuestion: action("editQuestion"),
 };
 
 export const mockAccount: d.QAccount = {

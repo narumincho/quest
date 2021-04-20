@@ -218,6 +218,15 @@ export const getQuestion = async (
   };
 };
 
+export const setQuestion = async (
+  questionId: d.QQuestionId,
+  name: string
+): Promise<void> => {
+  await firestore.collection("question").doc(questionId).update({
+    name,
+  });
+};
+
 export const getQuestionListByProgramId = async (
   programId: d.QProgramId
 ): Promise<ReadonlyArray<d.QQuestion>> => {

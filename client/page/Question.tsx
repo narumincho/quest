@@ -1,8 +1,15 @@
 import * as React from "react";
 import * as d from "../../data";
+import { Add, Edit } from "@material-ui/icons";
 import { AppBar, Link } from "../ui";
-import { Box, Breadcrumbs, Button, makeStyles, Typography } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Fab,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
 import { AppState } from "../state";
 import { ProgramCard } from "../ui/ProgramCard";
 import { QuestionCard } from "../ui/QuestionCard";
@@ -11,9 +18,14 @@ const useStyle = makeStyles({
   childCardList: {
     padding: 8,
     display: "grid",
-    gap: 8
-  }
-})
+    gap: 8,
+  },
+  fab: {
+    position: "fixed",
+    bottom: 16,
+    right: 16,
+  },
+});
 
 export const Question: React.VFC<{
   appState: AppState;
@@ -113,6 +125,20 @@ export const Question: React.VFC<{
           <Typography>質問ID: {props.questionId}</Typography>
         </Box>
       </Box>
+      <Link
+        location={d.QLocation.EditQuestion(props.questionId)}
+        appState={props.appState}
+      >
+        <Fab
+          color="primary"
+          variant="extended"
+          aria-label="add"
+          className={classes.fab}
+        >
+          <Edit />
+          質問を編集する
+        </Fab>
+      </Link>
     </Box>
   );
 };

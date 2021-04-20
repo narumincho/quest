@@ -41,7 +41,7 @@
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
- export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId } | { readonly _: "NewQuestion"; readonly qNewQuestionParameter: QNewQuestionParameter } | { readonly _: "Question"; readonly qQuestionId: QQuestionId } | { readonly _: "Class"; readonly qClassId: QClassId } | { readonly _: "NewClass"; readonly qProgramId: QProgramId } | { readonly _: "ClassInvitation"; readonly qClassInvitationToken: QClassInvitationToken };
+ export type QLocation = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly qProgramId: QProgramId } | { readonly _: "NewQuestion"; readonly qNewQuestionParameter: QNewQuestionParameter } | { readonly _: "Question"; readonly qQuestionId: QQuestionId } | { readonly _: "Class"; readonly qClassId: QClassId } | { readonly _: "NewClass"; readonly qProgramId: QProgramId } | { readonly _: "ClassInvitation"; readonly qClassInvitationToken: QClassInvitationToken } | { readonly _: "EditQuestion"; readonly qQuestionId: QQuestionId };
  
  
  /**
@@ -721,16 +721,16 @@
  
  
  /**
-  * 日時. 0001-01-01T00:00:00.000Z to 9999-12-31T23:59:59.999Z 最小単位はミリ秒. ミリ秒の求め方は day*1000*60*60*24 + millisecond
+  * 日時. `0001-01-01T00:00:00.000Z to 9999-12-31T23:59:59.999Z` 最小単位はミリ秒. ミリ秒の求め方は `day*1000*60*60*24 + millisecond`
   * @typePartId 7d91f0f70643799692aa144ee51a62b1
   */
  export type Time = { 
  /**
-  * 1970-01-01からの経過日数. マイナスになることもある
+  * `1970-01-01` からの経過日数. マイナスになることもある
   */
  readonly day: Int32; 
  /**
-  * 日にちの中のミリ秒. 0 to 86399999 (=1000*60*60*24-1)
+  * 日にちの中のミリ秒. `0 to 86399999 (=1000*60*60*24-1)`
   */
  readonly millisecond: Int32 };
  
@@ -1033,6 +1033,13 @@
   * データ
   */
  readonly data: data };
+ 
+ 
+ /**
+  * questのクラス招待トークン
+  * @typePartId a5f14e3ce94846347dc38bc1fb29ba7f
+  */
+ export type QClassInvitationToken = string & { readonly _qClassInvitationToken: never };
  
  
  /**
@@ -1699,10 +1706,22 @@
  
  
  /**
-  * questのクラス招待トークン
-  * @typePartId a5f14e3ce94846347dc38bc1fb29ba7f
+  * 質問を編集する
+  * @typePartId 98bc46a897ffdb9d86782890776c9221
   */
- export type QClassInvitationToken = string & { readonly _qClassInvitationToken: never };
+ export type QEditQuestion = { 
+ /**
+  * accountToken
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * questionId
+  */
+ readonly questionId: QQuestionId; 
+ /**
+  * 新たな質問文
+  */
+ readonly name: String };
  
  
  /**
@@ -1753,7 +1772,11 @@
  /**
   * クラスの招待URL
   */
- readonly ClassInvitation: (a: QClassInvitationToken) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), NewQuestion: (qNewQuestionParameter: QNewQuestionParameter): QLocation => ({ _: "NewQuestion", qNewQuestionParameter }), Question: (qQuestionId: QQuestionId): QLocation => ({ _: "Question", qQuestionId }), Class: (qClassId: QClassId): QLocation => ({ _: "Class", qClassId }), NewClass: (qProgramId: QProgramId): QLocation => ({ _: "NewClass", qProgramId }), ClassInvitation: (qClassInvitationToken: QClassInvitationToken): QLocation => ({ _: "ClassInvitation", qClassInvitationToken }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
+ readonly ClassInvitation: (a: QClassInvitationToken) => QLocation; 
+ /**
+  * 質問編集画面
+  */
+ readonly EditQuestion: (a: QQuestionId) => QLocation } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (qProgramId: QProgramId): QLocation => ({ _: "Program", qProgramId }), NewQuestion: (qNewQuestionParameter: QNewQuestionParameter): QLocation => ({ _: "NewQuestion", qNewQuestionParameter }), Question: (qQuestionId: QQuestionId): QLocation => ({ _: "Question", qQuestionId }), Class: (qClassId: QClassId): QLocation => ({ _: "Class", qClassId }), NewClass: (qProgramId: QProgramId): QLocation => ({ _: "NewClass", qProgramId }), ClassInvitation: (qClassInvitationToken: QClassInvitationToken): QLocation => ({ _: "ClassInvitation", qClassInvitationToken }), EditQuestion: (qQuestionId: QQuestionId): QLocation => ({ _: "EditQuestion", qQuestionId }), typePartId: "0951f74f6309835e7ff412f105474aa7" as TypePartId, codec: { encode: (value: QLocation): ReadonlyArray<number> => {
    switch (value._) {
      case "Top": {
        return [0];
@@ -1781,6 +1804,9 @@
      }
      case "ClassInvitation": {
        return [8].concat(QClassInvitationToken.codec.encode(value.qClassInvitationToken));
+     }
+     case "EditQuestion": {
+       return [9].concat(QQuestionId.codec.encode(value.qQuestionId));
      }
    }
  }, decode: (index: number, binary: Uint8Array): { readonly result: QLocation; readonly nextIndex: number } => {
@@ -1817,6 +1843,10 @@
    if (patternIndex.result === 8) {
      const result: { readonly result: QClassInvitationToken; readonly nextIndex: number } = QClassInvitationToken.codec.decode(patternIndex.nextIndex, binary);
      return { result: QLocation.ClassInvitation(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 9) {
+     const result: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(patternIndex.nextIndex, binary);
+     return { result: QLocation.EditQuestion(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };
@@ -4188,7 +4218,7 @@
  
  
  /**
-  * 日時. 0001-01-01T00:00:00.000Z to 9999-12-31T23:59:59.999Z 最小単位はミリ秒. ミリ秒の求め方は day*1000*60*60*24 + millisecond
+  * 日時. `0001-01-01T00:00:00.000Z to 9999-12-31T23:59:59.999Z` 最小単位はミリ秒. ミリ秒の求め方は `day*1000*60*60*24 + millisecond`
   * @typePartId 7d91f0f70643799692aa144ee51a62b1
   */
  export const Time: { 
@@ -5032,6 +5062,21 @@
    const dataAndNextIndex: { readonly result: data; readonly nextIndex: number } = dataCodec.decode(idAndNextIndex.nextIndex, binary);
    return { result: { id: idAndNextIndex.result, data: dataAndNextIndex.result }, nextIndex: dataAndNextIndex.nextIndex };
  } }) };
+ 
+ 
+ /**
+  * questのクラス招待トークン
+  * @typePartId a5f14e3ce94846347dc38bc1fb29ba7f
+  */
+ export const QClassInvitationToken: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QClassInvitationToken> } = { typePartId: "a5f14e3ce94846347dc38bc1fb29ba7f" as TypePartId, codec: { encode: (value: QClassInvitationToken): ReadonlyArray<number> => (encodeToken(value)), decode: (index: number, binary: Uint8Array): { readonly result: QClassInvitationToken; readonly nextIndex: number } => (decodeToken(index, binary) as { readonly result: QClassInvitationToken; readonly nextIndex: number }) } };
  
  
  /**
@@ -6435,10 +6480,10 @@
  
  
  /**
-  * questのクラス招待トークン
-  * @typePartId a5f14e3ce94846347dc38bc1fb29ba7f
+  * 質問を編集する
+  * @typePartId 98bc46a897ffdb9d86782890776c9221
   */
- export const QClassInvitationToken: { 
+ export const QEditQuestion: { 
  /**
   * definy.app内 の 型パーツの Id
   */
@@ -6446,7 +6491,16 @@
  /**
   * 独自のバイナリ形式の変換処理ができるコーデック
   */
- readonly codec: Codec<QClassInvitationToken> } = { typePartId: "a5f14e3ce94846347dc38bc1fb29ba7f" as TypePartId, codec: { encode: (value: QClassInvitationToken): ReadonlyArray<number> => (encodeToken(value)), decode: (index: number, binary: Uint8Array): { readonly result: QClassInvitationToken; readonly nextIndex: number } => (decodeToken(index, binary) as { readonly result: QClassInvitationToken; readonly nextIndex: number }) } };
+ readonly codec: Codec<QEditQuestion>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QEditQuestion) => QEditQuestion } = { typePartId: "98bc46a897ffdb9d86782890776c9221" as TypePartId, helper: (qEditQuestion: QEditQuestion): QEditQuestion => qEditQuestion, codec: { encode: (value: QEditQuestion): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QQuestionId.codec.encode(value.questionId)).concat(String.codec.encode(value.name))), decode: (index: number, binary: Uint8Array): { readonly result: QEditQuestion; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const questionIdAndNextIndex: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(questionIdAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, name: nameAndNextIndex.result }, nextIndex: nameAndNextIndex.nextIndex };
+ } } };
  
  
  
