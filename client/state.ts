@@ -252,6 +252,10 @@ export const useAppState = (): AppState => {
         variant: "success",
       });
       indexedDb.deleteAccountToken();
+      useAccountMapResult.deleteAll();
+      useClassMapResult.deleteAll();
+      useProgramMapResult.deleteAll();
+      questionState.deleteAll();
       setLoginState({
         tag: "NoLogin",
       });

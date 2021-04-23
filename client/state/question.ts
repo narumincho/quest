@@ -26,6 +26,8 @@ export type UseQuestionMapResult = {
     id: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
   readonly questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
+  /** ログアウトしたとき, キャッシュを削除する */
+  deleteAll: () => void;
 };
 
 export const useQuestionMap = (): UseQuestionMapResult => {
@@ -67,6 +69,9 @@ export const useQuestionMap = (): UseQuestionMapResult => {
       getParentQuestionList(id, questionMap),
     questionTree: (programId): ReadonlyArray<QuestionTree> =>
       getQuestionTree(programId, [...questionMap.values()]),
+    deleteAll: () => {
+      setQuestionMap(new Map());
+    },
   };
 };
 
