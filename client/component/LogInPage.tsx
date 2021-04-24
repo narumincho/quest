@@ -1,7 +1,8 @@
 import * as React from "react";
-import { AppBar, LineLoginButton } from "../ui";
 import { Box, Typography } from "@material-ui/core";
+import { AppBar } from "./AppBar";
 import { AppState } from "../state";
+import { LineLoginButton } from "./LineLoginButton";
 
 export type Props = {
   readonly appState: AppState;

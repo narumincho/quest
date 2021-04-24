@@ -1,5 +1,5 @@
 import { Meta, Story } from "@storybook/react";
-import { AppBar } from "../../client/ui/AppBar";
+import { AppBar } from "../../client/component/AppBar";
 import React from "react";
 import { mockAppState } from "../mock";
 

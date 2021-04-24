@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppBar, Link } from "../ui";
 import {
   Box,
   Breadcrumbs,
@@ -17,9 +16,11 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Close } from "@material-ui/icons";
-import { QuestionButton } from "../ui/QuestionCard";
+import { Link } from "./Link";
+import { QuestionButton } from "./QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
 
 export const QuestionEditPage: React.VFC<{

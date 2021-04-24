@@ -1,10 +1,11 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppBar, Link } from "../ui";
 import { Box, Fab, Typography, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import { AppBar } from "./AppBar";
 import { AppState } from "../state";
-import { ProgramCard } from "../ui/ProgramCard";
+import { Link } from "./Link";
+import { ProgramCard } from "./ProgramCard";
 import { Skeleton } from "@material-ui/lab";
 
 export type Props = {

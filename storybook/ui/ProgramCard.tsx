@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import { mockAppState, mockProgramIdA, mockProgramIdLong } from "../mock";
-import { ProgramCard } from "../../client/ui/ProgramCard";
+import { ProgramCard } from "../../client/component/ProgramCard";
 import React from "react";
 
 const meta: Meta = {

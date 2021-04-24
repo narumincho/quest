@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
 import { mockAccountId, mockAppState } from "../mock";
-import { AccountCard } from "../../client/ui/AccountCard";
+import { AccountCard } from "../../client/component/AccountCard";
 
 const meta: Meta = {
   title: "ui/AccountCard",

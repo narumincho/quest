@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
 import { Add, Edit } from "@material-ui/icons";
-import { AppBar, Link } from "../ui";
 import {
   Box,
   Breadcrumbs,
@@ -10,9 +9,11 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import { AppBar } from "./AppBar";
 import { AppState } from "../state";
-import { ProgramCard } from "../ui/ProgramCard";
-import { QuestionCard } from "../ui/QuestionCard";
+import { Link } from "./Link";
+import { ProgramCard } from "./ProgramCard";
+import { QuestionCard } from "./QuestionCard";
 
 const useStyle = makeStyles({
   childCardList: {

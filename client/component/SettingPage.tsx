@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
-import { AppBar, Link } from "../ui";
 import {
   Avatar,
   Box,
@@ -9,7 +8,9 @@ import {
   Button,
   Typography,
 } from "@material-ui/core";
+import { AppBar } from "./AppBar";
 import { AppState } from "../state";
+import { Link } from "./Link";
 
 export type Props = { account: d.QAccount; appState: AppState };
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import * as d from "../../data";
 import { Paper, Typography, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
-import { Link } from "../ui";
+import { Link } from "./Link";
 
 export type Props = {
   readonly programId: d.QProgramId;

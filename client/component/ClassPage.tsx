@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppBar, Link } from "../ui";
 import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
+import { AppBar } from "./AppBar";
 import { AppState } from "../state";
+import { Link } from "./Link";
 
 export type Props = {
   readonly a: AppState;

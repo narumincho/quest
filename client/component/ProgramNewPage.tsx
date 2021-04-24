@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppBar, Link } from "../ui";
 import {
   Box,
   Breadcrumbs,
@@ -13,7 +12,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import { AppBar } from "./AppBar";
 import { AppState } from "../state";
+import { Link } from "./Link";
 import { stringToValidProgramName } from "../../common/validation";
 
 export type Props = {

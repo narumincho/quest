@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AccountCard, AppBar, ClassCard, QuestionTreeList } from "../ui";
 import {
   AppState,
   RequestClassListInProgramState,
@@ -13,8 +12,12 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import { AccountCard } from "./AccountCard";
 import { Add } from "@material-ui/icons";
-import { Link } from "../ui/Link";
+import { AppBar } from "./AppBar";
+import { ClassCard } from "./ClassCard";
+import { Link } from "./Link";
+import { QuestionTreeList } from "./QuestionTree";
 
 export type Props = {
   readonly programId: d.QProgramId;

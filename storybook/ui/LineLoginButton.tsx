@@ -1,5 +1,5 @@
 import { Meta, Story } from "@storybook/react";
-import { LineLoginButton } from "../../client/ui/LineLoginButton";
+import { LineLoginButton } from "../../client/component/LineLoginButton";
 import React from "react";
 import { mockAppState } from "../mock";
 
