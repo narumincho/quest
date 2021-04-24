@@ -10,7 +10,7 @@ import {
 import { fullScreen } from "../decorators";
 
 const meta: Meta = {
-  title: "Page/AdminTop",
+  title: "AdminTopPage",
   component: AdminTopPage,
   parameters: {
     layout: "fullscreen",

@@ -5,7 +5,7 @@ import { QuestionNewPage } from "../../client/component/QuestionNewPage";
 import { fullScreen } from "../decorators";
 
 const meta: Meta = {
-  title: "Page/NewQuestion",
+  title: "QuestionNewPage",
   component: QuestionNewPage,
   parameters: {
     layout: "fullscreen",

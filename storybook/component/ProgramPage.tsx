@@ -5,7 +5,7 @@ import { ProgramPage } from "../../client/component/ProgramPage";
 import { fullScreen } from "../decorators";
 
 const meta: Meta = {
-  title: "Page/Program",
+  title: "ProgramPage",
   component: ProgramPage,
   parameters: {
     layout: "fullscreen",

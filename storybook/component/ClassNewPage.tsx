@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { LogInPage } from "../../client/component/LogInPage";
+import { mockAppState, mockProgramIdA } from "../mock";
+import { ClassNewPage } from "../../client/component/ClassNewPage";
 import { fullScreen } from "../decorators";
-import { mockAppState } from "../mock";
 
 const meta: Meta = {
-  title: "Page/Login",
-  component: LogInPage,
+  title: "ClassNewPage",
+  component: ClassNewPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -15,5 +15,5 @@ const meta: Meta = {
 export default meta;
 
 export const Default: Story<never> = () => (
-  <LogInPage appState={mockAppState} />
+  <ClassNewPage a={mockAppState} programId={mockProgramIdA} />
 );

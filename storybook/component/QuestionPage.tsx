@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { ProgramNewPage } from "../../client/component/ProgramNewPage";
+import { mockAppState, muzintou } from "../mock";
+import { QuestionPage } from "../../client/component/QuestionPage";
 import { fullScreen } from "../decorators";
-import { mockAppState } from "../mock";
 
 const meta: Meta = {
-  title: "Page/NewProgram",
-  component: ProgramNewPage,
+  title: "QuestionPage",
+  component: QuestionPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -15,5 +15,5 @@ const meta: Meta = {
 export default meta;
 
 export const Default: Story<never> = () => (
-  <ProgramNewPage appState={mockAppState} />
+  <QuestionPage appState={mockAppState} questionId={muzintou} />
 );
