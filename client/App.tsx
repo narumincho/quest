@@ -1,18 +1,18 @@
 import * as React from "react";
 import * as d from "../data";
 import { AppState, useAppState } from "./state";
-import { AdminTop } from "./page/AdminTop";
-import { Class } from "./page/Class";
-import { ClassInvitation } from "./page/ClassInvitation";
-import { EditQuestion } from "./page/EditQuestion";
-import { Loading } from "./page/Loading";
-import { Login } from "./page/Login";
-import { NewClass } from "./page/NewClass";
-import { NewProgram } from "./page/NewProgram";
-import { NewQuestion } from "./page/NewQuestion";
-import { Program } from "./page/Program";
-import { Question } from "./page/Question";
-import { Setting } from "./page/Setting";
+import { AdminTopPage } from "./component/AdminTopPage";
+import { ClassInvitationPage } from "./component/ClassInvitationPage";
+import { ClassNewPage } from "./component/ClassNewPage";
+import { ClassPage } from "./component/ClassPage";
+import { LoadingPage } from "./component/LoadingPage";
+import { LogInPage } from "./component/LogInPage";
+import { ProgramNewPage } from "./component/ProgramNewPage";
+import { ProgramPage } from "./component/ProgramPage";
+import { QuestionEditPage } from "./component/QuestionEditPage";
+import { QuestionNewPage } from "./component/QuestionNewPage";
+import { QuestionPage } from "./component/QuestionPage";
+import { SettingPage } from "./component/SettingPage";
 
 export const App: React.VFC<Record<never, never>> = () => {
   const appState = useAppState();
@@ -29,9 +29,9 @@ export const App: React.VFC<Record<never, never>> = () => {
     case "NoLogin":
     case "RequestingLoginUrl":
     case "JumpingPage":
-      return <Login appState={appState} />;
+      return <LogInPage appState={appState} />;
     default:
-      return <Loading />;
+      return <LoadingPage />;
   }
 };
 
@@ -43,18 +43,21 @@ const LoggedIn: React.VFC<{
   const location = props.appState.location;
   switch (location._) {
     case "Top":
-      return <AdminTop appState={props.appState} />;
+      return <AdminTopPage appState={props.appState} />;
     case "Setting":
-      return <Setting account={props.account} appState={props.appState} />;
+      return <SettingPage account={props.account} appState={props.appState} />;
     case "NewProgram":
-      return <NewProgram appState={props.appState} />;
+      return <ProgramNewPage appState={props.appState} />;
     case "Program":
       return (
-        <Program programId={location.qProgramId} appState={props.appState} />
+        <ProgramPage
+          programId={location.qProgramId}
+          appState={props.appState}
+        />
       );
     case "NewQuestion":
       return (
-        <NewQuestion
+        <QuestionNewPage
           appState={props.appState}
           programId={location.qNewQuestionParameter.programId}
           parent={
@@ -66,21 +69,27 @@ const LoggedIn: React.VFC<{
       );
     case "Question":
       return (
-        <Question questionId={location.qQuestionId} appState={props.appState} />
+        <QuestionPage
+          questionId={location.qQuestionId}
+          appState={props.appState}
+        />
       );
     case "NewClass":
-      return <NewClass a={props.appState} programId={location.qProgramId} />;
+      return (
+        <ClassNewPage a={props.appState} programId={location.qProgramId} />
+      );
     case "Class":
-      return <Class a={props.appState} classId={location.qClassId} />;
+      return <ClassPage a={props.appState} classId={location.qClassId} />;
     case "ClassInvitation":
       return (
-        <ClassInvitation
+        <ClassInvitationPage
+          appState={props.appState}
           classInvitationToken={location.qClassInvitationToken}
         />
       );
     case "EditQuestion":
       return (
-        <EditQuestion
+        <QuestionEditPage
           appState={props.appState}
           questionId={location.qQuestionId}
         />
