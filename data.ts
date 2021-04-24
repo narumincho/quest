@@ -957,6 +957,29 @@
  
  
  /**
+  * 質問を編集する
+  * @typePartId 98bc46a897ffdb9d86782890776c9221
+  */
+ export type QEditQuestion = { 
+ /**
+  * accountToken
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * questionId
+  */
+ readonly questionId: QQuestionId; 
+ /**
+  * 新たな質問文
+  */
+ readonly name: String; 
+ /**
+  * 親の質問
+  */
+ readonly parentId: Maybe<QQuestionId> };
+ 
+ 
+ /**
   * カスタム型. 代数的データ型
   * @typePartId a0cee28e982f5fbcae6b2c7bd1e27e2a
   */
@@ -1703,25 +1726,6 @@
   * @typePartId fddd2a65994fae205dd636f3a6b9f1ea
   */
  export type TsMember = { readonly _: "Spread"; readonly tsExpr: TsExpr } | { readonly _: "KeyValue"; readonly keyValue: KeyValue };
- 
- 
- /**
-  * 質問を編集する
-  * @typePartId 98bc46a897ffdb9d86782890776c9221
-  */
- export type QEditQuestion = { 
- /**
-  * accountToken
-  */
- readonly accountToken: AccountToken; 
- /**
-  * questionId
-  */
- readonly questionId: QQuestionId; 
- /**
-  * 新たな質問文
-  */
- readonly name: String };
  
  
  /**
@@ -4969,6 +4973,31 @@
  
  
  /**
+  * 質問を編集する
+  * @typePartId 98bc46a897ffdb9d86782890776c9221
+  */
+ export const QEditQuestion: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QEditQuestion>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QEditQuestion) => QEditQuestion } = { typePartId: "98bc46a897ffdb9d86782890776c9221" as TypePartId, helper: (qEditQuestion: QEditQuestion): QEditQuestion => qEditQuestion, codec: { encode: (value: QEditQuestion): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QQuestionId.codec.encode(value.questionId)).concat(String.codec.encode(value.name)).concat(Maybe.codec(QQuestionId.codec).encode(value.parentId))), decode: (index: number, binary: Uint8Array): { readonly result: QEditQuestion; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const questionIdAndNextIndex: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(questionIdAndNextIndex.nextIndex, binary);
+   const parentIdAndNextIndex: { readonly result: Maybe<QQuestionId>; readonly nextIndex: number } = Maybe.codec(QQuestionId.codec).decode(nameAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, name: nameAndNextIndex.result, parentId: parentIdAndNextIndex.result }, nextIndex: parentIdAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
   * カスタム型. 代数的データ型
   * @typePartId a0cee28e982f5fbcae6b2c7bd1e27e2a
   */
@@ -6476,30 +6505,6 @@
      return { result: TsMember.KeyValue(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
- } } };
- 
- 
- /**
-  * 質問を編集する
-  * @typePartId 98bc46a897ffdb9d86782890776c9221
-  */
- export const QEditQuestion: { 
- /**
-  * definy.app内 の 型パーツの Id
-  */
- readonly typePartId: TypePartId; 
- /**
-  * 独自のバイナリ形式の変換処理ができるコーデック
-  */
- readonly codec: Codec<QEditQuestion>; 
- /**
-  * 型を合わせる上で便利なヘルパー関数
-  */
- readonly helper: (a: QEditQuestion) => QEditQuestion } = { typePartId: "98bc46a897ffdb9d86782890776c9221" as TypePartId, helper: (qEditQuestion: QEditQuestion): QEditQuestion => qEditQuestion, codec: { encode: (value: QEditQuestion): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QQuestionId.codec.encode(value.questionId)).concat(String.codec.encode(value.name))), decode: (index: number, binary: Uint8Array): { readonly result: QEditQuestion; readonly nextIndex: number } => {
-   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
-   const questionIdAndNextIndex: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
-   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(questionIdAndNextIndex.nextIndex, binary);
-   return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, name: nameAndNextIndex.result }, nextIndex: nameAndNextIndex.nextIndex };
  } } };
  
  

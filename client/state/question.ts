@@ -1,4 +1,5 @@
 import * as d from "../../data";
+import { questionParentIsValid } from "../../common/validation";
 import { useState } from "react";
 
 export type QuestionTree = {
@@ -26,6 +27,13 @@ export type UseQuestionMapResult = {
     id: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
   readonly questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
+  /** ログアウトしたとき, キャッシュを削除する */
+  readonly deleteAll: () => void;
+  /** 親の質問になることができる質問を, キャッシュから取得する */
+  readonly getQuestionThatCanBeParentList: (
+    programId: d.QProgramId,
+    questionId: d.QQuestionId
+  ) => ReadonlyArray<d.QQuestion>;
 };
 
 export const useQuestionMap = (): UseQuestionMapResult => {
@@ -67,9 +75,30 @@ export const useQuestionMap = (): UseQuestionMapResult => {
       getParentQuestionList(id, questionMap),
     questionTree: (programId): ReadonlyArray<QuestionTree> =>
       getQuestionTree(programId, [...questionMap.values()]),
+    deleteAll: () => {
+      setQuestionMap(new Map());
+    },
+    getQuestionThatCanBeParentList: (programId, questionId) => {
+      const result: Array<d.QQuestion> = [];
+      for (const question of questionMap.values()) {
+        const validationResult = questionParentIsValid(
+          question.id,
+          questionId,
+          programId,
+          questionMap
+        );
+        if (validationResult.isValid) {
+          result.push(question);
+        }
+      }
+      return result;
+    },
   };
 };
 
+/**
+ * 質問の直接な子供を取得する
+ */
 export const questionChildren = (
   id: d.QQuestionId,
   questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
@@ -102,6 +131,11 @@ export const getParentQuestionList = (
   }
 };
 
+/**
+ * プログラム全体の質問の木構造をつくる
+ * @param programId プログラムID
+ * @param questionList すべての質問が含まれているリスト
+ */
 export const getQuestionTree = (
   programId: d.QProgramId,
   questionList: ReadonlyArray<d.QQuestion>
@@ -112,14 +146,19 @@ export const getQuestionTree = (
       treeList.push({
         id: question.id,
         text: question.name,
-        children: getQuestionChildren(question.id, questionList),
+        children: getQuestionChildrenTree(question.id, questionList),
       });
     }
   }
   return treeList;
 };
 
-const getQuestionChildren = (
+/**
+ * 質問の木構造をつくる
+ * @param questionId 木構造の1番上の親
+ * @param questionList すべての質問が含まれているリスト
+ */
+const getQuestionChildrenTree = (
   questionId: d.QQuestionId,
   questionList: ReadonlyArray<d.QQuestion>
 ): ReadonlyArray<QuestionTree> => {
@@ -129,7 +168,7 @@ const getQuestionChildren = (
       result.push({
         id: question.id,
         text: question.name,
-        children: getQuestionChildren(question.id, questionList),
+        children: getQuestionChildrenTree(question.id, questionList),
       });
     }
   }

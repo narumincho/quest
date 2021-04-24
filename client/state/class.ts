@@ -7,6 +7,8 @@ export type UseClassMapResult = {
   /** 1度に複数のクラスをリロードするまで保存する */
   setClassList: (classList: ReadonlyArray<d.QClass>) => void;
   getById: (id: d.QClassId) => d.QClass | undefined;
+  /** ログアウトしたとき, キャッシュを削除する */
+  deleteAll: () => void;
 };
 
 export const useClassMap = (): UseClassMapResult => {
@@ -30,6 +32,9 @@ export const useClassMap = (): UseClassMapResult => {
         }
         return map;
       });
+    },
+    deleteAll: () => {
+      setClassMap(new Map());
     },
   };
 };

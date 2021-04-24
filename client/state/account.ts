@@ -8,6 +8,8 @@ export type UseAccountMapResult = {
   setList: (accountList: ReadonlyArray<d.QAccount>) => void;
   /** アカウントをキャッシュから取得する */
   getById: (id: d.AccountId) => d.QAccount | undefined;
+  /** ログアウトしたとき, キャッシュを削除する */
+  deleteAll: () => void;
 };
 
 export const useAccountMap = (): UseAccountMapResult => {
@@ -31,6 +33,9 @@ export const useAccountMap = (): UseAccountMapResult => {
         }
         return map;
       });
+    },
+    deleteAll: () => {
+      setAccountMap(new Map());
     },
   };
 };

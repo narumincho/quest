@@ -134,7 +134,35 @@ export const apiFunc: {
     if (questionTextResult._ === "Error") {
       throw new Error(questionTextResult.error);
     }
-    firebaseInterface.setQuestion(parameter.questionId, questionTextResult.ok);
+    if (parameter.parentId._ === "Nothing") {
+      firebaseInterface.setQuestion(
+        parameter.questionId,
+        questionTextResult.ok,
+        null
+      );
+      return {
+        ...question,
+        name: questionTextResult.ok,
+      };
+    }
+    const parentValidationResult = validation.questionParentIsValid(
+      parameter.questionId,
+      parameter.parentId.value,
+      question.programId,
+      new Map(
+        (
+          await firebaseInterface.getQuestionListByProgramId(question.programId)
+        ).map((q) => [q.id, q])
+      )
+    );
+    if (!parentValidationResult.isValid) {
+      throw new Error(parentValidationResult.reason);
+    }
+    firebaseInterface.setQuestion(
+      parameter.questionId,
+      questionTextResult.ok,
+      parameter.parentId.value
+    );
     return {
       ...question,
       name: questionTextResult.ok,

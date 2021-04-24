@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Paper, Typography, makeStyles } from "@material-ui/core";
+import { Box, Button, Paper, Typography, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 import { Link } from "./Link";
 
@@ -18,6 +18,9 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * 質問へのリンクがついた, 質問の内容を表示するカード
+ */
 export const QuestionCard: React.VFC<Props> = (props) => {
   const classes = useStyles();
   const question = props.appState.question(props.questionId);
@@ -33,5 +36,28 @@ export const QuestionCard: React.VFC<Props> = (props) => {
         <Typography>{question.name}</Typography>
       </Paper>
     </Link>
+  );
+};
+
+/**
+ * 質問の内容を表示するカード
+ */
+export const QuestionButton: React.VFC<Props & { onClick: () => void }> = (
+  props
+) => {
+  const classes = useStyles();
+  const question = props.appState.question(props.questionId);
+  if (question === undefined) {
+    return <Box>質問の情報を読込中</Box>;
+  }
+  return (
+    <Button
+      variant="contained"
+      onClick={props.onClick}
+      fullWidth
+      className={classes.card}
+    >
+      <Typography>{question.name}</Typography>
+    </Button>
   );
 };

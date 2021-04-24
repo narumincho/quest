@@ -59,6 +59,8 @@ export type UseProgramMapResult = {
     programId: d.QProgramId,
     classIdList: ReadonlyArray<d.QClassId>
   ) => void;
+  /** ログアウトしたとき, キャッシュを削除する */
+  deleteAll: () => void;
 };
 
 export const useProgramMap = (): UseProgramMapResult => {
@@ -149,6 +151,9 @@ export const useProgramMap = (): UseProgramMapResult => {
           classIdList: { tag: "Loaded", classIdList },
         });
       });
+    },
+    deleteAll: () => {
+      setProgramMap(new Map());
     },
   };
 };
