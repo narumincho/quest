@@ -4,7 +4,7 @@ import { mockAppState, muzintou } from "../mock";
 import { QuestionCard } from "../../client/component/QuestionCard";
 
 const meta: Meta = {
-  title: "ui/QuestionCard",
+  title: "QuestionCard",
   component: QuestionCard,
 };
 export default meta;

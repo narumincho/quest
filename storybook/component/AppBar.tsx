@@ -4,7 +4,7 @@ import React from "react";
 import { mockAppState } from "../mock";
 
 const meta: Meta = {
-  title: "ui/AppBar",
+  title: "AppBar",
   component: AppBar,
 };
 export default meta;

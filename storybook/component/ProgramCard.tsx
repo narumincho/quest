@@ -4,7 +4,7 @@ import { ProgramCard } from "../../client/component/ProgramCard";
 import React from "react";
 
 const meta: Meta = {
-  title: "ui/ProgramCard",
+  title: "ProgramCard",
   component: ProgramCard,
 };
 export default meta;

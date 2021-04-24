@@ -4,7 +4,7 @@ import { mockAccountId, mockAppState } from "../mock";
 import { AccountCard } from "../../client/component/AccountCard";
 
 const meta: Meta = {
-  title: "ui/AccountCard",
+  title: "AccountCard",
   component: AccountCard,
 };
 export default meta;

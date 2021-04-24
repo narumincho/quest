@@ -4,7 +4,7 @@ import { mockAppState, mockClassId } from "../mock";
 import { ClassCard } from "../../client/component/ClassCard";
 
 const meta: Meta = {
-  title: "ui/ClassCard",
+  title: "ClassCard",
   component: ClassCard,
 };
 export default meta;

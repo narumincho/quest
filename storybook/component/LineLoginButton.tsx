@@ -4,7 +4,7 @@ import React from "react";
 import { mockAppState } from "../mock";
 
 const meta: Meta = {
-  title: "ui/LineLoginButton",
+  title: "LineLoginButton",
   component: LineLoginButton,
 };
 export default meta;
