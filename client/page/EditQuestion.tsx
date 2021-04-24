@@ -7,11 +7,19 @@ import {
   Button,
   CircularProgress,
   Dialog,
+  DialogContent,
   DialogTitle,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
   TextField,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
 import { AppState } from "../state";
+import { Close } from "@material-ui/icons";
+import { QuestionButton } from "../ui/QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
 
 export const EditQuestion: React.VFC<{
@@ -45,12 +53,26 @@ export const EditQuestion: React.VFC<{
   return <EditQuestionLoaded appState={props.appState} question={question} />;
 };
 
+type EditState = "none" | "selectParent" | "requesting";
+
+const useStyles = makeStyles({
+  dialogTitle: {
+    display: "grid",
+    gridTemplateColumns: "1fr auto",
+    alignItems: "center",
+  },
+});
+
 const EditQuestionLoaded: React.VFC<{
   appState: AppState;
   question: d.QQuestion;
 }> = (props) => {
+  const classes = useStyles();
   const [text, setText] = React.useState<string>(props.question.name);
-  const [isRequesting, setIsRequesting] = React.useState<boolean>(false);
+  const [parentQuestionId, setParentQuestionId] = React.useState<
+    d.Maybe<d.QQuestionId>
+  >(props.question.parent);
+  const [editState, setEditState] = React.useState<EditState>("none");
   const textResult = stringToValidQuestionText(text);
   const program = props.appState.program(props.question.programId);
   const parentList = props.appState.questionParentList(props.question.parent);
@@ -60,7 +82,7 @@ const EditQuestionLoaded: React.VFC<{
       return;
     }
     props.appState.editQuestion(props.question.id, textResult.ok);
-    setIsRequesting(true);
+    setEditState("requesting");
   };
   return (
     <Box>
@@ -106,9 +128,32 @@ const EditQuestionLoaded: React.VFC<{
             helperText={textResult._ === "Error" ? textResult.error : undefined}
             variant="outlined"
             InputProps={{
-              readOnly: isRequesting,
+              readOnly: editState !== "none",
             }}
           />
+        </Box>
+
+        <Box padding={1}>
+          <Box>親の質問</Box>
+          {parentQuestionId._ === "Just" ? (
+            <QuestionButton
+              appState={props.appState}
+              questionId={parentQuestionId.value}
+              onClick={() => {
+                setEditState("selectParent");
+              }}
+            />
+          ) : (
+            <Button
+              onClick={() => {
+                setEditState("selectParent");
+              }}
+              fullWidth
+              variant="contained"
+            >
+              --指定なし--
+            </Button>
+          )}
         </Box>
         <Box padding={1}>
           <Button
@@ -121,11 +166,71 @@ const EditQuestionLoaded: React.VFC<{
           </Button>
         </Box>
       </Box>
-      <Dialog open={isRequesting}>
+      <Dialog open={editState === "requesting"}>
         <DialogTitle>質問を保存中</DialogTitle>
         <Box padding={2} display="grid" justifyContent="center">
           <CircularProgress />
         </Box>
+      </Dialog>
+      <Dialog
+        fullScreen
+        open={editState === "selectParent"}
+        onClose={() => {
+          setEditState("none");
+        }}
+        scroll="paper"
+      >
+        <DialogTitle>
+          <Box className={classes.dialogTitle}>
+            親の質問を選択
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={() => {
+                setEditState("none");
+              }}
+              aria-label="close"
+            >
+              <Close />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent dividers>
+          <List>
+            <ListItem
+              button
+              onClick={() => {
+                setEditState("none");
+                setParentQuestionId(d.Maybe.Nothing());
+              }}
+              selected={parentQuestionId._ === "Nothing"}
+            >
+              <ListItemText primary="--指定なし--" />
+            </ListItem>
+            {props.appState
+              .getQuestionListInProgramAndNotChildren(
+                props.question.programId,
+                props.question.id
+              )
+              .map((q) => {
+                return (
+                  <ListItem
+                    button
+                    onClick={() => {
+                      setEditState("none");
+                      setParentQuestionId(d.Maybe.Just(q.id));
+                    }}
+                    selected={
+                      parentQuestionId._ === "Just" &&
+                      parentQuestionId.value === q.id
+                    }
+                  >
+                    <ListItemText primary={q.name} />
+                  </ListItem>
+                );
+              })}
+          </List>
+        </DialogContent>
       </Dialog>
     </Box>
   );

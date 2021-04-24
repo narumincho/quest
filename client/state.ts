@@ -96,6 +96,11 @@ export type AppState = {
   shareClassInviteLink: (classId: d.QClassId) => void;
   /** 質問を編集する */
   editQuestion: (questionId: d.QQuestionId, name: string) => void;
+  /** プログラムに属して, かつ 質問の子孫でなない質問をキャッシュから取得する */
+  getQuestionListInProgramAndNotChildren: (
+    programId: d.QProgramId,
+    questionId: d.QQuestionId
+  ) => ReadonlyArray<d.QQuestion>;
 };
 
 export type LoginState =
@@ -506,6 +511,8 @@ export const useAppState = (): AppState => {
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
+    getQuestionListInProgramAndNotChildren:
+      questionState.getQuestionListInProgramAndNotChildren,
   };
 };
 

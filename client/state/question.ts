@@ -27,7 +27,12 @@ export type UseQuestionMapResult = {
   ) => ReadonlyArray<d.QQuestion>;
   readonly questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
   /** ログアウトしたとき, キャッシュを削除する */
-  deleteAll: () => void;
+  readonly deleteAll: () => void;
+  /** プログラムに属して, かつ 質問の子孫でなない質問をキャッシュから取得する */
+  readonly getQuestionListInProgramAndNotChildren: (
+    programId: d.QProgramId,
+    questionId: d.QQuestionId
+  ) => ReadonlyArray<d.QQuestion>;
 };
 
 export const useQuestionMap = (): UseQuestionMapResult => {
@@ -72,9 +77,24 @@ export const useQuestionMap = (): UseQuestionMapResult => {
     deleteAll: () => {
       setQuestionMap(new Map());
     },
+    getQuestionListInProgramAndNotChildren: (programId, questionId) => {
+      const result: Array<d.QQuestion> = [];
+      for (const question of questionMap.values()) {
+        if (
+          question.programId === programId &&
+          !isChildren(question.id, questionId, questionMap)
+        ) {
+          result.push(question);
+        }
+      }
+      return result;
+    },
   };
 };
 
+/**
+ * 質問の直接な子供を取得する
+ */
 export const questionChildren = (
   id: d.QQuestionId,
   questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
@@ -107,6 +127,45 @@ export const getParentQuestionList = (
   }
 };
 
+/**
+ * 質問が, 指定した質問の子供になっているか.
+ * 直接的でなくても, 孫や, ひ孫などなら `true` を返す.
+ * 質問が見つからなかったときは, `false` を返す
+ * `maybeChildrenQuestionId` と `maybeParentQuestionId` が同じものを指定されたら, `true` を返す
+ *
+ * @param maybeChildrenQuestionId 子孫かもしれない質問ID
+ * @param maybeParentQuestionId 親かも知れない質問ID
+ * @param questionMap すべての質問が含まれたMap
+ */
+const isChildren = (
+  maybeChildrenQuestionId: d.QQuestionId,
+  maybeParentQuestionId: d.QQuestionId,
+  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+) => {
+  if (maybeChildrenQuestionId === maybeParentQuestionId) {
+    return true;
+  }
+  let targetId = maybeChildrenQuestionId;
+  while (true) {
+    const question = questionMap.get(targetId);
+    if (question === undefined) {
+      return false;
+    }
+    if (question.parent._ === "Nothing") {
+      return false;
+    }
+    if (question.parent.value === maybeParentQuestionId) {
+      return true;
+    }
+    targetId = question.parent.value;
+  }
+};
+
+/**
+ * プログラム全体の質問の木構造をつくる
+ * @param programId プログラムID
+ * @param questionList すべての質問が含まれているリスト
+ */
 export const getQuestionTree = (
   programId: d.QProgramId,
   questionList: ReadonlyArray<d.QQuestion>
@@ -117,14 +176,19 @@ export const getQuestionTree = (
       treeList.push({
         id: question.id,
         text: question.name,
-        children: getQuestionChildren(question.id, questionList),
+        children: getQuestionChildrenTree(question.id, questionList),
       });
     }
   }
   return treeList;
 };
 
-const getQuestionChildren = (
+/**
+ * 質問の木構造をつくる
+ * @param questionId 木構造の1番上の親
+ * @param questionList すべての質問が含まれているリスト
+ */
+const getQuestionChildrenTree = (
   questionId: d.QQuestionId,
   questionList: ReadonlyArray<d.QQuestion>
 ): ReadonlyArray<QuestionTree> => {
@@ -134,7 +198,7 @@ const getQuestionChildren = (
       result.push({
         id: question.id,
         text: question.name,
-        children: getQuestionChildren(question.id, questionList),
+        children: getQuestionChildrenTree(question.id, questionList),
       });
     }
   }
