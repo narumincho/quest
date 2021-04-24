@@ -83,6 +83,7 @@ const LoggedIn: React.VFC<{
     case "ClassInvitation":
       return (
         <ClassInvitationPage
+          appState={props.appState}
           classInvitationToken={location.qClassInvitationToken}
         />
       );

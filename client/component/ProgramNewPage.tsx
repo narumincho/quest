@@ -12,9 +12,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 import { stringToValidProgramName } from "../../common/validation";
 
 export type Props = {
@@ -47,8 +47,7 @@ export const ProgramNewPage: React.VFC<Props> = (props) => {
     props.appState.createProgram(projectName);
   };
   return (
-    <Box>
-      <AppBar appState={props.appState} />
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -111,6 +110,6 @@ export const ProgramNewPage: React.VFC<Props> = (props) => {
           <CircularProgress />
         </Box>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 };

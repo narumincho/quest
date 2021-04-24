@@ -17,6 +17,7 @@ import { Add } from "@material-ui/icons";
 import { AppBar } from "./AppBar";
 import { ClassCard } from "./ClassCard";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 import { QuestionTreeList } from "./QuestionTree";
 
 export type Props = {
@@ -34,8 +35,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
 
   if (program === undefined) {
     return (
-      <Box>
-        <AppBar appState={props.appState} />
+      <PageContainer appState={props.appState}>
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -50,13 +50,12 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>プログラムID: {props.programId}</Typography>
         </Box>
-      </Box>
+      </PageContainer>
     );
   }
 
   return (
-    <Box>
-      <AppBar appState={props.appState} />
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -120,7 +119,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
           <Typography>プログラムID: {props.programId}</Typography>
         </Box>
       </Box>
-    </Box>
+    </PageContainer>
   );
 };
 

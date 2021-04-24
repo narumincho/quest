@@ -10,9 +10,9 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
@@ -43,8 +43,7 @@ export const QuestionNewPage: React.VFC<{
       ? []
       : props.appState.questionParentList(d.Maybe.Just(props.parent));
   return (
-    <Box>
-      <AppBar appState={props.appState} />
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -122,7 +121,7 @@ export const QuestionNewPage: React.VFC<{
           <CircularProgress />
         </Box>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 };
 

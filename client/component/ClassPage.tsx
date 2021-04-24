@@ -4,6 +4,7 @@ import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
 import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 
 export type Props = {
   readonly a: AppState;
@@ -14,8 +15,7 @@ export const ClassPage: React.VFC<Props> = (props) => {
   const qClass = props.a.getClass(props.classId);
   if (qClass === undefined) {
     return (
-      <Box>
-        <AppBar appState={props.a} />
+      <PageContainer appState={props.a}>
         <Box>クラス読み込み準備中</Box>
         <Box padding={1}>
           <Box padding={1}>
@@ -30,13 +30,12 @@ export const ClassPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>クラスID: {props.classId}</Typography>
         </Box>
-      </Box>
+      </PageContainer>
     );
   }
   const program = props.a.program(qClass.programId);
   return (
-    <Box>
-      <AppBar appState={props.a} />
+    <PageContainer appState={props.a}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -72,6 +71,6 @@ export const ClassPage: React.VFC<Props> = (props) => {
           <Typography>クラスID: {props.classId}</Typography>
         </Box>
       </Box>
-    </Box>
+    </PageContainer>
   );
 };

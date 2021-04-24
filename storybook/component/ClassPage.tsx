@@ -2,15 +2,10 @@ import * as React from "react";
 import { Meta, Story } from "@storybook/react";
 import { mockAppState, mockClassId } from "../mock";
 import { ClassPage } from "../../client/component/ClassPage";
-import { fullScreen } from "../decorators";
 
 const meta: Meta = {
   title: "ClassPage",
   component: ClassPage,
-  parameters: {
-    layout: "fullscreen",
-  },
-  decorators: [fullScreen],
 };
 export default meta;
 

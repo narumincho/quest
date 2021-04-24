@@ -1,8 +1,15 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState } from "../state";
+import { PageContainer } from "./PageContainer";
 
 export const ClassInvitationPage: React.VFC<{
+  appState: AppState;
   classInvitationToken: d.QClassInvitationToken;
-}> = () => {
-  return <div>招待URLを開いたようだね</div>;
+}> = (props) => {
+  return (
+    <PageContainer isHideBack appState={props.appState}>
+      招待URLを開いたようだね
+    </PageContainer>
+  );
 };

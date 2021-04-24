@@ -7,15 +7,10 @@ import {
   mockProgramIdB,
   mockProgramIdLong,
 } from "../mock";
-import { fullScreen } from "../decorators";
 
 const meta: Meta = {
   title: "AdminTopPage",
   component: AdminTopPage,
-  parameters: {
-    layout: "fullscreen",
-  },
-  decorators: [fullScreen],
 };
 export default meta;
 

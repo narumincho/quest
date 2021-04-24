@@ -11,14 +11,13 @@ import {
 import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 
 export type Props = { account: d.QAccount; appState: AppState };
 
 export const SettingPage: React.VFC<Props> = (props) => {
   return (
-    <Box>
-      <AppBar appState={props.appState} />
-
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -50,6 +49,6 @@ export const SettingPage: React.VFC<Props> = (props) => {
           </Button>
         </Box>
       </Box>
-    </Box>
+    </PageContainer>
   );
 };

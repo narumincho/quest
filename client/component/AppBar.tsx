@@ -20,9 +20,8 @@ export type Props = {
   appState: AppState;
   /**
    * 戻るボタンを隠すか
-   * @default false
    */
-  isHideBack?: boolean;
+  isHideBack: boolean;
 };
 
 const useStyles = makeStyles({
@@ -34,7 +33,7 @@ const useStyles = makeStyles({
 export const AppBar: React.VFC<Props> = (props) => {
   const classes = useStyles();
   return (
-    <MAppBar position="static">
+    <MAppBar position="sticky">
       <Toolbar>
         {props.isHideBack ? (
           <></>

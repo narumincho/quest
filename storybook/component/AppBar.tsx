@@ -9,4 +9,6 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<never> = () => <AppBar appState={mockAppState} />;
+export const Default: Story<{ isHideBack: boolean }> = (props) => (
+  <AppBar isHideBack={props.isHideBack} appState={mockAppState} />
+);

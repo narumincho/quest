@@ -9,9 +9,9 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
 
@@ -38,8 +38,7 @@ export const QuestionPage: React.VFC<{
 
   if (question === undefined) {
     return (
-      <Box>
-        <AppBar appState={props.appState} />
+      <PageContainer appState={props.appState}>
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -54,15 +53,14 @@ export const QuestionPage: React.VFC<{
         <Box padding={1}>
           <Typography>質問ID: {props.questionId}</Typography>
         </Box>
-      </Box>
+      </PageContainer>
     );
   }
   const program = props.appState.program(question.programId);
   const parentList = props.appState.questionParentList(question.parent);
 
   return (
-    <Box>
-      <AppBar appState={props.appState} />
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -140,6 +138,6 @@ export const QuestionPage: React.VFC<{
           質問を編集する
         </Fab>
       </Link>
-    </Box>
+    </PageContainer>
   );
 };

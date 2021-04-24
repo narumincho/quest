@@ -16,10 +16,10 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Close } from "@material-ui/icons";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 import { QuestionButton } from "./QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
 
@@ -31,8 +31,7 @@ export const QuestionEditPage: React.VFC<{
 
   if (question === undefined) {
     return (
-      <Box>
-        <AppBar appState={props.appState} />
+      <PageContainer appState={props.appState}>
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -47,7 +46,7 @@ export const QuestionEditPage: React.VFC<{
         <Box padding={1}>
           <Typography>質問ID: {props.questionId}</Typography>
         </Box>
-      </Box>
+      </PageContainer>
     );
   }
 
@@ -90,8 +89,7 @@ const EditQuestionLoaded: React.VFC<{
     setEditState("requesting");
   };
   return (
-    <Box>
-      <AppBar appState={props.appState} />
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -237,6 +235,6 @@ const EditQuestionLoaded: React.VFC<{
           </List>
         </DialogContent>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 };

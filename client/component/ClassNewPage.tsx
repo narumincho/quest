@@ -12,9 +12,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 import { stringToValidClassName } from "../../common/validation";
 
 const useStyles = makeStyles({
@@ -48,8 +48,7 @@ export const ClassNewPage: React.VFC<{
     props.a.createClass({ className, programId: props.programId });
   };
   return (
-    <Box>
-      <AppBar appState={props.a} />
+    <PageContainer appState={props.a}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -118,6 +117,6 @@ export const ClassNewPage: React.VFC<{
           <CircularProgress />
         </Box>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 };

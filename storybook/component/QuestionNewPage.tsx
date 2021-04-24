@@ -2,15 +2,10 @@ import * as React from "react";
 import { Meta, Story } from "@storybook/react";
 import { mockAppState, mockProgramIdA, muzintou } from "../mock";
 import { QuestionNewPage } from "../../client/component/QuestionNewPage";
-import { fullScreen } from "../decorators";
 
 const meta: Meta = {
   title: "QuestionNewPage",
   component: QuestionNewPage,
-  parameters: {
-    layout: "fullscreen",
-  },
-  decorators: [fullScreen],
 };
 export default meta;
 

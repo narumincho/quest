@@ -2,9 +2,9 @@ import * as React from "react";
 import * as d from "../../data";
 import { Box, Fab, Typography, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { Skeleton } from "@material-ui/lab";
 
@@ -28,8 +28,7 @@ export const AdminTopPage: React.VFC<Props> = (props) => {
   }, []);
 
   return (
-    <Box>
-      <AppBar isHideBack appState={props.appState} />
+    <PageContainer isHideBack appState={props.appState}>
       <Box padding={1}>
         <Typography variant="h5">作成したプログラム</Typography>
       </Box>
@@ -45,7 +44,7 @@ export const AdminTopPage: React.VFC<Props> = (props) => {
           プログラム作成
         </Fab>
       </Link>
-    </Box>
+    </PageContainer>
   );
 };
 
