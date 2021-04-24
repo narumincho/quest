@@ -27,7 +27,7 @@ const useStyle = makeStyles({
   },
 });
 
-export const Question: React.VFC<{
+export const QuestionPage: React.VFC<{
   appState: AppState;
   questionId: d.QQuestionId;
 }> = (props) => {

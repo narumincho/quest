@@ -16,7 +16,7 @@ import { ProgramCard } from "../ui/ProgramCard";
 import { QuestionCard } from "../ui/QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
 
-export const NewQuestion: React.VFC<{
+export const QuestionNewPage: React.VFC<{
   appState: AppState;
   programId: d.QProgramId;
   parent: d.QQuestionId | undefined;

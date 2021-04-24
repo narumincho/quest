@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const AdminTop: React.VFC<Props> = (props) => {
+export const AdminTopPage: React.VFC<Props> = (props) => {
   const classes = useStyles();
 
   React.useEffect(() => {

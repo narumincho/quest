@@ -9,7 +9,7 @@ export type Props = {
   readonly classId: d.QClassId;
 };
 
-export const Class: React.VFC<Props> = (props) => {
+export const ClassPage: React.VFC<Props> = (props) => {
   const qClass = props.a.getClass(props.classId);
   if (qClass === undefined) {
     return (

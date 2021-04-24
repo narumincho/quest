@@ -7,7 +7,7 @@ export type Props = {
   readonly appState: AppState;
 };
 
-export const Login: React.VFC<Props> = (props) => {
+export const LogInPage: React.VFC<Props> = (props) => {
   return (
     <Box>
       <AppBar appState={props.appState} isHideBack />

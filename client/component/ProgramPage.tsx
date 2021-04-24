@@ -3,7 +3,6 @@ import * as d from "../../data";
 import { AccountCard, AppBar, ClassCard, QuestionTreeList } from "../ui";
 import {
   AppState,
-  ProgramWithQuestionIdListAndClassIdList,
   RequestClassListInProgramState,
   RequestQuestionListInProgramState,
 } from "../state";
@@ -22,7 +21,7 @@ export type Props = {
   readonly appState: AppState;
 };
 
-export const Program: React.VFC<Props> = (props) => {
+export const ProgramPage: React.VFC<Props> = (props) => {
   const program = props.appState.program(props.programId);
 
   React.useEffect(() => {

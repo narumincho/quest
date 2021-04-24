@@ -22,9 +22,10 @@ const useStyles = makeStyles({
   },
 });
 
-export const NewClass: React.VFC<{ a: AppState; programId: d.QProgramId }> = (
-  props
-) => {
+export const ClassNewPage: React.VFC<{
+  a: AppState;
+  programId: d.QProgramId;
+}> = (props) => {
   const classes = useStyles();
   const [className, setClassName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);

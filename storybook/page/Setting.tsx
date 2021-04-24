@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
 import { mockAccount, mockAppState } from "../mock";
-import { Setting } from "../../client/page/Setting";
+import { SettingPage } from "../../client/component/SettingPage";
 import { fullScreen } from "../decorators";
 
 const meta: Meta = {
   title: "Page/Setting",
-  component: Setting,
+  component: SettingPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -15,5 +15,5 @@ const meta: Meta = {
 export default meta;
 
 export const Default: Story<never> = () => (
-  <Setting account={mockAccount} appState={mockAppState} />
+  <SettingPage account={mockAccount} appState={mockAppState} />
 );

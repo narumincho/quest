@@ -13,7 +13,7 @@ import { AppState } from "../state";
 
 export type Props = { account: d.QAccount; appState: AppState };
 
-export const Setting: React.VFC<Props> = (props) => {
+export const SettingPage: React.VFC<Props> = (props) => {
   return (
     <Box>
       <AppBar appState={props.appState} />

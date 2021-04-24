@@ -22,7 +22,7 @@ import { Close } from "@material-ui/icons";
 import { QuestionButton } from "../ui/QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
 
-export const EditQuestion: React.VFC<{
+export const QuestionEditPage: React.VFC<{
   appState: AppState;
   questionId: d.QQuestionId;
 }> = (props) => {

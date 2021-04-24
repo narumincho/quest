@@ -26,7 +26,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const NewProgram: React.VFC<Props> = (props) => {
+export const ProgramNewPage: React.VFC<Props> = (props) => {
   const classes = useStyles();
   const [projectName, setProjectName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);

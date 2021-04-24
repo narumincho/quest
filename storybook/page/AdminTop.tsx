@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AdminTop, Props } from "../../client/page/AdminTop";
+import { AdminTopPage, Props } from "../../client/component/AdminTopPage";
 import { Meta, Story } from "@storybook/react";
 import {
   mockAppState,
@@ -11,7 +11,7 @@ import { fullScreen } from "../decorators";
 
 const meta: Meta = {
   title: "Page/AdminTop",
-  component: AdminTop,
+  component: AdminTopPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -19,10 +19,12 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Loading: Story<Props> = () => <AdminTop appState={mockAppState} />;
+export const Loading: Story<Props> = () => (
+  <AdminTopPage appState={mockAppState} />
+);
 
 export const Requesting: Story<Props> = () => (
-  <AdminTop
+  <AdminTopPage
     appState={{
       ...mockAppState,
       createdProgramListState: { tag: "Requesting" },
@@ -31,7 +33,7 @@ export const Requesting: Story<Props> = () => (
 );
 
 export const Loaded: Story<Props> = () => (
-  <AdminTop
+  <AdminTopPage
     appState={{
       ...mockAppState,
       createdProgramListState: {
@@ -43,7 +45,7 @@ export const Loaded: Story<Props> = () => (
 );
 
 export const LoadedZero: Story<Props> = () => (
-  <AdminTop
+  <AdminTopPage
     appState={{
       ...mockAppState,
       createdProgramListState: {
