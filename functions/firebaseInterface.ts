@@ -220,10 +220,12 @@ export const getQuestion = async (
 
 export const setQuestion = async (
   questionId: d.QQuestionId,
-  name: string
+  name: string,
+  parentId: d.QQuestionId | null
 ): Promise<void> => {
   await firestore.collection("question").doc(questionId).update({
     name,
+    parent: parentId,
   });
 };
 

@@ -1,4 +1,5 @@
 import * as d from "../../data";
+import { questionParentIsValid } from "../../common/validation";
 import { useState } from "react";
 
 export type QuestionTree = {
@@ -28,8 +29,8 @@ export type UseQuestionMapResult = {
   readonly questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
   /** ログアウトしたとき, キャッシュを削除する */
   readonly deleteAll: () => void;
-  /** プログラムに属して, かつ 質問の子孫でなない質問をキャッシュから取得する */
-  readonly getQuestionListInProgramAndNotChildren: (
+  /** 親の質問になることができる質問を, キャッシュから取得する */
+  readonly getQuestionThatCanBeParentList: (
     programId: d.QProgramId,
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
@@ -77,13 +78,16 @@ export const useQuestionMap = (): UseQuestionMapResult => {
     deleteAll: () => {
       setQuestionMap(new Map());
     },
-    getQuestionListInProgramAndNotChildren: (programId, questionId) => {
+    getQuestionThatCanBeParentList: (programId, questionId) => {
       const result: Array<d.QQuestion> = [];
       for (const question of questionMap.values()) {
-        if (
-          question.programId === programId &&
-          !isChildren(question.id, questionId, questionMap)
-        ) {
+        const validationResult = questionParentIsValid(
+          question.id,
+          questionId,
+          programId,
+          questionMap
+        );
+        if (validationResult.isValid) {
           result.push(question);
         }
       }
@@ -122,40 +126,6 @@ export const getParentQuestionList = (
     result.push(question);
     if (question.parent._ === "Nothing") {
       return result;
-    }
-    targetId = question.parent.value;
-  }
-};
-
-/**
- * 質問が, 指定した質問の子供になっているか.
- * 直接的でなくても, 孫や, ひ孫などなら `true` を返す.
- * 質問が見つからなかったときは, `false` を返す
- * `maybeChildrenQuestionId` と `maybeParentQuestionId` が同じものを指定されたら, `true` を返す
- *
- * @param maybeChildrenQuestionId 子孫かもしれない質問ID
- * @param maybeParentQuestionId 親かも知れない質問ID
- * @param questionMap すべての質問が含まれたMap
- */
-const isChildren = (
-  maybeChildrenQuestionId: d.QQuestionId,
-  maybeParentQuestionId: d.QQuestionId,
-  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
-) => {
-  if (maybeChildrenQuestionId === maybeParentQuestionId) {
-    return true;
-  }
-  let targetId = maybeChildrenQuestionId;
-  while (true) {
-    const question = questionMap.get(targetId);
-    if (question === undefined) {
-      return false;
-    }
-    if (question.parent._ === "Nothing") {
-      return false;
-    }
-    if (question.parent.value === maybeParentQuestionId) {
-      return true;
     }
     targetId = question.parent.value;
   }

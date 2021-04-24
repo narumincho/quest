@@ -95,9 +95,13 @@ export type AppState = {
   /** 招待URLをシェアする */
   shareClassInviteLink: (classId: d.QClassId) => void;
   /** 質問を編集する */
-  editQuestion: (questionId: d.QQuestionId, name: string) => void;
-  /** プログラムに属して, かつ 質問の子孫でなない質問をキャッシュから取得する */
-  getQuestionListInProgramAndNotChildren: (
+  editQuestion: (
+    questionId: d.QQuestionId,
+    name: string,
+    parentId: d.Maybe<d.QQuestionId>
+  ) => void;
+  /** 親の質問になることができる質問を, キャッシュから取得する */
+  getQuestionThatCanBeParentList: (
     programId: d.QProgramId,
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
@@ -486,7 +490,7 @@ export const useAppState = (): AppState => {
           console.log(e);
         });
     },
-    editQuestion: (questionId, name) => {
+    editQuestion: (questionId, name, parentId) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
         return;
@@ -496,6 +500,7 @@ export const useAppState = (): AppState => {
           accountToken,
           questionId,
           name,
+          parentId,
         })
         .then((response) => {
           if (response._ === "Error") {
@@ -511,8 +516,8 @@ export const useAppState = (): AppState => {
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
-    getQuestionListInProgramAndNotChildren:
-      questionState.getQuestionListInProgramAndNotChildren,
+    getQuestionThatCanBeParentList:
+      questionState.getQuestionThatCanBeParentList,
   };
 };
 

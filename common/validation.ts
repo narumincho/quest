@@ -90,3 +90,77 @@ const normalizeMultiLineString = (text: string): string => {
   }
   return result;
 };
+
+export type QuestionParentIsValidResult =
+  | {
+      readonly isValid: true;
+    }
+  | {
+      readonly isValid: false;
+      readonly reason: string;
+    };
+
+/**
+ * 質問が, 指定した質問の子供になっているか.
+ * 直接的でなくても, 孫や, ひ孫などなら `true` を返す.
+ * 質問が見つからなかったときは, `false` を返す
+ * `maybeChildrenQuestionId` と `maybeParentQuestionId` が同じものを指定されたら, `true` を返す
+ *
+ * @param parentQuestionId 親に設定する予定の質問ID
+ * @param questionId 編集する対象の質問ID
+ * @param questionMap すべての質問が含まれたMap (プロジェクトに含まれている質問で充分)
+ */
+export const questionParentIsValid = (
+  parentQuestionId: d.QQuestionId,
+  questionId: d.QQuestionId,
+  programId: d.QProgramId,
+  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+): QuestionParentIsValidResult => {
+  if (parentQuestionId === questionId) {
+    return {
+      isValid: false,
+      reason: "自分自身を親の質問としては登録できない",
+    };
+  }
+  /** 子孫と思われる質問から, 親へ移動して調べる */
+  const childQuestion = questionMap.get(parentQuestionId);
+  if (childQuestion === undefined) {
+    return {
+      isValid: false,
+      reason: "親要素にしたい質問を取得できなかった",
+    };
+  }
+  if (childQuestion.programId !== programId) {
+    return {
+      isValid: false,
+      reason: "違うプロジェクトの親を指定することはできない",
+    };
+  }
+  if (childQuestion.parent._ === "Nothing") {
+    return {
+      isValid: true,
+    };
+  }
+  let targetId = childQuestion.parent.value;
+  while (true) {
+    const question = questionMap.get(targetId);
+    if (question === undefined) {
+      return {
+        isValid: false,
+        reason: "親の質問を取得できなかった",
+      };
+    }
+    if (question.parent._ === "Nothing") {
+      return {
+        isValid: true,
+      };
+    }
+    if (question.parent.value === questionId) {
+      return {
+        isValid: false,
+        reason: "自身の子孫の質問を親の質問に設定できない",
+      };
+    }
+    targetId = question.parent.value;
+  }
+};

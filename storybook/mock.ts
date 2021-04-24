@@ -99,7 +99,7 @@ export const mockAppState: AppState = {
   requestGetClassListInProgram: action("requestGetClassListInProgram"),
   shareClassInviteLink: action("shareClassInviteLink"),
   editQuestion: action("editQuestion"),
-  getQuestionListInProgramAndNotChildren: () => {
+  getQuestionThatCanBeParentList: () => {
     return questionList;
   },
 };

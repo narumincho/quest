@@ -81,7 +81,11 @@ const EditQuestionLoaded: React.VFC<{
     if (textResult._ === "Error") {
       return;
     }
-    props.appState.editQuestion(props.question.id, textResult.ok);
+    props.appState.editQuestion(
+      props.question.id,
+      textResult.ok,
+      parentQuestionId
+    );
     setEditState("requesting");
   };
   return (
@@ -208,7 +212,7 @@ const EditQuestionLoaded: React.VFC<{
               <ListItemText primary="--指定なし--" />
             </ListItem>
             {props.appState
-              .getQuestionListInProgramAndNotChildren(
+              .getQuestionThatCanBeParentList(
                 props.question.programId,
                 props.question.id
               )
