@@ -206,7 +206,7 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
     throw new Error(packageJsonResult.error);
   }
 
-  await fileSystem.outputFile(
+  await fileSystem.outputJson(
     `${functionsDistributionPath}/package.json`,
     packageJsonResult.ok
   );
