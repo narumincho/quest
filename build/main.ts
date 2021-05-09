@@ -1,11 +1,13 @@
 import * as esbuild from "esbuild";
 import * as fileSystem from "fs-extra";
-import * as ts from "typescript";
 import {
-  generateCodeAsString,
-  identifer,
-  d as jsTsData,
-} from "js-ts-code-generator";
+  ModuleKind,
+  ModuleResolutionKind,
+  NewLineKind,
+  ScriptTarget,
+  createProgram,
+} from "typescript";
+import { jsTs, d as jsTsData, packageJson } from "@narumincho/gen";
 import { Mode } from "../common/mode";
 
 const clientSourceEntryPath = "./client/main.tsx";
@@ -124,6 +126,8 @@ const generateFirestoreRules = (): Promise<void> => {
   return fileSystem.outputFile(
     firestoreRulesFilePath,
     `
+rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
@@ -141,16 +145,16 @@ service cloud.firestore {
  * TypeScript の 標準のコンパイラ tsc を使う
  */
 const buildFunctionsTypeScript = (): void => {
-  ts.createProgram({
+  createProgram({
     rootNames: [functionsSourceEntryPath],
     options: {
-      target: ts.ScriptTarget.ES2020,
+      target: ScriptTarget.ES2020,
       forceConsistentCasingInFileNames: true,
-      newLine: ts.NewLineKind.LineFeed,
+      newLine: NewLineKind.LineFeed,
       lib: ["DOM", "ES2020"],
       strict: true,
-      moduleResolution: ts.ModuleResolutionKind.NodeJs,
-      module: ts.ModuleKind.CommonJS,
+      moduleResolution: ModuleResolutionKind.NodeJs,
+      module: ModuleKind.CommonJS,
       outDir: functionsDistributionPath,
     },
   }).emit();
@@ -163,9 +167,9 @@ const buildFunctionsTypeScript = (): void => {
  * バージョンは リポジトリのルートにある `package.json` のバージョンを読み取って使用する.
  */
 const outputPackageJsonForFunctions = async (): Promise<void> => {
-  const packageJson: {
-    devDependencies: Record<string, string>;
-  } = await fileSystem.readJSON("package.json");
+  const devDependencies = packageJson.fromJson(
+    await fileSystem.readJSON("package.json")
+  ).devDependencies;
   const packageNameUseInFunctions = [
     "@narumincho/html",
     "firebase-admin",
@@ -177,39 +181,47 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
     "fs-extra",
   ];
 
-  await fileSystem.outputFile(
+  const packageJsonResult = packageJson.toJson({
+    name: "definy-functions",
+    version: "1.0.0",
+    description: "definy in Cloud Functions for Firebase",
+    entryPoint: "./functions/main.js",
+    author: "narumincho",
+    nodeVersion: "14",
+    dependencies: new Map(
+      Object.entries(devDependencies).flatMap(
+        ([packageName, packageVersion]): ReadonlyArray<
+          readonly [string, string]
+        > =>
+          packageNameUseInFunctions.includes(packageName)
+            ? [[packageName, packageVersion]]
+            : []
+      )
+    ),
+    gitHubAccountName: "narumincho",
+    gitHubRepositoryName: "quest",
+    homepage: "https://github.com/narumincho/quest",
+  });
+  if (packageJsonResult._ === "Error") {
+    throw new Error(packageJsonResult.error);
+  }
+
+  await fileSystem.outputJson(
     `${functionsDistributionPath}/package.json`,
-    JSON.stringify({
-      name: "definy-functions",
-      version: "1.0.0",
-      description: "definy in Cloud Functions for Firebase",
-      main: "./functions/main.js",
-      author: "narumincho",
-      engines: { node: "14" },
-      dependencies: Object.fromEntries(
-        Object.entries(packageJson.devDependencies).flatMap(
-          ([packageName, packageVersion]): ReadonlyArray<
-            readonly [string, string]
-          > =>
-            packageNameUseInFunctions.includes(packageName)
-              ? [[packageName, packageVersion]]
-              : []
-        )
-      ),
-    })
+    packageJsonResult.ok
   );
 };
 
 /** `common/origin` のファイルを出力する. modeによって出力されるオリジンが変更される. */
 const outputCommonOrigin = (mode: Mode): Promise<void> => {
-  const modeIdentifer = identifer.fromString("Mode");
+  const modeIdentifer = jsTs.identiferFromString("Mode");
   return fileSystem.outputFile(
     "./common/nowMode.ts",
-    generateCodeAsString(
+    jsTs.generateCodeAsString(
       {
         exportDefinitionList: [
           jsTsData.ExportDefinition.Variable({
-            name: identifer.fromString("nowMode"),
+            name: jsTs.identiferFromString("nowMode"),
             document: "現在のビルドの動作モード",
             expr: jsTsData.TsExpr.StringLiteral(mode),
             type: jsTsData.TsType.ImportedType({
