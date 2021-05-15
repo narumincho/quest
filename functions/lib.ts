@@ -168,6 +168,15 @@ export const apiFunc: {
       name: questionTextResult.ok,
     };
   },
+  getClassByClassInvitationToken: async (classInvitationToken) => {
+    const result = await firebaseInterface.getClassByClassInvitationToken(
+      classInvitationToken
+    );
+    if (result === undefined) {
+      throw new Error("無効な招待です");
+    }
+    return result;
+  },
 };
 
 const lineLoginClientId = "1655691758";

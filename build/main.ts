@@ -188,8 +188,8 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
     entryPoint: "./functions/main.js",
     author: "narumincho",
     nodeVersion: "14",
-    dependencies: new Map(
-      Object.entries(devDependencies).flatMap(
+    dependencies: new Map<string, string>(
+      [...devDependencies].flatMap(
         ([packageName, packageVersion]): ReadonlyArray<
           readonly [string, string]
         > =>

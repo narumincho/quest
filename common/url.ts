@@ -92,10 +92,9 @@ const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
     case "ClassInvitation":
       return {
         resourceName: classInvitationPath,
+        resourceId: location.qClassInvitationToken,
         searchParams: new Map(),
-        hash: new Map([
-          [classInvitationTokenKey, location.qClassInvitationToken],
-        ]),
+        hash: new Map(),
       };
     case "EditQuestion":
       return {
@@ -177,9 +176,7 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.QLocation => {
       return defaultLocation;
     }
     case classInvitationPath: {
-      const classInvitationToken = structuredUrl.hash.get(
-        classInvitationTokenKey
-      );
+      const classInvitationToken = structuredUrl.resourceId;
       if (typeof classInvitationToken === "string") {
         return d.QLocation.ClassInvitation(
           classInvitationToken as d.QClassInvitationToken
@@ -214,7 +211,6 @@ const classPath = "class";
 const newClassPath = addNewPrefix(classPath);
 const newClassProgramId = "programId";
 const classInvitationPath = "class-invitation";
-const classInvitationTokenKey = "class-invitation-token";
 const editQuestionPath = addEditPrefix(questionPath);
 
 /**

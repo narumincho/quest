@@ -85,3 +85,12 @@ export const editQuestion: ApiCodec<d.QEditQuestion, d.QQuestion> = {
   request: d.QEditQuestion.codec,
   response: d.QQuestion.codec,
 };
+
+/** クラスの招待URLからクラスの情報を得る */
+export const getClassByClassInvitationToken: ApiCodec<
+  d.QClassInvitationToken,
+  d.QClass
+> = {
+  request: d.QClassInvitationToken.codec,
+  response: d.QClass.codec,
+};
