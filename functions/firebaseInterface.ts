@@ -8,7 +8,7 @@ import { imagePng } from "./mimeType";
 import { nowMode } from "../common/nowMode";
 
 const app = admin.initializeApp();
-const firestore = (app.firestore() as unknown) as typedFirestore.Firestore<{
+const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
   loginState: {
     key: string;
     value: {
@@ -176,16 +176,14 @@ export const getProgramListByCreateAccountId = async (
     .collection("program")
     .where("createAccountId", "==", createAccountId)
     .get();
-  return result.docs.map(
-    (docSnapshot): d.QProgram => {
-      const document = docSnapshot.data();
-      return {
-        id: docSnapshot.id,
-        name: document.name,
-        createAccountId: document.createAccountId,
-      };
-    }
-  );
+  return result.docs.map((docSnapshot): d.QProgram => {
+    const document = docSnapshot.data();
+    return {
+      id: docSnapshot.id,
+      name: document.name,
+      createAccountId: document.createAccountId,
+    };
+  });
 };
 
 export const createQuestion = async (question: d.QQuestion): Promise<void> => {
@@ -236,20 +234,18 @@ export const getQuestionListByProgramId = async (
     .collection("question")
     .where("programId", "==", programId)
     .get();
-  return result.docs.map(
-    (docSnapshot): d.QQuestion => {
-      const document = docSnapshot.data();
-      return {
-        id: docSnapshot.id,
-        name: document.name,
-        parent:
-          document.parent === null
-            ? d.Maybe.Nothing()
-            : d.Maybe.Just(document.parent),
-        programId: document.programId,
-      };
-    }
-  );
+  return result.docs.map((docSnapshot): d.QQuestion => {
+    const document = docSnapshot.data();
+    return {
+      id: docSnapshot.id,
+      name: document.name,
+      parent:
+        document.parent === null
+          ? d.Maybe.Nothing()
+          : d.Maybe.Just(document.parent),
+      programId: document.programId,
+    };
+  });
 };
 
 export const createClass = async (qClass: d.QClass): Promise<void> => {
@@ -267,17 +263,15 @@ export const getClassListInProgram = async (
     .collection("class")
     .where("programId", "==", programId)
     .get();
-  return snapshot.docs.map(
-    (doc): d.QClass => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        name: data.name,
-        programId: data.programId,
-        invitationToken: data.invitationToken,
-      };
-    }
-  );
+  return snapshot.docs.map((doc): d.QClass => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      name: data.name,
+      programId: data.programId,
+      invitationToken: data.invitationToken,
+    };
+  });
 };
 
 export const getClassByClassInvitationToken = async (

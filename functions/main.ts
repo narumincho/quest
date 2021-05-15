@@ -13,7 +13,8 @@ if (nowMode === "development") {
     name: "テスト用アカウント",
     accountTokenHash:
       "a565b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955",
-    iconHash: "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955" as d.ImageHash,
+    iconHash:
+      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955" as d.ImageHash,
     lineId: "noLineId",
   });
 }
