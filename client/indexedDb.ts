@@ -56,9 +56,7 @@ export const getAccountToken = (): Promise<d.AccountToken | undefined> =>
         reject(new Error("アカウントトークンの読み取りに失敗"));
       };
 
-      const getRequest: IDBRequest<
-        d.AccountToken | undefined
-      > = transaction
+      const getRequest: IDBRequest<d.AccountToken | undefined> = transaction
         .objectStore(accountTokenObjectStoreName)
         .get(accountTokenKeyName);
     });

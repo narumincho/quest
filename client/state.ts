@@ -146,10 +146,8 @@ export const useAppState = (): AppState => {
   const useProgramMapResult = useProgramMap();
   const useClassMapResult = useClassMap();
   const useAccountMapResult = useAccountMap();
-  const [
-    createdProgramList,
-    setCreatedProgramList,
-  ] = useState<CreatedProgramListState>({ tag: "None" });
+  const [createdProgramList, setCreatedProgramList] =
+    useState<CreatedProgramListState>({ tag: "None" });
   const questionState = useQuestionMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
 

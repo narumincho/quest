@@ -9,21 +9,19 @@ import {
 import { AppState } from "../state";
 import { locationToUrl } from "../../common/url";
 
-const useStyles = makeStyles(
-  (theme): StyleRules<"link"> => {
-    if (theme.palette.type === "dark") {
-      return {
-        link: {
-          color: "#99e1ff",
-        },
-      };
-    }
-
+const useStyles = makeStyles((theme): StyleRules<"link"> => {
+  if (theme.palette.type === "dark") {
     return {
-      link: {},
+      link: {
+        color: "#99e1ff",
+      },
     };
   }
-);
+
+  return {
+    link: {},
+  };
+});
 
 export const Link: React.FC<{ appState: AppState; location: d.QLocation }> = (
   props
