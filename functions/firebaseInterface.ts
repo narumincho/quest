@@ -280,6 +280,26 @@ export const getClassListInProgram = async (
   );
 };
 
+export const getClassByClassInvitationToken = async (
+  invitationToken: d.QClassInvitationToken
+): Promise<d.QClass | undefined> => {
+  const snapshot = await firestore
+    .collection("class")
+    .where("invitationToken", "==", invitationToken)
+    .get();
+  const doc = snapshot.docs[0];
+  if (doc === undefined) {
+    return undefined;
+  }
+  const data = doc.data();
+  return {
+    id: doc.id,
+    name: data.name,
+    invitationToken: data.invitationToken,
+    programId: data.programId,
+  };
+};
+
 const fakeCloudStoragePath = "./fakeCloudStorage";
 
 /**
