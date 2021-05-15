@@ -50,6 +50,8 @@
     "eslint": "7.26.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-react": "7.23.2",
+    "eslint-plugin-react-hooks": "4.2.0",
     "firebase-admin": "9.8.0",
     "firebase-functions": "3.14.0",
     "fs-extra": "10.0.0",
@@ -68,8 +70,15 @@
     "extends": [
       "eslint:all",
       "plugin:@typescript-eslint/recommended",
-      "plugin:prettier/recommended"
+      "plugin:prettier/recommended",
+      "plugin:react/recommended",
+      "plugin:react-hooks/recommended"
     ],
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
     "plugins": [
       "@typescript-eslint"
     ],
