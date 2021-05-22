@@ -132,6 +132,21 @@
  
  
  /**
+  * quest で 生徒(質問を答え, フィードバックするひと) としてクラスに参加するためのパラメータ
+  * @typePartId 1928498fae964eff3fc965142c9677dc
+  */
+ export type JoinClassAsStudentParameter = { 
+ /**
+  * 参加するアカウントのアカウントトークン
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * 招待トークン
+  */
+ readonly classInvitationToken: QClassInvitationToken };
+ 
+ 
+ /**
   * definy.app のメッセージ
   * @typePartId 1c280bc21ab8d5ccc4455800650cf31b
   */
@@ -1223,7 +1238,7 @@
   * DefinyWebアプリ内での場所を示すもの. URLから求められる. URLに変換できる
   * @typePartId bbcb8e43df8afff9fe24b001c66fb065
   */
- export type Location = { readonly _: "Home" } | { readonly _: "CreateProject" } | { readonly _: "Project"; readonly projectId: ProjectId } | { readonly _: "Account"; readonly accountId: AccountId } | { readonly _: "Setting" } | { readonly _: "About" } | { readonly _: "TypePart"; readonly typePartId: TypePartId };
+ export type Location = { readonly _: "Home" } | { readonly _: "CreateProject" } | { readonly _: "Project"; readonly projectId: ProjectId } | { readonly _: "Account"; readonly accountId: AccountId } | { readonly _: "Setting" } | { readonly _: "About" } | { readonly _: "TypePart"; readonly typePartId: TypePartId } | { readonly _: "Part"; readonly partId: PartId };
  
  
  /**
@@ -2470,6 +2485,29 @@
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } }) };
+ 
+ 
+ /**
+  * quest で 生徒(質問を答え, フィードバックするひと) としてクラスに参加するためのパラメータ
+  * @typePartId 1928498fae964eff3fc965142c9677dc
+  */
+ export const JoinClassAsStudentParameter: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<JoinClassAsStudentParameter>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: JoinClassAsStudentParameter) => JoinClassAsStudentParameter } = { typePartId: "1928498fae964eff3fc965142c9677dc" as TypePartId, helper: (joinClassAsStudentParameter: JoinClassAsStudentParameter): JoinClassAsStudentParameter => joinClassAsStudentParameter, codec: { encode: (value: JoinClassAsStudentParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QClassInvitationToken.codec.encode(value.classInvitationToken))), decode: (index: number, binary: Uint8Array): { readonly result: JoinClassAsStudentParameter; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const classInvitationTokenAndNextIndex: { readonly result: QClassInvitationToken; readonly nextIndex: number } = QClassInvitationToken.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, classInvitationToken: classInvitationTokenAndNextIndex.result }, nextIndex: classInvitationTokenAndNextIndex.nextIndex };
+ } } };
  
  
  /**
@@ -5403,7 +5441,11 @@
  /**
   * 型パーツ編集ページ
   */
- readonly TypePart: (a: TypePartId) => Location } = { Home: { _: "Home" }, CreateProject: { _: "CreateProject" }, Project: (projectId: ProjectId): Location => ({ _: "Project", projectId }), Account: (accountId: AccountId): Location => ({ _: "Account", accountId }), Setting: { _: "Setting" }, About: { _: "About" }, TypePart: (typePartId: TypePartId): Location => ({ _: "TypePart", typePartId }), typePartId: "bbcb8e43df8afff9fe24b001c66fb065" as TypePartId, codec: { encode: (value: Location): ReadonlyArray<number> => {
+ readonly TypePart: (a: TypePartId) => Location; 
+ /**
+  * パーツ編集ページ
+  */
+ readonly Part: (a: PartId) => Location } = { Home: { _: "Home" }, CreateProject: { _: "CreateProject" }, Project: (projectId: ProjectId): Location => ({ _: "Project", projectId }), Account: (accountId: AccountId): Location => ({ _: "Account", accountId }), Setting: { _: "Setting" }, About: { _: "About" }, TypePart: (typePartId: TypePartId): Location => ({ _: "TypePart", typePartId }), Part: (partId: PartId): Location => ({ _: "Part", partId }), typePartId: "bbcb8e43df8afff9fe24b001c66fb065" as TypePartId, codec: { encode: (value: Location): ReadonlyArray<number> => {
    switch (value._) {
      case "Home": {
        return [0];
@@ -5425,6 +5467,9 @@
      }
      case "TypePart": {
        return [6].concat(TypePartId.codec.encode(value.typePartId));
+     }
+     case "Part": {
+       return [7].concat(PartId.codec.encode(value.partId));
      }
    }
  }, decode: (index: number, binary: Uint8Array): { readonly result: Location; readonly nextIndex: number } => {
@@ -5452,6 +5497,10 @@
    if (patternIndex.result === 6) {
      const result: { readonly result: TypePartId; readonly nextIndex: number } = TypePartId.codec.decode(patternIndex.nextIndex, binary);
      return { result: Location.TypePart(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 7) {
+     const result: { readonly result: PartId; readonly nextIndex: number } = PartId.codec.decode(patternIndex.nextIndex, binary);
+     return { result: Location.Part(result.result), nextIndex: result.nextIndex };
    }
    throw new Error("存在しないパターンを指定された 型を更新してください");
  } } };

@@ -53,6 +53,16 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     };
     subCollections: Record<never, never>;
   };
+  classJoinData: {
+    key: `${d.AccountId}_${d.QClassId}`;
+    value: {
+      joinTime: admin.firestore.Timestamp;
+      roleType: "guest" | "student";
+      accountId: d.AccountId;
+      classId: d.QClassId;
+    };
+    subCollections: Record<never, never>;
+  };
 }>;
 const cloudStorageBucket = app.storage().bucket();
 
@@ -292,6 +302,41 @@ export const getClassByClassInvitationToken = async (
     invitationToken: data.invitationToken,
     programId: data.programId,
   };
+};
+
+export const getJoinClassData = async (
+  classId: d.QClassId,
+  accountId: d.AccountId
+): Promise<
+  | undefined
+  | {
+      readonly joinTime: admin.firestore.Timestamp;
+      readonly roleType: "guest" | "student";
+      readonly accountId: d.AccountId;
+      readonly classId: d.QClassId;
+    }
+> => {
+  const doc = await firestore
+    .collection("classJoinData")
+    .doc(`${classId}_${accountId}`)
+    .get();
+  return doc.data();
+};
+
+export const joinClassAsStudent = async (
+  classId: d.QClassId,
+  accountId: d.AccountId,
+  date: Date
+): Promise<void> => {
+  await firestore
+    .collection("classJoinData")
+    .doc(`${classId}_${accountId}`)
+    .create({
+      accountId,
+      classId,
+      joinTime: admin.firestore.Timestamp.fromDate(date),
+      roleType: "student",
+    });
 };
 
 const fakeCloudStoragePath = "./fakeCloudStorage";
