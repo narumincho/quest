@@ -177,6 +177,29 @@ export const apiFunc: {
     }
     return result;
   },
+  joinClassAsStudent: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const invitationTokenResult =
+      await firebaseInterface.getClassByClassInvitationToken(
+        parameter.classInvitationToken
+      );
+    if (invitationTokenResult === undefined) {
+      throw new Error("無効な招待です");
+    }
+    const joinData = await firebaseInterface.getJoinClassData(
+      invitationTokenResult.id,
+      account.id
+    );
+    if (joinData !== undefined && joinData.roleType === "student") {
+      throw new Error("すでに参加しています");
+    }
+    await firebaseInterface.joinClassAsStudent(
+      invitationTokenResult.id,
+      account.id,
+      new Date()
+    );
+    return invitationTokenResult;
+  },
 };
 
 const lineLoginClientId = "1655691758";

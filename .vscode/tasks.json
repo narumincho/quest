@@ -3,19 +3,11 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "start-development-build",
+      "script": "start",
       "group": "build",
       "problemMatcher": [],
-      "label": "npm: start-development-build",
-      "detail": "ts-node build/start-development-build.ts"
-    },
-    {
-      "type": "npm",
-      "script": "start-emulator",
-      "group": "build",
-      "problemMatcher": [],
-      "label": "npm: start-emulator",
-      "detail": "firebase emulators:start --project north-quest"
+      "label": "npm: prestart & npm: start",
+      "detail": "開発用のアプリをビルドして起動する"
     },
     {
       "type": "npm",

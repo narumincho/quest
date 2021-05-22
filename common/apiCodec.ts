@@ -92,3 +92,11 @@ export const getClassByClassInvitationToken: ApiCodec<
   request: d.QClassInvitationToken.codec,
   response: d.QClass.codec,
 };
+
+export const joinClassAsStudent: ApiCodec<
+  d.JoinClassAsStudentParameter,
+  d.QClass
+> = {
+  request: d.JoinClassAsStudentParameter.codec,
+  response: d.QClass.codec,
+};
