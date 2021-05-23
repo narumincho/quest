@@ -102,6 +102,7 @@ export const mockAppState: AppState = {
   getQuestionThatCanBeParentList: () => {
     return questionList;
   },
+  joinClass: action("joinClass"),
 };
 
 export const mockAccount: d.QAccount = {

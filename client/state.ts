@@ -105,6 +105,8 @@ export type AppState = {
     programId: d.QProgramId,
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
+  /** クラスに参加する */
+  joinClass: (classInvitationToken: d.QClassInvitationToken) => void;
 };
 
 export type LoginState =
@@ -516,6 +518,30 @@ export const useAppState = (): AppState => {
     },
     getQuestionThatCanBeParentList:
       questionState.getQuestionThatCanBeParentList,
+    joinClass: (classInvitationToken) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        enqueueSnackbar(`クラスの参加にはログインする必要があります`, {
+          variant: "error",
+        });
+        return;
+      }
+      api
+        .joinClassAsStudent({ accountToken, classInvitationToken })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(`クラスの参加に失敗しました ${response.error}`, {
+              variant: "error",
+            });
+            return;
+          }
+          enqueueSnackbar(`クラスに参加しました`, {
+            variant: "success",
+          });
+          useClassMapResult.setClass(response.ok);
+          setLocation(d.QLocation.Class(response.ok.id));
+        });
+    },
   };
 };
 
