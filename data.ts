@@ -60,6 +60,13 @@
  
  
  /**
+  * クラスの情報をクラスの招待トークンから取得するときのレスポンス
+  * @typePartId 0bc48429266ac8dfe8f9f8f304938c88
+  */
+ export type GetClassAndRoleResult = { readonly _: "NotJoin"; readonly qClass: QClass } | { readonly _: "JoinedAsStudent"; readonly qClass: QClass } | { readonly _: "JoinedAsGuest"; readonly qClass: QClass };
+ 
+ 
+ /**
   * 外部に公開する定義
   * @typePartId 0c8b854b812290a054877ca5de6c4daf
   */
@@ -260,6 +267,21 @@
   * スプレッド ...a のようにするか
   */
  readonly spread: Bool };
+ 
+ 
+ /**
+  * quest で ログインしている状態で, クラスの招待URLを受け取ったときに, クラスの情報と, クラスにすでに入っているかなどを取得する
+  * @typePartId 37e7ea136171a7fd4e23be7a7385af6b
+  */
+ export type GetClassAndRoleParameter = { 
+ /**
+  * ログインするアカウントのアカウントトークン
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * クラスの招待トークン
+  */
+ readonly classInvitationToken: QClassInvitationToken };
  
  
  /**
@@ -1895,6 +1917,60 @@
  
  
  /**
+  * クラスの情報をクラスの招待トークンから取得するときのレスポンス
+  * @typePartId 0bc48429266ac8dfe8f9f8f304938c88
+  */
+ export const GetClassAndRoleResult: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<GetClassAndRoleResult>; 
+ /**
+  * クラスに参加していない
+  */
+ readonly NotJoin: (a: QClass) => GetClassAndRoleResult; 
+ /**
+  * すでに生徒として参加している
+  */
+ readonly JoinedAsStudent: (a: QClass) => GetClassAndRoleResult; 
+ /**
+  * すでにゲストとして参加している
+  */
+ readonly JoinedAsGuest: (a: QClass) => GetClassAndRoleResult } = { NotJoin: (qClass: QClass): GetClassAndRoleResult => ({ _: "NotJoin", qClass }), JoinedAsStudent: (qClass: QClass): GetClassAndRoleResult => ({ _: "JoinedAsStudent", qClass }), JoinedAsGuest: (qClass: QClass): GetClassAndRoleResult => ({ _: "JoinedAsGuest", qClass }), typePartId: "0bc48429266ac8dfe8f9f8f304938c88" as TypePartId, codec: { encode: (value: GetClassAndRoleResult): ReadonlyArray<number> => {
+   switch (value._) {
+     case "NotJoin": {
+       return [0].concat(QClass.codec.encode(value.qClass));
+     }
+     case "JoinedAsStudent": {
+       return [1].concat(QClass.codec.encode(value.qClass));
+     }
+     case "JoinedAsGuest": {
+       return [2].concat(QClass.codec.encode(value.qClass));
+     }
+   }
+ }, decode: (index: number, binary: Uint8Array): { readonly result: GetClassAndRoleResult; readonly nextIndex: number } => {
+   const patternIndex: { readonly result: number; readonly nextIndex: number } = Int32.codec.decode(index, binary);
+   if (patternIndex.result === 0) {
+     const result: { readonly result: QClass; readonly nextIndex: number } = QClass.codec.decode(patternIndex.nextIndex, binary);
+     return { result: GetClassAndRoleResult.NotJoin(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 1) {
+     const result: { readonly result: QClass; readonly nextIndex: number } = QClass.codec.decode(patternIndex.nextIndex, binary);
+     return { result: GetClassAndRoleResult.JoinedAsStudent(result.result), nextIndex: result.nextIndex };
+   }
+   if (patternIndex.result === 2) {
+     const result: { readonly result: QClass; readonly nextIndex: number } = QClass.codec.decode(patternIndex.nextIndex, binary);
+     return { result: GetClassAndRoleResult.JoinedAsGuest(result.result), nextIndex: result.nextIndex };
+   }
+   throw new Error("存在しないパターンを指定された 型を更新してください");
+ } } };
+ 
+ 
+ /**
   * 外部に公開する定義
   * @typePartId 0c8b854b812290a054877ca5de6c4daf
   */
@@ -2882,6 +2958,29 @@
    const exprAndNextIndex: { readonly result: TsExpr; readonly nextIndex: number } = TsExpr.codec.decode(index, binary);
    const spreadAndNextIndex: { readonly result: Bool; readonly nextIndex: number } = Bool.codec.decode(exprAndNextIndex.nextIndex, binary);
    return { result: { expr: exprAndNextIndex.result, spread: spreadAndNextIndex.result }, nextIndex: spreadAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
+  * quest で ログインしている状態で, クラスの招待URLを受け取ったときに, クラスの情報と, クラスにすでに入っているかなどを取得する
+  * @typePartId 37e7ea136171a7fd4e23be7a7385af6b
+  */
+ export const GetClassAndRoleParameter: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<GetClassAndRoleParameter>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: GetClassAndRoleParameter) => GetClassAndRoleParameter } = { typePartId: "37e7ea136171a7fd4e23be7a7385af6b" as TypePartId, helper: (getClassAndRoleParameter: GetClassAndRoleParameter): GetClassAndRoleParameter => getClassAndRoleParameter, codec: { encode: (value: GetClassAndRoleParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QClassInvitationToken.codec.encode(value.classInvitationToken))), decode: (index: number, binary: Uint8Array): { readonly result: GetClassAndRoleParameter; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const classInvitationTokenAndNextIndex: { readonly result: QClassInvitationToken; readonly nextIndex: number } = QClassInvitationToken.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, classInvitationToken: classInvitationTokenAndNextIndex.result }, nextIndex: classInvitationTokenAndNextIndex.nextIndex };
  } } };
  
  

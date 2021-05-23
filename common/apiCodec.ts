@@ -84,13 +84,22 @@ export const editQuestion: ApiCodec<d.QEditQuestion, d.QQuestion> = {
   response: d.QQuestion.codec,
 };
 
-/** クラスの招待URLからクラスの情報を得る */
+/** クラスの招待URLからクラスの情報を得る. ログインしていないときに招待URLを開いたときに使う */
 export const getClassByClassInvitationToken: ApiCodec<
   d.QClassInvitationToken,
   d.QClass
 > = {
   request: d.QClassInvitationToken.codec,
   response: d.QClass.codec,
+};
+
+/** ログインしているときに招待URLを開いた アカウントトークンと招待トークンがリクエスト時に必要になる */
+export const getClassAndRole: ApiCodec<
+  d.GetClassAndRoleParameter,
+  d.GetClassAndRoleResult
+> = {
+  request: d.GetClassAndRoleParameter.codec,
+  response: d.GetClassAndRoleResult.codec,
 };
 
 export const joinClassAsStudent: ApiCodec<

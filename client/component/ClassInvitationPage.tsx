@@ -26,13 +26,22 @@ export const ClassInvitationPage: React.VFC<{
       });
   }, [props.classInvitationToken]);
 
+  const requestJoin = (): void => {
+    props.appState.joinClass(props.classInvitationToken);
+    setIsRequestingJoin(true);
+  };
+
   return (
     <PageContainer isHideBack appState={props.appState}>
       <Box>招待URLを開いたようだね</Box>
       {className === undefined ? (
         <Box>確認中……</Box>
       ) : (
-        <Button variant="contained" disabled={isRequestingJoin}>
+        <Button
+          variant="contained"
+          disabled={isRequestingJoin}
+          onClick={requestJoin}
+        >
           {isRequestingJoin ? className + "に参加中" : className + "に参加する"}
         </Button>
       )}
