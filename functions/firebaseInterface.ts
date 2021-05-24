@@ -32,6 +32,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     value: {
       name: string;
       createAccountId: d.AccountId;
+      createTime: admin.firestore.Timestamp;
     };
     subCollections: Record<never, never>;
   };
@@ -41,6 +42,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
       name: string;
       parent: d.QQuestionId | null;
       programId: d.QProgramId;
+      createTime: admin.firestore.Timestamp;
     };
     subCollections: Record<never, never>;
   };
@@ -50,6 +52,8 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
       name: string;
       programId: d.QProgramId;
       invitationToken: d.QClassInvitationToken;
+      createAccountId: d.AccountId;
+      createTime: admin.firestore.Timestamp;
     };
     subCollections: Record<never, never>;
   };
@@ -57,7 +61,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     key: `${d.AccountId}_${d.QClassId}`;
     value: {
       joinTime: admin.firestore.Timestamp;
-      roleType: "guest" | "student";
+      role: d.QRole;
       accountId: d.AccountId;
       classId: d.QClassId;
     };
@@ -158,6 +162,7 @@ export const createProgram = async (data: {
   await firestore.collection("program").doc(data.id).create({
     name: data.name,
     createAccountId: data.createAccountId,
+    createTime: admin.firestore.FieldValue.serverTimestamp(),
   });
 };
 
@@ -204,6 +209,7 @@ export const createQuestion = async (question: d.QQuestion): Promise<void> => {
       name: question.name,
       parent: question.parent._ === "Just" ? question.parent.value : null,
       programId: question.programId,
+      createTime: admin.firestore.FieldValue.serverTimestamp(),
     });
 };
 
@@ -258,11 +264,16 @@ export const getQuestionListByProgramId = async (
   });
 };
 
-export const createClass = async (qClass: d.QClass): Promise<void> => {
+export const createClass = async (
+  qClass: d.QClass,
+  createAccountId: d.AccountId
+): Promise<void> => {
   await firestore.collection("class").doc(qClass.id).create({
     name: qClass.name,
     programId: qClass.programId,
     invitationToken: qClass.invitationToken,
+    createAccountId,
+    createTime: admin.firestore.FieldValue.serverTimestamp(),
   });
 };
 
@@ -279,6 +290,7 @@ export const getClassListInProgram = async (
       id: doc.id,
       name: data.name,
       programId: data.programId,
+      createAccountId: data.createAccountId,
       invitationToken: data.invitationToken,
     };
   });
@@ -301,6 +313,74 @@ export const getClassByClassInvitationToken = async (
     name: data.name,
     invitationToken: data.invitationToken,
     programId: data.programId,
+    createAccountId: data.createAccountId,
+  };
+};
+
+export const getClassListByCreateAccountId = async (
+  accountId: d.AccountId
+): Promise<ReadonlyArray<d.QClass>> => {
+  const snapshot = await firestore
+    .collection("class")
+    .where("createAccountId", "==", accountId)
+    .get();
+  return snapshot.docs.map((doc): d.QClass => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      name: data.name,
+      programId: data.programId,
+      invitationToken: data.invitationToken,
+      createAccountId: data.createAccountId,
+    };
+  });
+};
+
+export const getJoinClassDataListByAccountId = async (
+  accountId: d.AccountId
+): Promise<ReadonlyArray<d.Tuple2<d.QClassStudentOrGuest, d.QRole>>> => {
+  const snapshot = await firestore
+    .collection("classJoinData")
+    .where("accountId", "==", accountId)
+    .get();
+  const result: ReadonlyArray<d.Tuple2<d.QClassStudentOrGuest, d.QRole>> =
+    await Promise.all(
+      snapshot.docs.map<Promise<d.Tuple2<d.QClassStudentOrGuest, d.QRole>>>(
+        async (doc): Promise<d.Tuple2<d.QClassStudentOrGuest, d.QRole>> => {
+          const data = doc.data();
+          const classData = (
+            await firestore.collection("class").doc(data.classId).get()
+          ).data();
+          if (classData === undefined) {
+            throw new Error("unknown class " + data.classId);
+          }
+          return {
+            first: {
+              id: data.classId,
+              name: classData.name,
+              createAccountId: classData.createAccountId,
+            },
+            second: data.role,
+          };
+        }
+      )
+    );
+  return result;
+};
+
+export const getClassByClassId = async (
+  classId: d.QClassId
+): Promise<undefined | d.QClass> => {
+  const data = (await firestore.collection("class").doc(classId).get()).data();
+  if (data === undefined) {
+    return undefined;
+  }
+  return {
+    id: classId,
+    name: data.name,
+    invitationToken: data.invitationToken,
+    programId: data.programId,
+    createAccountId: data.createAccountId,
   };
 };
 
@@ -311,7 +391,7 @@ export const getJoinClassData = async (
   | undefined
   | {
       readonly joinTime: admin.firestore.Timestamp;
-      readonly roleType: "guest" | "student";
+      readonly role: d.QRole;
       readonly accountId: d.AccountId;
       readonly classId: d.QClassId;
     }
@@ -335,7 +415,7 @@ export const joinClassAsStudent = async (
       accountId,
       classId,
       joinTime: admin.firestore.Timestamp.fromDate(date),
-      roleType: "student",
+      role: d.QRole.Student,
     });
 };
 

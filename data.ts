@@ -38,6 +38,25 @@
  
  
  /**
+  * 生徒やゲスト向けの招待トークンが含まれていないクラスの情報
+  * @typePartId 067954ebc8a7f155be3a4ee196ccf99a
+  */
+ export type QClassStudentOrGuest = { 
+ /**
+  * クラス名
+  */
+ readonly name: String; 
+ /**
+  * クラスID
+  */
+ readonly id: QClassId; 
+ /**
+  * 作成したアカウントのID
+  */
+ readonly createAccountId: AccountId };
+ 
+ 
+ /**
   * quest の ページの場所を表現する
   * @typePartId 0951f74f6309835e7ff412f105474aa7
   */
@@ -968,6 +987,29 @@
  
  
  /**
+  * アカウントの情報
+  * @typePartId 94aa0a477dfb8362d00aaac05b29b79c
+  */
+ export type QAccountData = { 
+ /**
+  * アカウント情報
+  */
+ readonly account: QAccount; 
+ /**
+  * 作成したプログラム
+  */
+ readonly createdProgramList: List<QProgram>; 
+ /**
+  * 作成したクラス
+  */
+ readonly createdClassList: List<QClass>; 
+ /**
+  * 参加したクラス
+  */
+ readonly joinedClassList: List<Tuple2<QClassStudentOrGuest, QRole>> };
+ 
+ 
+ /**
   * Elm の 式
   * @typePartId 94e53139b3a82087777ea3e001b2adb4
   */
@@ -1014,6 +1056,21 @@
   * 親の質問
   */
  readonly parentId: Maybe<QQuestionId> };
+ 
+ 
+ /**
+  * 2つの値を持つ型
+  * @typePartId 9b55e2a5ed07246355fbeba998eaf5fe
+  */
+ export type Tuple2<first extends unknown, second extends unknown> = { 
+ /**
+  * 0番目の値
+  */
+ readonly first: first; 
+ /**
+  * 1番目の値
+  */
+ readonly second: second };
  
  
  /**
@@ -1399,6 +1456,13 @@
  
  
  /**
+  * クラスに生徒として入っているか, ゲストとして入っているか
+  * @typePartId ce031774e68409c72ea855cf929f2293
+  */
+ export type QRole = "Student" | "Guest";
+ 
+ 
+ /**
   * questの クラス
   * @typePartId cf779792c0201a3874f77765b063b64b
   */
@@ -1418,7 +1482,11 @@
  /**
   * 招待トークン
   */
- readonly invitationToken: QClassInvitationToken };
+ readonly invitationToken: QClassInvitationToken; 
+ /**
+  * クラスの作成者
+  */
+ readonly createAccountId: AccountId };
  
  
  /**
@@ -1763,6 +1831,30 @@
   * @typePartId fddd2a65994fae205dd636f3a6b9f1ea
   */
  export type TsMember = { readonly _: "Spread"; readonly tsExpr: TsExpr } | { readonly _: "KeyValue"; readonly keyValue: KeyValue };
+ 
+ 
+ /**
+  * 生徒やゲスト向けの招待トークンが含まれていないクラスの情報
+  * @typePartId 067954ebc8a7f155be3a4ee196ccf99a
+  */
+ export const QClassStudentOrGuest: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QClassStudentOrGuest>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QClassStudentOrGuest) => QClassStudentOrGuest } = { typePartId: "067954ebc8a7f155be3a4ee196ccf99a" as TypePartId, helper: (qClassStudentOrGuest: QClassStudentOrGuest): QClassStudentOrGuest => qClassStudentOrGuest, codec: { encode: (value: QClassStudentOrGuest): ReadonlyArray<number> => (String.codec.encode(value.name).concat(QClassId.codec.encode(value.id)).concat(AccountId.codec.encode(value.createAccountId))), decode: (index: number, binary: Uint8Array): { readonly result: QClassStudentOrGuest; readonly nextIndex: number } => {
+   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(index, binary);
+   const idAndNextIndex: { readonly result: QClassId; readonly nextIndex: number } = QClassId.codec.decode(nameAndNextIndex.nextIndex, binary);
+   const createAccountIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(idAndNextIndex.nextIndex, binary);
+   return { result: { name: nameAndNextIndex.result, id: idAndNextIndex.result, createAccountId: createAccountIdAndNextIndex.result }, nextIndex: createAccountIdAndNextIndex.nextIndex };
+ } } };
  
  
  /**
@@ -4860,6 +4952,31 @@
  
  
  /**
+  * アカウントの情報
+  * @typePartId 94aa0a477dfb8362d00aaac05b29b79c
+  */
+ export const QAccountData: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QAccountData>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: QAccountData) => QAccountData } = { typePartId: "94aa0a477dfb8362d00aaac05b29b79c" as TypePartId, helper: (qAccountData: QAccountData): QAccountData => qAccountData, codec: { encode: (value: QAccountData): ReadonlyArray<number> => (QAccount.codec.encode(value.account).concat(List.codec(QProgram.codec).encode(value.createdProgramList)).concat(List.codec(QClass.codec).encode(value.createdClassList)).concat(List.codec(Tuple2.codec(QClassStudentOrGuest.codec, QRole.codec)).encode(value.joinedClassList))), decode: (index: number, binary: Uint8Array): { readonly result: QAccountData; readonly nextIndex: number } => {
+   const accountAndNextIndex: { readonly result: QAccount; readonly nextIndex: number } = QAccount.codec.decode(index, binary);
+   const createdProgramListAndNextIndex: { readonly result: List<QProgram>; readonly nextIndex: number } = List.codec(QProgram.codec).decode(accountAndNextIndex.nextIndex, binary);
+   const createdClassListAndNextIndex: { readonly result: List<QClass>; readonly nextIndex: number } = List.codec(QClass.codec).decode(createdProgramListAndNextIndex.nextIndex, binary);
+   const joinedClassListAndNextIndex: { readonly result: List<Tuple2<QClassStudentOrGuest, QRole>>; readonly nextIndex: number } = List.codec(Tuple2.codec(QClassStudentOrGuest.codec, QRole.codec)).decode(createdClassListAndNextIndex.nextIndex, binary);
+   return { result: { account: accountAndNextIndex.result, createdProgramList: createdProgramListAndNextIndex.result, createdClassList: createdClassListAndNextIndex.result, joinedClassList: joinedClassListAndNextIndex.result }, nextIndex: joinedClassListAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
   * Elm の 式
   * @typePartId 94e53139b3a82087777ea3e001b2adb4
   */
@@ -5132,6 +5249,29 @@
    const parentIdAndNextIndex: { readonly result: Maybe<QQuestionId>; readonly nextIndex: number } = Maybe.codec(QQuestionId.codec).decode(nameAndNextIndex.nextIndex, binary);
    return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, name: nameAndNextIndex.result, parentId: parentIdAndNextIndex.result }, nextIndex: parentIdAndNextIndex.nextIndex };
  } } };
+ 
+ 
+ /**
+  * 2つの値を持つ型
+  * @typePartId 9b55e2a5ed07246355fbeba998eaf5fe
+  */
+ export const Tuple2: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: <first extends unknown, second extends unknown>(a: Codec<first>, b: Codec<second>) => Codec<Tuple2<first, second>>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: <first extends unknown, second extends unknown>(a: Tuple2<first, second>) => Tuple2<first, second> } = { typePartId: "9b55e2a5ed07246355fbeba998eaf5fe" as TypePartId, helper: <first extends unknown, second extends unknown>(tuple2: Tuple2<first, second>): Tuple2<first, second> => tuple2, codec: <first extends unknown, second extends unknown>(firstCodec: Codec<first>, secondCodec: Codec<second>): Codec<Tuple2<first, second>> => ({ encode: (value: Tuple2<first, second>): ReadonlyArray<number> => (firstCodec.encode(value.first).concat(secondCodec.encode(value.second))), decode: (index: number, binary: Uint8Array): { readonly result: Tuple2<first, second>; readonly nextIndex: number } => {
+   const firstAndNextIndex: { readonly result: first; readonly nextIndex: number } = firstCodec.decode(index, binary);
+   const secondAndNextIndex: { readonly result: second; readonly nextIndex: number } = secondCodec.decode(firstAndNextIndex.nextIndex, binary);
+   return { result: { first: firstAndNextIndex.result, second: secondAndNextIndex.result }, nextIndex: secondAndNextIndex.nextIndex };
+ } }) };
  
  
  /**
@@ -5880,6 +6020,47 @@
  
  
  /**
+  * クラスに生徒として入っているか, ゲストとして入っているか
+  * @typePartId ce031774e68409c72ea855cf929f2293
+  */
+ export const QRole: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<QRole>; 
+ /**
+  * 生徒, 質問を答えたり, フィードバックできる人
+  */
+ readonly Student: QRole; 
+ /**
+  * ゲスト
+  */
+ readonly Guest: QRole } = { Student: "Student", Guest: "Guest", typePartId: "ce031774e68409c72ea855cf929f2293" as TypePartId, codec: { encode: (value: QRole): ReadonlyArray<number> => {
+   switch (value) {
+     case "Student": {
+       return [0];
+     }
+     case "Guest": {
+       return [1];
+     }
+   }
+ }, decode: (index: number, binary: Uint8Array): { readonly result: QRole; readonly nextIndex: number } => {
+   const patternIndex: { readonly result: number; readonly nextIndex: number } = Int32.codec.decode(index, binary);
+   if (patternIndex.result === 0) {
+     return { result: QRole.Student, nextIndex: patternIndex.nextIndex };
+   }
+   if (patternIndex.result === 1) {
+     return { result: QRole.Guest, nextIndex: patternIndex.nextIndex };
+   }
+   throw new Error("存在しないパターンを指定された 型を更新してください");
+ } } };
+ 
+ 
+ /**
   * questの クラス
   * @typePartId cf779792c0201a3874f77765b063b64b
   */
@@ -5895,12 +6076,13 @@
  /**
   * 型を合わせる上で便利なヘルパー関数
   */
- readonly helper: (a: QClass) => QClass } = { typePartId: "cf779792c0201a3874f77765b063b64b" as TypePartId, helper: (qClass: QClass): QClass => qClass, codec: { encode: (value: QClass): ReadonlyArray<number> => (QClassId.codec.encode(value.id).concat(String.codec.encode(value.name)).concat(QProgramId.codec.encode(value.programId)).concat(QClassInvitationToken.codec.encode(value.invitationToken))), decode: (index: number, binary: Uint8Array): { readonly result: QClass; readonly nextIndex: number } => {
+ readonly helper: (a: QClass) => QClass } = { typePartId: "cf779792c0201a3874f77765b063b64b" as TypePartId, helper: (qClass: QClass): QClass => qClass, codec: { encode: (value: QClass): ReadonlyArray<number> => (QClassId.codec.encode(value.id).concat(String.codec.encode(value.name)).concat(QProgramId.codec.encode(value.programId)).concat(QClassInvitationToken.codec.encode(value.invitationToken)).concat(AccountId.codec.encode(value.createAccountId))), decode: (index: number, binary: Uint8Array): { readonly result: QClass; readonly nextIndex: number } => {
    const idAndNextIndex: { readonly result: QClassId; readonly nextIndex: number } = QClassId.codec.decode(index, binary);
    const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(idAndNextIndex.nextIndex, binary);
    const programIdAndNextIndex: { readonly result: QProgramId; readonly nextIndex: number } = QProgramId.codec.decode(nameAndNextIndex.nextIndex, binary);
    const invitationTokenAndNextIndex: { readonly result: QClassInvitationToken; readonly nextIndex: number } = QClassInvitationToken.codec.decode(programIdAndNextIndex.nextIndex, binary);
-   return { result: { id: idAndNextIndex.result, name: nameAndNextIndex.result, programId: programIdAndNextIndex.result, invitationToken: invitationTokenAndNextIndex.result }, nextIndex: invitationTokenAndNextIndex.nextIndex };
+   const createAccountIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(invitationTokenAndNextIndex.nextIndex, binary);
+   return { result: { id: idAndNextIndex.result, name: nameAndNextIndex.result, programId: programIdAndNextIndex.result, invitationToken: invitationTokenAndNextIndex.result, createAccountId: createAccountIdAndNextIndex.result }, nextIndex: createAccountIdAndNextIndex.nextIndex };
  } } };
  
  
