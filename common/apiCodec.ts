@@ -102,15 +102,7 @@ export const getClassByClassInvitationToken: ApiCodec<
   response: d.QClass.codec,
 };
 
-/** ログインしているときに招待URLを開いた アカウントトークンと招待トークンがリクエスト時に必要になる */
-export const getClassAndRole: ApiCodec<
-  d.GetClassAndRoleParameter,
-  d.GetClassAndRoleResult
-> = {
-  request: d.GetClassAndRoleParameter.codec,
-  response: d.GetClassAndRoleResult.codec,
-};
-
+/** 生徒として, クラスに参加する */
 export const joinClassAsStudent: ApiCodec<
   d.JoinClassAsStudentParameter,
   d.QClass

@@ -94,6 +94,7 @@ export const mockAppState: AppState = {
       name: "サンプルクラス",
       programId: mockProgramIdA,
       invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
+      createAccountId: "" as d.AccountId,
     };
   },
   requestGetClassListInProgram: action("requestGetClassListInProgram"),

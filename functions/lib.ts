@@ -223,17 +223,6 @@ export const apiFunc: {
     );
     return invitationTokenResult;
   },
-  getClassAndRole: (parameter) => {
-    return Promise.resolve(
-      d.GetClassAndRoleResult.NotJoin({
-        id: "" as d.QClassId,
-        invitationToken: "" as d.QClassInvitationToken,
-        name: "未実装",
-        createAccountId: "" as d.AccountId,
-        programId: "" as d.QProgramId,
-      })
-    );
-  },
 };
 
 const lineLoginClientId = "1655691758";
