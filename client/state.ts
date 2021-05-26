@@ -122,6 +122,9 @@ export type LoginState =
       tag: "LoggedIn";
       accountToken: d.AccountToken;
       account: d.QAccount;
+      createdProgramList: ReadonlyMap<d.QProgramId, d.QProgram>;
+      createdClassList: ReadonlyMap<d.QClassId, d.QClass>;
+      joinedClassList: ReadonlyArray<d.Tuple2<d.QClassStudentOrGuest, d.QRole>>;
     }
   | {
       tag: "RequestingLoginUrl";
@@ -178,7 +181,7 @@ export const useAppState = (): AppState => {
         "",
         commonUrl.locationToUrl(urlData.location).toString()
       );
-      api.getAccountByAccountToken(accountToken).then((response) => {
+      api.getAccountData(accountToken).then((response) => {
         if (response._ === "Error") {
           enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
             variant: "error",
@@ -190,12 +193,25 @@ export const useAppState = (): AppState => {
         setLoginState({
           tag: "LoggedIn",
           accountToken,
-          account: response.ok,
+          account: response.ok.account,
+          createdProgramList: new Map(
+            response.ok.createdProgramList.map((program): [
+              d.QProgramId,
+              d.QProgram
+            ] => [program.id, program])
+          ),
+          createdClassList: new Map(
+            response.ok.createdClassList.map((qClass): [
+              d.QClassId,
+              d.QClass
+            ] => [qClass.id, qClass])
+          ),
+          joinedClassList: response.ok.joinedClassList,
         });
-        useAccountMapResult.set(response.ok);
+        useAccountMapResult.set(response.ok.account);
       });
     });
-  }, []);
+  }, [enqueueSnackbar, useAccountMapResult]);
 
   const getAccountToken = (): d.AccountToken | undefined => {
     switch (loginState.tag) {
