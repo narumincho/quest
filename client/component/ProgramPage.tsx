@@ -1,10 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import {
-  AppState,
-  RequestClassListInProgramState,
-  RequestQuestionListInProgramState,
-} from "../state";
+import { AppState, ClassIdListState, QuestionListIdState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -78,7 +74,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>質問:</Typography>
           <QuestionList
-            questionList={program.questionIdList}
+            questionList={program.questionIdListState}
             appState={props.appState}
             programId={props.programId}
           />
@@ -100,7 +96,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>クラス:</Typography>
           <ClassList
-            requestCLassListInProgramState={program.classIdList}
+            requestCLassListInProgramState={program.classIdListState}
             a={props.appState}
             programId={props.programId}
           />
@@ -124,7 +120,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
 };
 
 export const QuestionList: React.VFC<{
-  questionList: RequestQuestionListInProgramState;
+  questionList: QuestionListIdState;
   appState: AppState;
   programId: d.QProgramId;
 }> = (props) => {
@@ -139,6 +135,13 @@ export const QuestionList: React.VFC<{
     return (
       <Box padding={1}>
         <Typography>読込中</Typography>
+      </Box>
+    );
+  }
+  if (props.questionList.tag === "Error") {
+    return (
+      <Box padding={1}>
+        <Typography>取得に失敗しました</Typography>
       </Box>
     );
   }
@@ -166,7 +169,7 @@ const useStyle = makeStyles({
 });
 
 const ClassList: React.VFC<{
-  requestCLassListInProgramState: RequestClassListInProgramState;
+  requestCLassListInProgramState: ClassIdListState;
   a: AppState;
   programId: d.QProgramId;
 }> = (props) => {
@@ -182,6 +185,13 @@ const ClassList: React.VFC<{
     return (
       <Box padding={1}>
         <Typography>読込中</Typography>
+      </Box>
+    );
+  }
+  if (props.requestCLassListInProgramState.tag === "Error") {
+    return (
+      <Box padding={1}>
+        <Typography>取得に失敗しました</Typography>
       </Box>
     );
   }

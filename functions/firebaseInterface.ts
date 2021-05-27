@@ -191,7 +191,7 @@ export const getProgramListByCreateAccountId = async (
     .collection("program")
     .where("createAccountId", "==", createAccountId)
     .get();
-  return result.docs.map((docSnapshot): d.QProgram => {
+  return result.docs.map<d.QProgram>((docSnapshot): d.QProgram => {
     const document = docSnapshot.data();
     return {
       id: docSnapshot.id,
@@ -250,7 +250,7 @@ export const getQuestionListByProgramId = async (
     .collection("question")
     .where("programId", "==", programId)
     .get();
-  return result.docs.map((docSnapshot): d.QQuestion => {
+  return result.docs.map<d.QQuestion>((docSnapshot): d.QQuestion => {
     const document = docSnapshot.data();
     return {
       id: docSnapshot.id,
@@ -284,7 +284,7 @@ export const getClassListInProgram = async (
     .collection("class")
     .where("programId", "==", programId)
     .get();
-  return snapshot.docs.map((doc): d.QClass => {
+  return snapshot.docs.map<d.QClass>((doc): d.QClass => {
     const data = doc.data();
     return {
       id: doc.id,
@@ -324,7 +324,7 @@ export const getClassListByCreateAccountId = async (
     .collection("class")
     .where("createAccountId", "==", accountId)
     .get();
-  return snapshot.docs.map((doc): d.QClass => {
+  return snapshot.docs.map<d.QClass>((doc): d.QClass => {
     const data = doc.data();
     return {
       id: doc.id,

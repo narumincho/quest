@@ -48,9 +48,11 @@ export const AppBar: React.VFC<Props> = (props) => {
         {props.appState.loginState.tag === "LoggedIn" ? (
           <Link location={d.QLocation.Setting} appState={props.appState}>
             <Avatar
-              alt={props.appState.loginState.account.name}
+              alt={props.appState.loginState.loggedInState.account.name}
               src={commonUrl
-                .imageUrl(props.appState.loginState.account.iconHash)
+                .imageUrl(
+                  props.appState.loginState.loggedInState.account.iconHash
+                )
                 .toString()}
             />
           </Link>

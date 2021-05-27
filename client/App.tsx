@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../data";
-import { AppState, useAppState } from "./state";
+import { AppState, LoggedInState, useAppState } from "./state";
 import { AdminTopPage } from "./component/AdminTopPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
@@ -21,8 +21,7 @@ export const App: React.VFC<Record<never, never>> = () => {
     case "LoggedIn":
       return (
         <LoggedIn
-          accountToken={appState.loginState.accountToken}
-          account={appState.loginState.account}
+          loggedInState={appState.loginState.loggedInState}
           appState={appState}
         />
       );
@@ -36,16 +35,25 @@ export const App: React.VFC<Record<never, never>> = () => {
 };
 
 const LoggedIn: React.VFC<{
-  accountToken: d.AccountToken;
-  account: d.QAccount;
+  loggedInState: LoggedInState;
   appState: AppState;
 }> = (props) => {
   const location = props.appState.location;
   switch (location._) {
     case "Top":
-      return <AdminTopPage appState={props.appState} />;
+      return (
+        <AdminTopPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+        />
+      );
     case "Setting":
-      return <SettingPage account={props.account} appState={props.appState} />;
+      return (
+        <SettingPage
+          account={props.loggedInState.account}
+          appState={props.appState}
+        />
+      );
     case "NewProgram":
       return <ProgramNewPage appState={props.appState} />;
     case "Program":
