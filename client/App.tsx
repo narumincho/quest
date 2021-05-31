@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as d from "../data";
 import { AppState, LoggedInState, useAppState } from "./state";
 import { AdminTopPage } from "./component/AdminTopPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
@@ -14,7 +13,7 @@ import { QuestionNewPage } from "./component/QuestionNewPage";
 import { QuestionPage } from "./component/QuestionPage";
 import { SettingPage } from "./component/SettingPage";
 
-export const App: React.VFC<Record<never, never>> = () => {
+export const App: React.VFC<Record<never, never>> = React.memo(() => {
   const appState = useAppState();
 
   switch (appState.loginState.tag) {
@@ -32,12 +31,13 @@ export const App: React.VFC<Record<never, never>> = () => {
     default:
       return <LoadingPage />;
   }
-};
+});
+App.displayName = "QuestApp";
 
 const LoggedIn: React.VFC<{
-  loggedInState: LoggedInState;
-  appState: AppState;
-}> = (props) => {
+  readonly loggedInState: LoggedInState;
+  readonly appState: AppState;
+}> = React.memo((props) => {
   const location = props.appState.location;
   switch (location._) {
     case "Top":
@@ -103,4 +103,5 @@ const LoggedIn: React.VFC<{
         />
       );
   }
-};
+});
+LoggedIn.displayName = "LoggedIn";

@@ -21,7 +21,7 @@ export const ThemedApp: React.FC<Record<never, never>> = () => {
           setDarkOrLight("light");
         }
       });
-  });
+  }, []);
 
   const theme = createMuiTheme({
     palette: {

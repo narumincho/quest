@@ -236,7 +236,8 @@ export const useAppState = (): AppState => {
         useAccountMapResult.set(response.ok.account);
       });
     });
-  }, [enqueueSnackbar, useAccountMapResult]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getAccountToken = (): d.AccountToken | undefined => {
     switch (loginState.tag) {
@@ -634,6 +635,6 @@ export const useAppState = (): AppState => {
   };
 };
 
-const back = () => {
+const back = (): void => {
   window.history.back();
 };
