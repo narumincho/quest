@@ -33,10 +33,7 @@ export const mockAppState: AppState = {
             tag: "Loaded",
             questionIdList: [...questionMap.keys()],
           },
-          classIdListState: {
-            tag: "Loaded",
-            classIdList: [mockClassId],
-          },
+          classIdList: [mockClassId],
         };
       case mockProgramIdB:
         return {
@@ -44,9 +41,7 @@ export const mockAppState: AppState = {
           createAccountId: mockAccountId,
           id: mockProgramIdA,
           questionIdListState: { tag: "Requesting" },
-          classIdListState: {
-            tag: "None",
-          },
+          classIdList: [],
         };
       case mockProgramIdLong:
         return {
@@ -54,9 +49,7 @@ export const mockAppState: AppState = {
           createAccountId: mockAccountId,
           id: mockProgramIdA,
           questionIdListState: { tag: "None" },
-          classIdListState: {
-            tag: "None",
-          },
+          classIdList: [],
         };
     }
     return undefined;
@@ -100,7 +93,6 @@ export const mockAppState: AppState = {
       createAccountId: "" as d.AccountId,
     };
   },
-  requestGetClassListInProgram: action("requestGetClassListInProgram"),
   shareClassInviteLink: action("shareClassInviteLink"),
   editQuestion: action("editQuestion"),
   getQuestionThatCanBeParentList: () => {
@@ -239,10 +231,7 @@ const programA: ProgramWithQuestionIdListAndClassIdList = {
     tag: "Loaded",
     questionIdList: [...questionMap.keys()],
   },
-  classIdListState: {
-    tag: "Loaded",
-    classIdList: [mockClassId],
-  },
+  classIdList: [mockClassId],
 };
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,

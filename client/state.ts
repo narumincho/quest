@@ -25,27 +25,12 @@ export type QuestionListIdState =
       questionIdList: ReadonlyArray<d.QQuestionId>;
     };
 
-export type ClassIdListState =
-  | {
-      tag: "None";
-    }
-  | {
-      tag: "Requesting";
-    }
-  | {
-      tag: "Error";
-    }
-  | {
-      tag: "Loaded";
-      classIdList: ReadonlyArray<d.QClassId>;
-    };
-
 export type ProgramWithQuestionIdListAndClassIdList = {
   readonly id: d.QProgramId;
   readonly name: string;
   readonly createAccountId: d.AccountId;
   readonly questionIdListState: QuestionListIdState;
-  readonly classIdListState: ClassIdListState;
+  readonly classIdList: ReadonlyArray<d.QClassId>;
 };
 
 export type { QuestionTree };
@@ -86,8 +71,6 @@ export type AppState = {
   createClass: (option: { className: string; programId: d.QProgramId }) => void;
   /** プログラムに属する質問を取得する */
   requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
-  /** プログラムに属するクラスを取得する */
-  requestGetClassListInProgram: (programId: d.QProgramId) => void;
   /** 質問を作成する */
   createQuestion: (
     programId: d.QProgramId,
@@ -206,32 +189,7 @@ export const useAppState = (): AppState => {
         }
         setLoginState({
           tag: "LoggedIn",
-          loggedInState: {
-            accountToken,
-            account: response.ok.account,
-            createdProgramList: new Map(
-              response.ok.createdProgramList.map((program): [
-                d.QProgramId,
-                ProgramWithQuestionIdListAndClassIdList
-              ] => [
-                program.id,
-                {
-                  id: program.id,
-                  createAccountId: program.createAccountId,
-                  classIdListState: { tag: "None" },
-                  name: program.name,
-                  questionIdListState: { tag: "None" },
-                },
-              ])
-            ),
-            createdClassList: new Map(
-              response.ok.createdClassList.map((qClass): [
-                d.QClassId,
-                d.QClass
-              ] => [qClass.id, qClass])
-            ),
-            joinedClassList: response.ok.joinedClassList,
-          },
+          loggedInState: accountDataToLoggedInState(response.ok, accountToken),
         });
         useAccountMapResult.set(response.ok.account);
       });
@@ -309,7 +267,7 @@ export const useAppState = (): AppState => {
           {
             id: program.id,
             questionIdListState: { tag: "None" },
-            classIdListState: { tag: "None" },
+            classIdList: [],
             createAccountId: program.createAccountId,
             name: program.name,
           }
@@ -335,29 +293,6 @@ export const useAppState = (): AppState => {
           (programWithQuestionIdListAndClassIdList) => ({
             ...programWithQuestionIdListAndClassIdList,
             questionIdList: questionListIdState,
-          })
-        ),
-      },
-    });
-  };
-
-  const setClassIdListStateInProgram = (
-    programId: d.QProgramId,
-    classIdListState: ClassIdListState
-  ): void => {
-    if (loginState.tag !== "LoggedIn") {
-      return;
-    }
-    setLoginState({
-      ...loginState,
-      loggedInState: {
-        ...loginState.loggedInState,
-        createdProgramList: mapUpdate(
-          loginState.loggedInState.createdProgramList,
-          programId,
-          (programWithQuestionIdListAndClassIdList) => ({
-            ...programWithQuestionIdListAndClassIdList,
-            classIdList: classIdListState,
           })
         ),
       },
@@ -490,41 +425,6 @@ export const useAppState = (): AppState => {
           });
         });
     },
-    requestGetClassListInProgram: (programId) => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(
-          `プログラムに属しているクラスの取得にはログインが必要です`,
-          {
-            variant: "warning",
-          }
-        );
-        return;
-      }
-      setClassIdListStateInProgram(programId, { tag: "Requesting" });
-      api
-        .getClassListInProgram({
-          programId,
-          accountToken,
-        })
-        .then((response) => {
-          if (response._ === "Error") {
-            setClassIdListStateInProgram(programId, { tag: "Error" });
-            enqueueSnackbar(
-              `プログラムに属しているクラスの取得にに失敗しました ${response.error}`,
-              {
-                variant: "error",
-              }
-            );
-            return;
-          }
-          useClassMapResult.setClassList(response.ok);
-          setClassIdListStateInProgram(programId, {
-            tag: "Loaded",
-            classIdList: response.ok.map((c) => c.id),
-          });
-        });
-    },
     createQuestion: (programId, parent, questionText) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
@@ -637,4 +537,39 @@ export const useAppState = (): AppState => {
 
 const back = (): void => {
   window.history.back();
+};
+
+const accountDataToLoggedInState = (
+  accountData: d.QAccountData,
+  accountToken: d.AccountToken
+): LoggedInState => {
+  return {
+    accountToken,
+    account: accountData.account,
+    createdProgramList: new Map(
+      accountData.createdProgramList.map((program): [
+        d.QProgramId,
+        ProgramWithQuestionIdListAndClassIdList
+      ] => [
+        program.id,
+        {
+          id: program.id,
+          createAccountId: program.createAccountId,
+          classIdList: accountData.createdClassList.flatMap(
+            (qClass): ReadonlyArray<d.QClassId> =>
+              qClass.programId === program.id ? [qClass.id] : []
+          ),
+          name: program.name,
+          questionIdListState: { tag: "None" },
+        },
+      ])
+    ),
+    createdClassList: new Map(
+      accountData.createdClassList.map((qClass): [d.QClassId, d.QClass] => [
+        qClass.id,
+        qClass,
+      ])
+    ),
+    joinedClassList: accountData.joinedClassList,
+  };
 };

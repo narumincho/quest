@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, ClassIdListState, QuestionListIdState } from "../state";
+import { AppState, QuestionListIdState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -10,7 +10,6 @@ import {
 } from "@material-ui/core";
 import { AccountCard } from "./AccountCard";
 import { Add } from "@material-ui/icons";
-import { AppBar } from "./AppBar";
 import { ClassCard } from "./ClassCard";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
@@ -26,8 +25,8 @@ export const ProgramPage: React.VFC<Props> = (props) => {
 
   React.useEffect(() => {
     props.appState.requestGetQuestionListInProgram(props.programId);
-    props.appState.requestGetClassListInProgram(props.programId);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.programId]);
 
   if (program === undefined) {
     return (
@@ -96,7 +95,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>クラス:</Typography>
           <ClassList
-            requestCLassListInProgramState={program.classIdListState}
+            classIdList={program.classIdList}
             a={props.appState}
             programId={props.programId}
           />
@@ -169,34 +168,12 @@ const useStyle = makeStyles({
 });
 
 const ClassList: React.VFC<{
-  requestCLassListInProgramState: ClassIdListState;
+  classIdList: ReadonlyArray<d.QClassId>;
   a: AppState;
   programId: d.QProgramId;
 }> = (props) => {
   const classes = useStyle();
-  if (props.requestCLassListInProgramState.tag === "None") {
-    return (
-      <Box padding={1}>
-        <Typography>リクエスト待ち</Typography>
-      </Box>
-    );
-  }
-  if (props.requestCLassListInProgramState.tag === "Requesting") {
-    return (
-      <Box padding={1}>
-        <Typography>読込中</Typography>
-      </Box>
-    );
-  }
-  if (props.requestCLassListInProgramState.tag === "Error") {
-    return (
-      <Box padding={1}>
-        <Typography>取得に失敗しました</Typography>
-      </Box>
-    );
-  }
-  const list = props.requestCLassListInProgramState.classIdList;
-  if (list.length === 0) {
+  if (props.classIdList.length === 0) {
     return (
       <Box padding={1}>
         <Typography>クラスが1つもありません</Typography>
@@ -205,7 +182,7 @@ const ClassList: React.VFC<{
   }
   return (
     <Box className={classes.list}>
-      {list.map((classId) => (
+      {props.classIdList.map((classId) => (
         <ClassCard a={props.a} classId={classId} key={classId} />
       ))}
     </Box>
