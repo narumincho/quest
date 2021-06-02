@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
 import { useAccountMap } from "./state/account";
-import { useClassMap } from "./state/class";
 
 export type QuestionListIdState =
   | {
@@ -30,7 +29,7 @@ export type ProgramWithQuestionIdListAndClassIdList = {
   readonly name: string;
   readonly createAccountId: d.AccountId;
   readonly questionIdListState: QuestionListIdState;
-  readonly classIdList: ReadonlyArray<d.QClassId>;
+  readonly classList: ReadonlyArray<d.QClass>;
 };
 
 export type { QuestionTree };
@@ -129,7 +128,6 @@ export type LoggedInState = {
     d.QProgramId,
     ProgramWithQuestionIdListAndClassIdList
   >;
-  createdClassList: ReadonlyMap<d.QClassId, d.QClass>;
   joinedClassList: ReadonlyArray<d.Tuple2<d.QClassStudentOrGuest, d.QRole>>;
 };
 
@@ -148,7 +146,6 @@ export const useAppState = (): AppState => {
     tag: "Loading",
   });
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
-  const useClassMapResult = useClassMap();
   const useAccountMapResult = useAccountMap();
   const questionState = useQuestionMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
@@ -267,7 +264,7 @@ export const useAppState = (): AppState => {
           {
             id: program.id,
             questionIdListState: { tag: "None" },
-            classIdList: [],
+            classList: [],
             createAccountId: program.createAccountId,
             name: program.name,
           }
@@ -299,6 +296,60 @@ export const useAppState = (): AppState => {
     });
   };
 
+  const setCreatedClass = (qClass: d.QClass): void => {
+    if (loginState.tag !== "LoggedIn") {
+      return;
+    }
+    setLoginState({
+      ...loginState,
+      loggedInState: {
+        ...loginState.loggedInState,
+        createdProgramList: mapUpdate(
+          loginState.loggedInState.createdProgramList,
+          qClass.programId,
+          (program) => {
+            return {
+              ...program,
+              classList: [...program.classList, qClass],
+            };
+          }
+        ),
+      },
+    });
+  };
+
+  const setJoinedClass = (
+    classStudentOrGuest: d.QClassStudentOrGuest,
+    role: d.QRole
+  ): void => {
+    if (loginState.tag !== "LoggedIn") {
+      return;
+    }
+    setLoginState({
+      ...loginState,
+      loggedInState: {
+        ...loginState.loggedInState,
+        joinedClassList: [
+          ...loginState.loggedInState.joinedClassList,
+          { first: classStudentOrGuest, second: role },
+        ],
+      },
+    });
+  };
+
+  const getCreatedClass = (qClassId: d.QClassId): d.QClass | undefined => {
+    if (loginState.tag !== "LoggedIn") {
+      return;
+    }
+    for (const program of loginState.loggedInState.createdProgramList.values()) {
+      for (const qClass of program.classList) {
+        if (qClass.id === qClassId) {
+          return qClass;
+        }
+      }
+    }
+  };
+
   return {
     loginState,
     requestLogin,
@@ -308,7 +359,6 @@ export const useAppState = (): AppState => {
       });
       indexedDb.deleteAccountToken();
       useAccountMapResult.deleteAll();
-      useClassMapResult.deleteAll();
       questionState.deleteAll();
       setLoginState({
         tag: "NoLogin",
@@ -377,7 +427,7 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`クラス 「${response.ok.name}」を作成しました`, {
             variant: "success",
           });
-          useClassMapResult.setClass(response.ok);
+          setCreatedClass(response.ok);
           changeLocation(d.QLocation.Class(response.ok.id));
         });
     },
@@ -463,9 +513,9 @@ export const useAppState = (): AppState => {
       return questionState.getParentQuestionList(id.value);
     },
     questionTree: questionState.questionTree,
-    getClass: useClassMapResult.getById,
+    getClass: getCreatedClass,
     shareClassInviteLink: (classId) => {
-      const qClass = useClassMapResult.getById(classId);
+      const qClass = getCreatedClass(classId);
       if (qClass === undefined) {
         return;
       }
@@ -528,7 +578,7 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`クラスに参加しました`, {
             variant: "success",
           });
-          useClassMapResult.setClass(response.ok);
+          setJoinedClass(response.ok, d.QRole.Student);
           setLocation(d.QLocation.Class(response.ok.id));
         });
     },
@@ -555,19 +605,13 @@ const accountDataToLoggedInState = (
         {
           id: program.id,
           createAccountId: program.createAccountId,
-          classIdList: accountData.createdClassList.flatMap(
-            (qClass): ReadonlyArray<d.QClassId> =>
-              qClass.programId === program.id ? [qClass.id] : []
+          classList: accountData.createdClassList.flatMap(
+            (qClass): ReadonlyArray<d.QClass> =>
+              qClass.programId === program.id ? [qClass] : []
           ),
           name: program.name,
           questionIdListState: { tag: "None" },
         },
-      ])
-    ),
-    createdClassList: new Map(
-      accountData.createdClassList.map((qClass): [d.QClassId, d.QClass] => [
-        qClass.id,
-        qClass,
       ])
     ),
     joinedClassList: accountData.joinedClassList,

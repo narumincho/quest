@@ -33,7 +33,7 @@ export const mockAppState: AppState = {
             tag: "Loaded",
             questionIdList: [...questionMap.keys()],
           },
-          classIdList: [mockClassId],
+          classList: [mockClass],
         };
       case mockProgramIdB:
         return {
@@ -41,7 +41,7 @@ export const mockAppState: AppState = {
           createAccountId: mockAccountId,
           id: mockProgramIdA,
           questionIdListState: { tag: "Requesting" },
-          classIdList: [],
+          classList: [],
         };
       case mockProgramIdLong:
         return {
@@ -49,7 +49,7 @@ export const mockAppState: AppState = {
           createAccountId: mockAccountId,
           id: mockProgramIdA,
           questionIdListState: { tag: "None" },
-          classIdList: [],
+          classList: [],
         };
     }
     return undefined;
@@ -112,6 +112,15 @@ export const mockAccountToken = "mockAccountToken" as d.AccountToken;
 export const mockProgramIdA = "mockProgramA" as d.QProgramId;
 export const mockProgramIdB = "mockProgramB" as d.QProgramId;
 export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
+export const mockClassId = "mockClassId" as d.QClassId;
+
+export const mockClass: d.QClass = {
+  id: mockClassId,
+  name: "サンプルクラス",
+  programId: mockProgramIdA,
+  invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
+  createAccountId: "" as d.AccountId,
+};
 
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
@@ -221,8 +230,6 @@ const questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion> = new Map(
   questionList.map((question) => [question.id, question] as const)
 );
 
-export const mockClassId = "mockClassId" as d.QClassId;
-
 const programA: ProgramWithQuestionIdListAndClassIdList = {
   name: "サンプルプログラム名A",
   createAccountId: mockAccountId,
@@ -231,12 +238,11 @@ const programA: ProgramWithQuestionIdListAndClassIdList = {
     tag: "Loaded",
     questionIdList: [...questionMap.keys()],
   },
-  classIdList: [mockClassId],
+  classList: [mockClass],
 };
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,
   accountToken: mockAccountToken,
-  createdClassList: new Map(),
   createdProgramList: new Map<
     d.QProgramId,
     ProgramWithQuestionIdListAndClassIdList

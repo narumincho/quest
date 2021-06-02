@@ -95,7 +95,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>クラス:</Typography>
           <ClassList
-            classIdList={program.classIdList}
+            classList={program.classList}
             a={props.appState}
             programId={props.programId}
           />
@@ -168,12 +168,12 @@ const useStyle = makeStyles({
 });
 
 const ClassList: React.VFC<{
-  classIdList: ReadonlyArray<d.QClassId>;
+  classList: ReadonlyArray<d.QClass>;
   a: AppState;
   programId: d.QProgramId;
 }> = (props) => {
   const classes = useStyle();
-  if (props.classIdList.length === 0) {
+  if (props.classList.length === 0) {
     return (
       <Box padding={1}>
         <Typography>クラスが1つもありません</Typography>
@@ -182,8 +182,8 @@ const ClassList: React.VFC<{
   }
   return (
     <Box className={classes.list}>
-      {props.classIdList.map((classId) => (
-        <ClassCard a={props.a} classId={classId} key={classId} />
+      {props.classList.map((qClass) => (
+        <ClassCard a={props.a} class={qClass} key={qClass.id} />
       ))}
     </Box>
   );
