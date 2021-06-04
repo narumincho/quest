@@ -223,6 +223,15 @@ export const apiFunc: {
     );
     return invitationTokenResult;
   },
+  getQuestionInProgramByQuestionId: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const question = await firebaseInterface.getQuestion(parameter.questionId);
+    if (question === undefined) {
+      throw new Error("指定した質問がが存在しないか, 作った本人でない");
+    }
+    await validateAndGetProgram(account.id, question.programId);
+    return firebaseInterface.getQuestionListByProgramId(question.programId);
+  },
 };
 
 const lineLoginClientId = "1655691758";

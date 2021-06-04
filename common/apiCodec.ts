@@ -110,3 +110,12 @@ export const joinClassAsStudent: ApiCodec<
   request: d.JoinClassAsStudentParameter.codec,
   response: d.QClass.codec,
 };
+
+/** プログラムに属する質問をある, 質問IDから得る */
+export const getQuestionInProgramByQuestionId: ApiCodec<
+  d.GetQuestionListInProgramByQuestionIdParameter,
+  d.List<d.QQuestion>
+> = {
+  request: d.GetQuestionListInProgramByQuestionIdParameter.codec,
+  response: d.List.codec(d.QQuestion.codec),
+};

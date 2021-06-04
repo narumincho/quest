@@ -304,6 +304,21 @@
  
  
  /**
+  * 質問IDからプログラムに属する質問を取得する
+  * @typePartId 38f8436dbd5f16407883acb3917cca49
+  */
+ export type GetQuestionListInProgramByQuestionIdParameter = { 
+ /**
+  * quest の アカウントトークン
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * 質問ID
+  */
+ readonly questionId: QQuestionId };
+ 
+ 
+ /**
   * バイナリ. JavaScriptのUint8Arrayで扱える. 最初にLED128でバイト数, その次にバイナリそのまま
   * @typePartId 3e2f740c88923b0393a1ef93d92f157b
   */
@@ -3073,6 +3088,29 @@
    const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
    const classInvitationTokenAndNextIndex: { readonly result: QClassInvitationToken; readonly nextIndex: number } = QClassInvitationToken.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
    return { result: { accountToken: accountTokenAndNextIndex.result, classInvitationToken: classInvitationTokenAndNextIndex.result }, nextIndex: classInvitationTokenAndNextIndex.nextIndex };
+ } } };
+ 
+ 
+ /**
+  * 質問IDからプログラムに属する質問を取得する
+  * @typePartId 38f8436dbd5f16407883acb3917cca49
+  */
+ export const GetQuestionListInProgramByQuestionIdParameter: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<GetQuestionListInProgramByQuestionIdParameter>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: GetQuestionListInProgramByQuestionIdParameter) => GetQuestionListInProgramByQuestionIdParameter } = { typePartId: "38f8436dbd5f16407883acb3917cca49" as TypePartId, helper: (getQuestionListInProgramByQuestionIdParameter: GetQuestionListInProgramByQuestionIdParameter): GetQuestionListInProgramByQuestionIdParameter => getQuestionListInProgramByQuestionIdParameter, codec: { encode: (value: GetQuestionListInProgramByQuestionIdParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QQuestionId.codec.encode(value.questionId))), decode: (index: number, binary: Uint8Array): { readonly result: GetQuestionListInProgramByQuestionIdParameter; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const questionIdAndNextIndex: { readonly result: QQuestionId; readonly nextIndex: number } = QQuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result }, nextIndex: questionIdAndNextIndex.nextIndex };
  } } };
  
  
