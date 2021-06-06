@@ -11,6 +11,16 @@ export type Props = {
 };
 
 export const ClassPage: React.VFC<Props> = (props) => {
+  React.useEffect(() => {
+    if (props.classId !== undefined) {
+      const qClass = props.a.getClass(props.classId);
+      if (qClass === undefined) {
+        return;
+      }
+      props.a.requestGetQuestionListInProgram(qClass.programId);
+    }
+  }, [props.a, props.classId]);
+
   const qClass = props.a.getClass(props.classId);
   if (qClass === undefined) {
     return (
@@ -32,6 +42,7 @@ export const ClassPage: React.VFC<Props> = (props) => {
       </PageContainer>
     );
   }
+
   const program = props.a.program(qClass.programId);
   return (
     <PageContainer appState={props.a}>
@@ -60,14 +71,14 @@ export const ClassPage: React.VFC<Props> = (props) => {
             fullWidth
             color="primary"
             onClick={() => {
-              props.a.shareClassInviteLink(props.classId);
+              props.a.shareClassInviteLink(qClass.id);
             }}
           >
             招待URLをシェアする
           </Button>
         </Box>
         <Box padding={1}>
-          <Typography>クラスID: {props.classId}</Typography>
+          <Typography>クラスID: {qClass.id}</Typography>
         </Box>
       </Box>
     </PageContainer>

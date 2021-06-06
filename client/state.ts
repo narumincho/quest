@@ -99,6 +99,8 @@ export type AppState = {
   ) => ReadonlyArray<d.QQuestion>;
   /** クラスに参加する */
   joinClass: (classInvitationToken: d.QClassInvitationToken) => void;
+  /** 質問IDからプロジェクトに属する質問を取得する */
+  getQuestionInProgramByQuestionId: (questionId: d.QQuestionId) => void;
 };
 
 export type LoginState =
@@ -580,6 +582,29 @@ export const useAppState = (): AppState => {
           });
           setJoinedClass(response.ok, d.QRole.Student);
           setLocation(d.QLocation.Class(response.ok.id));
+        });
+    },
+    getQuestionInProgramByQuestionId: (questionId: d.QQuestionId) => {
+      if (questionState.questionById(questionId) !== undefined) {
+        return;
+      }
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        enqueueSnackbar(`質問の取得にはログインする必要があります`, {
+          variant: "error",
+        });
+        return;
+      }
+      api
+        .getQuestionInProgramByQuestionId({ accountToken, questionId })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(`プログラムに属する質問の取得にに失敗しました`, {
+              variant: "error",
+            });
+            return;
+          }
+          questionState.setQuestionList(response.ok);
         });
     },
   };
