@@ -13,7 +13,7 @@ import {
 import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {
-  loginState: { tag: "NoLogin" },
+  logInState: { tag: "NoLogin" },
   jump: action("移動しようとした"),
   changeLocation: action("履歴を置き換える形で移動しようとした"),
   location: d.QLocation.Top,

@@ -270,7 +270,7 @@
   * Maybe. nullableのようなもの. 今後はRustのstd::Optionに出力するために属性をつけよう (確信)
   * @typePartId 304f21ae8208a21d08731aa6d183742d
   */
- export type Maybe<value extends unknown> = { readonly _: "Just"; readonly value: value } | { readonly _: "Nothing" };
+ export type Maybe<value extends unknown> = { /** ある */ readonly _: "Just"; readonly value: value } | { /** ない */ readonly _: "Nothing" };
  
  
  /**

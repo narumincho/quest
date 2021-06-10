@@ -16,11 +16,11 @@ import { SettingPage } from "./component/SettingPage";
 export const App: React.VFC<Record<never, never>> = React.memo(() => {
   const appState = useAppState();
 
-  switch (appState.loginState.tag) {
+  switch (appState.logInState.tag) {
     case "LoggedIn":
       return (
         <LoggedIn
-          loggedInState={appState.loginState.loggedInState}
+          loggedInState={appState.logInState.loggedInState}
           appState={appState}
         />
       );
