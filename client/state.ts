@@ -7,7 +7,6 @@ import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { ProgramWithClassList } from "./state/loggedInState";
 import { api } from "./api";
-import { mapUpdate } from "../common/map";
 import { stringToValidProgramName } from "../common/validation";
 import { useAccountMap } from "./state/account";
 
@@ -100,6 +99,8 @@ export const useAppState = (): AppState => {
     setJumpingPage,
     setProgram,
     setQuestionListState,
+    addCreatedClass,
+    addJoinedClass,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -197,47 +198,6 @@ export const useAppState = (): AppState => {
     setLocation(newLocation);
   };
 
-  const setCreatedClass = (qClass: d.QClass): void => {
-    if (logInState.tag !== "LoggedIn") {
-      return;
-    }
-    setLoginState({
-      ...loginState,
-      loggedInState: {
-        ...loginState.loggedInState,
-        createdProgramList: mapUpdate(
-          loginState.loggedInState.createdProgramList,
-          qClass.programId,
-          (program) => {
-            return {
-              ...program,
-              classList: [...program.classList, qClass],
-            };
-          }
-        ),
-      },
-    });
-  };
-
-  const setJoinedClass = (
-    classStudentOrGuest: d.QClassStudentOrGuest,
-    role: d.QRole
-  ): void => {
-    if (logInState.tag !== "LoggedIn") {
-      return;
-    }
-    setLogInState({
-      ...logInState,
-      loggedInState: {
-        ...logInState.loggedInState,
-        joinedClassList: [
-          ...logInState.loggedInState.joinedClassList,
-          { first: classStudentOrGuest, second: role },
-        ],
-      },
-    });
-  };
-
   const getCreatedClass = (qClassId: d.QClassId): d.QClass | undefined => {
     if (logInState.tag !== "LoggedIn") {
       return;
@@ -326,7 +286,7 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`クラス 「${response.ok.name}」を作成しました`, {
             variant: "success",
           });
-          setCreatedClass(response.ok);
+          addCreatedClass(response.ok);
           changeLocation(d.QLocation.Class(response.ok.id));
         });
     },
@@ -478,7 +438,7 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`クラスに参加しました`, {
             variant: "success",
           });
-          setJoinedClass(response.ok, d.QRole.Student);
+          addJoinedClass(response.ok, d.QRole.Student);
           setLocation(d.QLocation.Class(response.ok.id));
         });
     },

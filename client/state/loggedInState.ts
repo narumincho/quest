@@ -1,5 +1,5 @@
 import * as d from "../../data";
-import { mapSet } from "../../common/map";
+import { mapSet, mapUpdate } from "../../common/map";
 
 /** ログインしたときに保存する管理する状態 */
 export type LoggedInState = {
@@ -90,5 +90,35 @@ export const setQuestionListState = (
       option.programId,
       option.questionListState
     ),
+  };
+};
+
+export const addCreatedClass = (
+  beforeLoggedInState: LoggedInState,
+  qClass: d.QClass
+): LoggedInState => {
+  return {
+    ...beforeLoggedInState,
+    createdProgramList: mapUpdate(
+      beforeLoggedInState.createdProgramList,
+      qClass.programId,
+      (beforeClass) => ({
+        ...beforeClass,
+        classList: [...beforeClass.classList, qClass],
+      })
+    ),
+  };
+};
+
+export const addJoinedClass = (
+  beforeLoggedInState: LoggedInState,
+  option: { classStudentOrGuest: d.QClassStudentOrGuest; role: d.QRole }
+): LoggedInState => {
+  return {
+    ...beforeLoggedInState,
+    joinedClassList: [
+      ...beforeLoggedInState.joinedClassList,
+      { first: option.classStudentOrGuest, second: option.role },
+    ],
   };
 };

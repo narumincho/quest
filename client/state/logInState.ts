@@ -3,6 +3,8 @@ import {
   LoggedInState,
   QuestionListState,
   initLoggedInState,
+  addCreatedClass as loggedInStateAddCreatedClass,
+  addJoinedClass as loggedInStateAddJoinedClass,
   setProgram as loggedInStateSetProgram,
   setQuestionListState as loggedInStateSetQuestionListState,
 } from "./loggedInState";
@@ -58,6 +60,13 @@ export type logInStateResult = {
   readonly setQuestionListState: (
     programId: d.QProgramId,
     questionListState: QuestionListState
+  ) => void;
+  /** 作成したクラスを保存する */
+  readonly addCreatedClass: (qClass: d.QClass) => void;
+  /** 参加したクラスをキャッシュに追加する */
+  readonly addJoinedClass: (
+    classStudentOrGuest: d.QClassStudentOrGuest,
+    role: d.QRole
   ) => void;
 };
 
@@ -134,6 +143,39 @@ export const useLogInState = (): logInStateResult => {
     []
   );
 
+  const addCreatedClass = useCallback((qClass: d.QClass): void => {
+    setLogInState((beforeLogInState) => {
+      if (beforeLogInState.tag !== "LoggedIn") {
+        return beforeLogInState;
+      }
+      return {
+        ...beforeLogInState,
+        loggedInState: loggedInStateAddCreatedClass(
+          beforeLogInState.loggedInState,
+          qClass
+        ),
+      };
+    });
+  }, []);
+
+  const addJoinedClass = useCallback(
+    (classStudentOrGuest: d.QClassStudentOrGuest, role: d.QRole): void => {
+      setLogInState((beforeLogInState) => {
+        if (beforeLogInState.tag !== "LoggedIn") {
+          return beforeLogInState;
+        }
+        return {
+          ...beforeLogInState,
+          loggedInState: loggedInStateAddJoinedClass(
+            beforeLogInState.loggedInState,
+            { classStudentOrGuest, role }
+          ),
+        };
+      });
+    },
+    []
+  );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -144,6 +186,8 @@ export const useLogInState = (): logInStateResult => {
       setJumpingPage,
       setProgram,
       setQuestionListState,
+      addCreatedClass,
+      addJoinedClass,
     }),
     [
       logInState,
@@ -154,6 +198,8 @@ export const useLogInState = (): logInStateResult => {
       setJumpingPage,
       setProgram,
       setQuestionListState,
+      addCreatedClass,
+      addJoinedClass,
     ]
   );
 };
