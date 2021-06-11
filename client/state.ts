@@ -1,16 +1,26 @@
 import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
-import { LogInState, useLogInState } from "./state/logInState";
+import {
+  LogInState,
+  LoggedInState,
+  ProgramWithClassList,
+  QuestionListState,
+  useLogInState,
+} from "./state/logInState";
 import { QuestionTree, useQuestionMap } from "./state/question";
 import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-import { ProgramWithClassList } from "./state/loggedInState";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
 import { useAccountMap } from "./state/account";
 
-export type { QuestionTree };
+export type {
+  QuestionTree,
+  LoggedInState,
+  ProgramWithClassList,
+  QuestionListState,
+};
 
 export type AppState = {
   /** ログイン状態 */

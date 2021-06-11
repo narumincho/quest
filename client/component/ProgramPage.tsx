@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, QuestionListIdState } from "../state";
+import { AppState, QuestionListState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -41,7 +41,10 @@ export const ProgramPage: React.VFC<Props> = (props) => {
             </Breadcrumbs>
           </Box>
         </Box>
-        <Box>プログラム読み込み準備中</Box>
+        <Box>
+          あなたが作成していないまたは,
+          存在していないためプログラムを表示することができませんでした
+        </Box>
         <Box padding={1}>
           <Typography>プログラムID: {props.programId}</Typography>
         </Box>
@@ -73,7 +76,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>質問:</Typography>
           <QuestionList
-            questionList={program.questionIdListState}
+            questionList={undefined}
             appState={props.appState}
             programId={props.programId}
           />
@@ -119,11 +122,11 @@ export const ProgramPage: React.VFC<Props> = (props) => {
 };
 
 export const QuestionList: React.VFC<{
-  questionList: QuestionListIdState;
+  questionList: QuestionListState | undefined;
   appState: AppState;
   programId: d.QProgramId;
 }> = (props) => {
-  if (props.questionList.tag === "None") {
+  if (props.questionList === undefined) {
     return (
       <Box padding={1}>
         <Typography>リクエスト待ち</Typography>

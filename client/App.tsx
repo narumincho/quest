@@ -25,7 +25,7 @@ export const App: React.VFC<Record<never, never>> = React.memo(() => {
         />
       );
     case "NoLogin":
-    case "RequestingLoginUrl":
+    case "RequestingLogInUrl":
     case "JumpingPage":
       return <LogInPage appState={appState} />;
     default:

@@ -1,10 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import {
-  AppState,
-  LoggedInState,
-  ProgramWithQuestionIdListAndClassIdList,
-} from "../state";
+import { AppState, LoggedInState, ProgramWithClassList } from "../state";
 import { Box, Fab, Typography, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { Link } from "./Link";
@@ -60,10 +56,7 @@ const useCreatedProgramListStyles = makeStyles({
 
 export const CreatedProgramList: React.VFC<{
   readonly appState: AppState;
-  readonly createdProgramList: ReadonlyMap<
-    d.QProgramId,
-    ProgramWithQuestionIdListAndClassIdList
-  >;
+  readonly createdProgramList: ReadonlyMap<d.QProgramId, ProgramWithClassList>;
 }> = (props) => {
   const classes = useCreatedProgramListStyles();
   if (props.createdProgramList.size === 0) {

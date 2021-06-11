@@ -1,6 +1,7 @@
 import * as d from "../../data";
 import {
   LoggedInState,
+  ProgramWithClassList,
   QuestionListState,
   initLoggedInState,
   addCreatedClass as loggedInStateAddCreatedClass,
@@ -9,6 +10,8 @@ import {
   setQuestionListState as loggedInStateSetQuestionListState,
 } from "./loggedInState";
 import { useCallback, useMemo, useState } from "react";
+
+export type { LoggedInState, ProgramWithClassList, QuestionListState };
 
 export type LogInState =
   | {

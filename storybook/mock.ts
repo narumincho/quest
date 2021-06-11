@@ -2,7 +2,7 @@ import * as d from "../data";
 import {
   AppState,
   LoggedInState,
-  ProgramWithQuestionIdListAndClassIdList,
+  ProgramWithClassList,
   QuestionTree,
 } from "../client/state";
 import {
@@ -231,22 +231,18 @@ const questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion> = new Map(
   questionList.map((question) => [question.id, question] as const)
 );
 
-const programA: ProgramWithQuestionIdListAndClassIdList = {
+const programA: ProgramWithClassList = {
   name: "サンプルプログラム名A",
   createAccountId: mockAccountId,
   id: mockProgramIdA,
-  questionIdListState: {
-    tag: "Loaded",
-    questionIdList: [...questionMap.keys()],
-  },
   classList: [mockClass],
 };
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,
   accountToken: mockAccountToken,
-  createdProgramList: new Map<
-    d.QProgramId,
-    ProgramWithQuestionIdListAndClassIdList
-  >([[mockProgramIdA, programA]]),
+  createdProgramList: new Map<d.QProgramId, ProgramWithClassList>([
+    [mockProgramIdA, programA],
+  ]),
+  questionDict: new Map(),
   joinedClassList: [],
 };
