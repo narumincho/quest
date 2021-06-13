@@ -45,13 +45,13 @@ export const AppBar: React.VFC<Props> = (props) => {
         <Typography variant="h6" className={classes.title}>
           クエスト
         </Typography>
-        {props.appState.loginState.tag === "LoggedIn" ? (
+        {props.appState.logInState.tag === "LoggedIn" ? (
           <Link location={d.QLocation.Setting} appState={props.appState}>
             <Avatar
-              alt={props.appState.loginState.loggedInState.account.name}
+              alt={props.appState.logInState.loggedInState.account.name}
               src={commonUrl
                 .imageUrl(
-                  props.appState.loginState.loggedInState.account.iconHash
+                  props.appState.logInState.loggedInState.account.iconHash
                 )
                 .toString()}
             />

@@ -37,7 +37,7 @@ const useStyle = makeStyles({
 
 export const LineLoginButton: React.VFC<Props> = (props) => {
   const classes = useStyle();
-  switch (props.appState.loginState.tag) {
+  switch (props.appState.logInState.tag) {
     case "NoLogin":
       return (
         <Button
@@ -49,7 +49,7 @@ export const LineLoginButton: React.VFC<Props> = (props) => {
           <div className={classes.text}>LINE で ログイン</div>
         </Button>
       );
-    case "RequestingLoginUrl":
+    case "RequestingLogInUrl":
       return (
         <Button
           variant="contained"

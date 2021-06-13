@@ -1,3 +1,4 @@
+/** Map の値を設定する. 値がない場合は新たに追加する */
 export const mapSet = <Key, Value>(
   map: ReadonlyMap<Key, Value>,
   key: Key,

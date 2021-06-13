@@ -2,8 +2,8 @@ import * as d from "../data";
 import {
   AppState,
   LoggedInState,
-  ProgramWithQuestionIdListAndClassIdList,
-  QuestionTree,
+  ProgramWithClassList,
+  QuestionTreeListWithLoadingState,
 } from "../client/state";
 import {
   getParentQuestionList,
@@ -13,7 +13,7 @@ import {
 import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {
-  loginState: { tag: "NoLogin" },
+  logInState: { tag: "NoLogin" },
   jump: action("移動しようとした"),
   changeLocation: action("履歴を置き換える形で移動しようとした"),
   location: d.QLocation.Top,
@@ -80,8 +80,13 @@ export const mockAppState: AppState = {
     }
     return getParentQuestionList(id.value, questionMap);
   },
-  questionTree: (programId: d.QProgramId): ReadonlyArray<QuestionTree> => {
-    return getQuestionTree(programId, questionList);
+  getQuestionTreeListWithLoadingStateInProgram: (
+    programId: d.QProgramId
+  ): QuestionTreeListWithLoadingState => {
+    return {
+      tag: "Loaded",
+      questionTreeList: getQuestionTree(programId, questionList),
+    };
   },
   createClass: action("createClass"),
   getClass: () => {
@@ -231,22 +236,18 @@ const questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion> = new Map(
   questionList.map((question) => [question.id, question] as const)
 );
 
-const programA: ProgramWithQuestionIdListAndClassIdList = {
+const programA: ProgramWithClassList = {
   name: "サンプルプログラム名A",
   createAccountId: mockAccountId,
   id: mockProgramIdA,
-  questionIdListState: {
-    tag: "Loaded",
-    questionIdList: [...questionMap.keys()],
-  },
   classList: [mockClass],
 };
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,
   accountToken: mockAccountToken,
-  createdProgramList: new Map<
-    d.QProgramId,
-    ProgramWithQuestionIdListAndClassIdList
-  >([[mockProgramIdA, programA]]),
+  createdProgramList: new Map<d.QProgramId, ProgramWithClassList>([
+    [mockProgramIdA, programA],
+  ]),
+  questionDict: new Map(),
   joinedClassList: [],
 };
