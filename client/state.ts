@@ -114,6 +114,7 @@ export const useAppState = (): AppState => {
     addCreatedOrEditedQuestion,
     getQuestionById,
     getQuestionDirectChildren,
+    getParentQuestionList,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -382,7 +383,7 @@ export const useAppState = (): AppState => {
       if (id._ === "Nothing") {
         return [];
       }
-      return questionState.getParentQuestionList(id.value);
+      return getParentQuestionList(id.value);
     },
     questionTree: questionState.questionTree,
     getClass: getCreatedClass,

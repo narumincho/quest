@@ -7,6 +7,7 @@ import {
   addCreatedClass as loggedInStateAddCreatedClass,
   addCreatedOrEditedQuestion as loggedInStateAddCreatedOrEditedQuestion,
   addJoinedClass as loggedInStateAddJoinedClass,
+  getParentQuestionList as loggedInStateGetParentQuestionList,
   getQuestionById as loggedInStateGetQuestionById,
   getQuestionDirectChildren as loggedInStateGetQuestionDirectChildren,
   setProgram as loggedInStateSetProgram,
@@ -84,6 +85,10 @@ export type logInStateResult = {
   readonly getQuestionDirectChildren: (
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestionId>;
+  /** 質問の親を取得する */
+  readonly getParentQuestionList: (
+    questionId: d.QQuestionId
+  ) => ReadonlyArray<d.QQuestion>;
 };
 
 export const useLogInState = (): logInStateResult => {
@@ -230,6 +235,19 @@ export const useLogInState = (): logInStateResult => {
     [logInState]
   );
 
+  const getParentQuestionList = useCallback(
+    (questionId: d.QQuestionId): ReadonlyArray<d.QQuestion> => {
+      if (logInState.tag !== "LoggedIn") {
+        return [];
+      }
+      return loggedInStateGetParentQuestionList(
+        logInState.loggedInState,
+        questionId
+      );
+    },
+    [logInState]
+  );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -245,6 +263,7 @@ export const useLogInState = (): logInStateResult => {
       addCreatedOrEditedQuestion: addCreatedQuestion,
       getQuestionById,
       getQuestionDirectChildren,
+      getParentQuestionList,
     }),
     [
       logInState,
@@ -260,6 +279,7 @@ export const useLogInState = (): logInStateResult => {
       addCreatedQuestion,
       getQuestionById,
       getQuestionDirectChildren,
+      getParentQuestionList,
     ]
   );
 };

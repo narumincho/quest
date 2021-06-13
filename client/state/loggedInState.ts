@@ -1,6 +1,9 @@
 import * as d from "../../data";
 import { mapSet, mapUpdate } from "../../common/map";
-import { questionChildren } from "./question";
+import {
+  questionChildren,
+  getParentQuestionList as questionMapGetParentQuestionList,
+} from "./question";
 
 /** ログインしたときに保存する管理する状態 */
 export type LoggedInState = {
@@ -189,4 +192,22 @@ export const getQuestionDirectChildren = (
     return [];
   }
   return questionChildren(questionId, questionListState.questionMap);
+};
+
+export const getParentQuestionList = (
+  loggedInState: LoggedInState,
+  questionId: d.QQuestionId
+): ReadonlyArray<d.QQuestion> => {
+  const question = getQuestionById(loggedInState, questionId);
+  if (question === undefined) {
+    return [];
+  }
+  const questionListState = loggedInState.questionDict.get(question.programId);
+  if (questionListState === undefined || questionListState.tag !== "Loaded") {
+    return [];
+  }
+  return questionMapGetParentQuestionList(
+    questionId,
+    questionListState.questionMap
+  );
 };
