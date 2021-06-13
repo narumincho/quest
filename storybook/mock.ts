@@ -3,7 +3,7 @@ import {
   AppState,
   LoggedInState,
   ProgramWithClassList,
-  QuestionTree,
+  QuestionTreeListWithLoadingState,
 } from "../client/state";
 import {
   getParentQuestionList,
@@ -80,8 +80,13 @@ export const mockAppState: AppState = {
     }
     return getParentQuestionList(id.value, questionMap);
   },
-  questionTree: (programId: d.QProgramId): ReadonlyArray<QuestionTree> => {
-    return getQuestionTree(programId, questionList);
+  getQuestionTreeListWithLoadingStateInProgram: (
+    programId: d.QProgramId
+  ): QuestionTreeListWithLoadingState => {
+    return {
+      tag: "Loaded",
+      questionTreeList: getQuestionTree(programId, questionList),
+    };
   },
   createClass: action("createClass"),
   getClass: () => {

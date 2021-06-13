@@ -4,6 +4,7 @@ import {
   ProgramWithClassList,
   QuestionListState,
   QuestionTree,
+  QuestionTreeListWithLoadingState,
   initLoggedInState,
   addCreatedClass as loggedInStateAddCreatedClass,
   addCreatedOrEditedQuestion as loggedInStateAddCreatedOrEditedQuestion,
@@ -12,13 +13,18 @@ import {
   getQuestionById as loggedInStateGetQuestionById,
   getQuestionDirectChildren as loggedInStateGetQuestionDirectChildren,
   getQuestionThatCanBeParentList as loggedInStateGetQuestionThatCanBeParentList,
-  getQuestionTreeListInProgram as loggedInStateGetQuestionTreeListInProgram,
+  getQuestionTreeListWithLoadingStateInProgram as loggedInStateGetQuestionTreeListWithLoadingStateInProgram,
   setProgram as loggedInStateSetProgram,
   setQuestionListState as loggedInStateSetQuestionListState,
 } from "./loggedInState";
 import { useCallback, useMemo, useState } from "react";
 
-export type { LoggedInState, ProgramWithClassList, QuestionListState };
+export type {
+  LoggedInState,
+  ProgramWithClassList,
+  QuestionListState,
+  QuestionTreeListWithLoadingState,
+};
 
 export type LogInState =
   | {
@@ -93,9 +99,9 @@ export type logInStateResult = {
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
   /** プログラムの質問の木構造を取得する */
-  readonly getQuestionTreeListInProgram: (
+  readonly getQuestionTreeListWithLoadingStateInProgram: (
     programId: d.QProgramId
-  ) => ReadonlyArray<QuestionTree>;
+  ) => QuestionTreeListWithLoadingState;
   /** 親の質問になることができる質問を, キャッシュから取得する */
   readonly getQuestionThatCanBeParentList: (
     programId: d.QProgramId,
@@ -209,7 +215,7 @@ export const useLogInState = (): logInStateResult => {
     []
   );
 
-  const addCreatedQuestion = useCallback((question: d.QQuestion) => {
+  const addCreatedOrEditedQuestion = useCallback((question: d.QQuestion) => {
     setLogInState((beforeLogInState) => {
       if (beforeLogInState.tag !== "LoggedIn") {
         return beforeLogInState;
@@ -260,12 +266,12 @@ export const useLogInState = (): logInStateResult => {
     [logInState]
   );
 
-  const getQuestionTreeListInProgram = useCallback(
-    (programId: d.QProgramId) => {
+  const getQuestionTreeListWithLoadingStateInProgram = useCallback(
+    (programId: d.QProgramId): QuestionTreeListWithLoadingState => {
       if (logInState.tag !== "LoggedIn") {
-        return [];
+        return { tag: "Empty" };
       }
-      return loggedInStateGetQuestionTreeListInProgram(
+      return loggedInStateGetQuestionTreeListWithLoadingStateInProgram(
         logInState.loggedInState,
         programId
       );
@@ -302,11 +308,11 @@ export const useLogInState = (): logInStateResult => {
       setQuestionListState,
       addCreatedClass,
       addJoinedClass,
-      addCreatedOrEditedQuestion: addCreatedQuestion,
+      addCreatedOrEditedQuestion,
       getQuestionById,
       getQuestionDirectChildren,
       getParentQuestionList,
-      getQuestionTreeListInProgram,
+      getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
     }),
     [
@@ -320,11 +326,11 @@ export const useLogInState = (): logInStateResult => {
       setQuestionListState,
       addCreatedClass,
       addJoinedClass,
-      addCreatedQuestion,
+      addCreatedOrEditedQuestion,
       getQuestionById,
       getQuestionDirectChildren,
       getParentQuestionList,
-      getQuestionTreeListInProgram,
+      getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
     ]
   );

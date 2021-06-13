@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, QuestionListState } from "../state";
+import { AppState, QuestionTreeListWithLoadingState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -76,7 +76,9 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>質問:</Typography>
           <QuestionList
-            questionList={undefined}
+            questionTreeListWithLoadingState={props.appState.getQuestionTreeListWithLoadingStateInProgram(
+              props.programId
+            )}
             appState={props.appState}
             programId={props.programId}
           />
@@ -122,40 +124,39 @@ export const ProgramPage: React.VFC<Props> = (props) => {
 };
 
 export const QuestionList: React.VFC<{
-  questionList: QuestionListState | undefined;
+  questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
   appState: AppState;
   programId: d.QProgramId;
 }> = (props) => {
-  if (props.questionList === undefined) {
+  if (props.questionTreeListWithLoadingState.tag === "Empty") {
     return (
       <Box padding={1}>
         <Typography>リクエスト待ち</Typography>
       </Box>
     );
   }
-  if (props.questionList.tag === "Requesting") {
+  if (props.questionTreeListWithLoadingState.tag === "Requesting") {
     return (
       <Box padding={1}>
         <Typography>読込中</Typography>
       </Box>
     );
   }
-  if (props.questionList.tag === "Error") {
+  if (props.questionTreeListWithLoadingState.tag === "Error") {
     return (
       <Box padding={1}>
         <Typography>取得に失敗しました</Typography>
       </Box>
     );
   }
-  const list = props.questionList.questionMap;
-  if (list.size === 0) {
+  const treeList = props.questionTreeListWithLoadingState.questionTreeList;
+  if (treeList.length === 0) {
     return (
       <Box padding={1}>
         <Typography>質問が1つもありません</Typography>
       </Box>
     );
   }
-  const treeList = props.appState.questionTree(props.programId);
 
   return (
     <QuestionTreeList questionTreeList={treeList} appState={props.appState} />

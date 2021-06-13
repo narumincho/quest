@@ -6,6 +6,7 @@ import {
   LoggedInState,
   ProgramWithClassList,
   QuestionListState,
+  QuestionTreeListWithLoadingState,
   useLogInState,
 } from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
@@ -20,6 +21,7 @@ export type {
   LoggedInState,
   ProgramWithClassList,
   QuestionListState,
+  QuestionTreeListWithLoadingState,
 };
 
 export type AppState = {
@@ -67,7 +69,9 @@ export type AppState = {
     id: d.Maybe<d.QQuestionId>
   ) => ReadonlyArray<d.QQuestion>;
   /** 質問の木構造を取得する */
-  questionTree: (id: d.QProgramId) => ReadonlyArray<QuestionTree>;
+  getQuestionTreeListWithLoadingStateInProgram: (
+    id: d.QProgramId
+  ) => QuestionTreeListWithLoadingState;
   /** クラスを取得する */
   getClass: (id: d.QClassId) => d.QClass | undefined;
   /** 招待URLをシェアする */
@@ -115,7 +119,7 @@ export const useAppState = (): AppState => {
     getQuestionById,
     getQuestionDirectChildren,
     getParentQuestionList,
-    getQuestionTreeListInProgram,
+    getQuestionTreeListWithLoadingStateInProgram,
     getQuestionThatCanBeParentList,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
@@ -387,7 +391,7 @@ export const useAppState = (): AppState => {
       }
       return getParentQuestionList(id.value);
     },
-    questionTree: getQuestionTreeListInProgram,
+    getQuestionTreeListWithLoadingStateInProgram,
     getClass: getCreatedClass,
     shareClassInviteLink: (classId) => {
       const qClass = getCreatedClass(classId);

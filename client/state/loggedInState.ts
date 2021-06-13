@@ -42,6 +42,21 @@ export type QuestionListState =
       readonly questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>;
     };
 
+export type QuestionTreeListWithLoadingState =
+  | {
+      readonly tag: "Empty";
+    }
+  | {
+      readonly tag: "Requesting";
+    }
+  | {
+      readonly tag: "Error";
+    }
+  | {
+      readonly tag: "Loaded";
+      readonly questionTreeList: ReadonlyArray<QuestionTree>;
+    };
+
 export const initLoggedInState = (option: {
   readonly accountToken: d.AccountToken;
   readonly accountData: d.QAccountData;
@@ -217,17 +232,26 @@ export const getParentQuestionList = (
   );
 };
 
-export const getQuestionTreeListInProgram = (
+export const getQuestionTreeListWithLoadingStateInProgram = (
   loggedInState: LoggedInState,
   programId: d.QProgramId
-): ReadonlyArray<QuestionTree> => {
+): QuestionTreeListWithLoadingState => {
   const questionListState = loggedInState.questionDict.get(programId);
-  if (questionListState === undefined || questionListState.tag !== "Loaded") {
-    return [];
+  if (questionListState === undefined) {
+    return { tag: "Empty" };
   }
-  return getQuestionTree(programId, [
-    ...questionListState.questionMap.values(),
-  ]);
+  if (questionListState.tag === "Requesting") {
+    return { tag: "Requesting" };
+  }
+  if (questionListState.tag === "Error") {
+    return { tag: "Error" };
+  }
+  return {
+    tag: "Loaded",
+    questionTreeList: getQuestionTree(programId, [
+      ...questionListState.questionMap.values(),
+    ]),
+  };
 };
 
 /** 親の質問になることができる質問を, キャッシュから取得する */
