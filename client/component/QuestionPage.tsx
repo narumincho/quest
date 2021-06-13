@@ -32,6 +32,10 @@ export const QuestionPage: React.VFC<{
   appState: AppState;
   questionId: d.QQuestionId;
 }> = (props) => {
+  React.useEffect(() => {
+    props.appState.getQuestionInProgramByQuestionId(props.questionId);
+  }, [props.appState, props.questionId]);
+
   const question = props.appState.question(props.questionId);
   const children = props.appState.questionChildren(props.questionId);
   const classes = useStyle();

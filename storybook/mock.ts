@@ -1,5 +1,10 @@
 import * as d from "../data";
-import { AppState, QuestionTree } from "../client/state";
+import {
+  AppState,
+  LoggedInState,
+  ProgramWithClassList,
+  QuestionTreeListWithLoadingState,
+} from "../client/state";
 import {
   getParentQuestionList,
   getQuestionTree,
@@ -8,8 +13,7 @@ import {
 import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {
-  loginState: { tag: "NoLogin" },
-  createdProgramListState: { tag: "None" },
+  logInState: { tag: "NoLogin" },
   jump: action("移動しようとした"),
   changeLocation: action("履歴を置き換える形で移動しようとした"),
   location: d.QLocation.Top,
@@ -25,34 +29,27 @@ export const mockAppState: AppState = {
           name: "サンプルプログラム名A",
           createAccountId: mockAccountId,
           id: mockProgramIdA,
-          questionIdList: {
+          questionIdListState: {
             tag: "Loaded",
             questionIdList: [...questionMap.keys()],
           },
-          classIdList: {
-            tag: "Loaded",
-            classIdList: [mockClassId],
-          },
+          classList: [mockClass],
         };
       case mockProgramIdB:
         return {
           name: "サンプルプログラム名B",
           createAccountId: mockAccountId,
           id: mockProgramIdA,
-          questionIdList: { tag: "Requesting" },
-          classIdList: {
-            tag: "None",
-          },
+          questionIdListState: { tag: "Requesting" },
+          classList: [],
         };
       case mockProgramIdLong:
         return {
           name: lorem,
           createAccountId: mockAccountId,
           id: mockProgramIdA,
-          questionIdList: { tag: "None" },
-          classIdList: {
-            tag: "None",
-          },
+          questionIdListState: { tag: "None" },
+          classList: [],
         };
     }
     return undefined;
@@ -64,7 +61,6 @@ export const mockAppState: AppState = {
       name: "サンプルアカウント名",
     };
   },
-  requestGetCreatedProgram: action("作成したプログラム一覧を取得しようとした"),
   isCreatingQuestion: false,
   createQuestion: action("質問を作成しようとした"),
   requestGetQuestionListInProgram: action(
@@ -84,8 +80,13 @@ export const mockAppState: AppState = {
     }
     return getParentQuestionList(id.value, questionMap);
   },
-  questionTree: (programId: d.QProgramId): ReadonlyArray<QuestionTree> => {
-    return getQuestionTree(programId, questionList);
+  getQuestionTreeListWithLoadingStateInProgram: (
+    programId: d.QProgramId
+  ): QuestionTreeListWithLoadingState => {
+    return {
+      tag: "Loaded",
+      questionTreeList: getQuestionTree(programId, questionList),
+    };
   },
   createClass: action("createClass"),
   getClass: () => {
@@ -94,15 +95,16 @@ export const mockAppState: AppState = {
       name: "サンプルクラス",
       programId: mockProgramIdA,
       invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
+      createAccountId: "" as d.AccountId,
     };
   },
-  requestGetClassListInProgram: action("requestGetClassListInProgram"),
   shareClassInviteLink: action("shareClassInviteLink"),
   editQuestion: action("editQuestion"),
   getQuestionThatCanBeParentList: () => {
     return questionList;
   },
   joinClass: action("joinClass"),
+  getQuestionInProgramByQuestionId: action("getQuestionInProgramByQuestionId"),
 };
 
 export const mockAccount: d.QAccount = {
@@ -116,6 +118,15 @@ export const mockAccountToken = "mockAccountToken" as d.AccountToken;
 export const mockProgramIdA = "mockProgramA" as d.QProgramId;
 export const mockProgramIdB = "mockProgramB" as d.QProgramId;
 export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
+export const mockClassId = "mockClassId" as d.QClassId;
+
+export const mockClass: d.QClass = {
+  id: mockClassId,
+  name: "サンプルクラス",
+  programId: mockProgramIdA,
+  invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
+  createAccountId: "" as d.AccountId,
+};
 
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
@@ -225,4 +236,18 @@ const questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion> = new Map(
   questionList.map((question) => [question.id, question] as const)
 );
 
-export const mockClassId = "mockClassId" as d.QClassId;
+const programA: ProgramWithClassList = {
+  name: "サンプルプログラム名A",
+  createAccountId: mockAccountId,
+  id: mockProgramIdA,
+  classList: [mockClass],
+};
+export const mockLoggedInState: LoggedInState = {
+  account: mockAccount,
+  accountToken: mockAccountToken,
+  createdProgramList: new Map<d.QProgramId, ProgramWithClassList>([
+    [mockProgramIdA, programA],
+  ]),
+  questionDict: new Map(),
+  joinedClassList: [],
+};

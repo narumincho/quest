@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { mockAppState, mockClassId } from "../mock";
+import { mockAppState, mockClass } from "../mock";
 import { ClassCard } from "../../client/component/ClassCard";
 
 const meta: Meta = {
@@ -10,5 +10,5 @@ const meta: Meta = {
 export default meta;
 
 export const Default: Story<never> = () => (
-  <ClassCard classId={mockClassId} a={mockAppState} />
+  <ClassCard class={mockClass} a={mockAppState} />
 );

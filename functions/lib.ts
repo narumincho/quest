@@ -36,6 +36,25 @@ export const apiFunc: {
       id: result.id,
     };
   },
+  getAccountData: async (accountToken) => {
+    const account = await validateAndGetAccount(accountToken);
+    const [createdProgramList, createdClassList, joinedClassList] =
+      await Promise.all([
+        firebaseInterface.getProgramListByCreateAccountId(account.id),
+        firebaseInterface.getClassListByCreateAccountId(account.id),
+        firebaseInterface.getJoinClassDataListByAccountId(account.id),
+      ]);
+    return {
+      account: {
+        name: account.name,
+        iconHash: account.iconHash,
+        id: account.id,
+      },
+      createdClassList,
+      createdProgramList,
+      joinedClassList,
+    };
+  },
   createProgram: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
     const programNameResult = validation.stringToValidProgramName(
@@ -108,9 +127,10 @@ export const apiFunc: {
       id: createRandomId() as d.QClassId,
       name: classNameResult.ok,
       programId: parameter.programId,
+      createAccountId: account.id,
       invitationToken: createRandomToken() as d.QClassInvitationToken,
     };
-    await firebaseInterface.createClass(qClass);
+    await firebaseInterface.createClass(qClass, account.id);
     return qClass;
   },
   getClassListInProgram: async (parameter) => {
@@ -186,11 +206,14 @@ export const apiFunc: {
     if (invitationTokenResult === undefined) {
       throw new Error("無効な招待です");
     }
+    if (invitationTokenResult.createAccountId === account.id) {
+      throw new Error("クラス作成者は, 生徒としてクラスに入れません");
+    }
     const joinData = await firebaseInterface.getJoinClassData(
       invitationTokenResult.id,
       account.id
     );
-    if (joinData !== undefined && joinData.roleType === "student") {
+    if (joinData !== undefined && joinData.role === d.QRole.Student) {
       throw new Error("すでに参加しています");
     }
     await firebaseInterface.joinClassAsStudent(
@@ -200,15 +223,14 @@ export const apiFunc: {
     );
     return invitationTokenResult;
   },
-  getClassAndRole: (parameter) => {
-    return Promise.resolve(
-      d.GetClassAndRoleResult.NotJoin({
-        id: "" as d.QClassId,
-        invitationToken: "" as d.QClassInvitationToken,
-        name: "未実装",
-        programId: "" as d.QProgramId,
-      })
-    );
+  getQuestionInProgramByQuestionId: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const question = await firebaseInterface.getQuestion(parameter.questionId);
+    if (question === undefined) {
+      throw new Error("指定した質問がが存在しないか, 作った本人でない");
+    }
+    await validateAndGetProgram(account.id, question.programId);
+    return firebaseInterface.getQuestionListByProgramId(question.programId);
   },
 };
 

@@ -16,11 +16,20 @@ export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
 };
 
 /**
- * アカウントトークンからアカウントを作成する
+ * アカウントトークンからアカウント情報を取得する
+ * @deprecated
  */
 export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.QAccount> = {
   request: d.AccountToken.codec,
   response: d.QAccount.codec,
+};
+
+/**
+ * アカウントトークンから, アカウントに関連するデータ (アカウント情報, 作成したプログラム, 参加/作成したクラス等) を取得する
+ */
+export const getAccountData: ApiCodec<d.AccountToken, d.QAccountData> = {
+  request: d.AccountToken.codec,
+  response: d.QAccountData.codec,
 };
 
 /**
@@ -93,19 +102,20 @@ export const getClassByClassInvitationToken: ApiCodec<
   response: d.QClass.codec,
 };
 
-/** ログインしているときに招待URLを開いた アカウントトークンと招待トークンがリクエスト時に必要になる */
-export const getClassAndRole: ApiCodec<
-  d.GetClassAndRoleParameter,
-  d.GetClassAndRoleResult
-> = {
-  request: d.GetClassAndRoleParameter.codec,
-  response: d.GetClassAndRoleResult.codec,
-};
-
+/** 生徒として, クラスに参加する */
 export const joinClassAsStudent: ApiCodec<
   d.JoinClassAsStudentParameter,
   d.QClass
 > = {
   request: d.JoinClassAsStudentParameter.codec,
   response: d.QClass.codec,
+};
+
+/** プログラムに属する質問をある, 質問IDから得る */
+export const getQuestionInProgramByQuestionId: ApiCodec<
+  d.GetQuestionListInProgramByQuestionIdParameter,
+  d.List<d.QQuestion>
+> = {
+  request: d.GetQuestionListInProgramByQuestionIdParameter.codec,
+  response: d.List.codec(d.QQuestion.codec),
 };

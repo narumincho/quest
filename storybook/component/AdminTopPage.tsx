@@ -3,6 +3,7 @@ import { AdminTopPage, Props } from "../../client/component/AdminTopPage";
 import { Meta, Story } from "@storybook/react";
 import {
   mockAppState,
+  mockLoggedInState,
   mockProgramIdA,
   mockProgramIdB,
   mockProgramIdLong,
@@ -14,39 +15,13 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Loading: Story<Props> = () => (
-  <AdminTopPage appState={mockAppState} />
+export const Default: Story<Props> = () => (
+  <AdminTopPage appState={mockAppState} loggedInState={mockLoggedInState} />
 );
 
-export const Requesting: Story<Props> = () => (
+export const Empty: Story<Props> = () => (
   <AdminTopPage
-    appState={{
-      ...mockAppState,
-      createdProgramListState: { tag: "Requesting" },
-    }}
-  />
-);
-
-export const Loaded: Story<Props> = () => (
-  <AdminTopPage
-    appState={{
-      ...mockAppState,
-      createdProgramListState: {
-        tag: "Loaded",
-        projectIdList: [mockProgramIdA, mockProgramIdB, mockProgramIdLong],
-      },
-    }}
-  />
-);
-
-export const LoadedZero: Story<Props> = () => (
-  <AdminTopPage
-    appState={{
-      ...mockAppState,
-      createdProgramListState: {
-        tag: "Loaded",
-        projectIdList: [],
-      },
-    }}
+    appState={mockAppState}
+    loggedInState={{ ...mockLoggedInState, createdProgramList: new Map() }}
   />
 );

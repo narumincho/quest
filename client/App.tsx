@@ -1,6 +1,5 @@
 import * as React from "react";
-import * as d from "../data";
-import { AppState, useAppState } from "./state";
+import { AppState, LoggedInState, useAppState } from "./state";
 import { AdminTopPage } from "./component/AdminTopPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
@@ -14,38 +13,47 @@ import { QuestionNewPage } from "./component/QuestionNewPage";
 import { QuestionPage } from "./component/QuestionPage";
 import { SettingPage } from "./component/SettingPage";
 
-export const App: React.VFC<Record<never, never>> = () => {
+export const App: React.VFC<Record<never, never>> = React.memo(() => {
   const appState = useAppState();
 
-  switch (appState.loginState.tag) {
+  switch (appState.logInState.tag) {
     case "LoggedIn":
       return (
         <LoggedIn
-          accountToken={appState.loginState.accountToken}
-          account={appState.loginState.account}
+          loggedInState={appState.logInState.loggedInState}
           appState={appState}
         />
       );
     case "NoLogin":
-    case "RequestingLoginUrl":
+    case "RequestingLogInUrl":
     case "JumpingPage":
       return <LogInPage appState={appState} />;
     default:
       return <LoadingPage />;
   }
-};
+});
+App.displayName = "QuestApp";
 
 const LoggedIn: React.VFC<{
-  accountToken: d.AccountToken;
-  account: d.QAccount;
-  appState: AppState;
-}> = (props) => {
+  readonly loggedInState: LoggedInState;
+  readonly appState: AppState;
+}> = React.memo((props) => {
   const location = props.appState.location;
   switch (location._) {
     case "Top":
-      return <AdminTopPage appState={props.appState} />;
+      return (
+        <AdminTopPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+        />
+      );
     case "Setting":
-      return <SettingPage account={props.account} appState={props.appState} />;
+      return (
+        <SettingPage
+          account={props.loggedInState.account}
+          appState={props.appState}
+        />
+      );
     case "NewProgram":
       return <ProgramNewPage appState={props.appState} />;
     case "Program":
@@ -95,4 +103,5 @@ const LoggedIn: React.VFC<{
         />
       );
   }
-};
+});
+LoggedIn.displayName = "LoggedIn";

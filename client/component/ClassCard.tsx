@@ -1,11 +1,11 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Paper, Typography, makeStyles } from "@material-ui/core";
+import { Paper, Typography, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 import { Link } from "./Link";
 
 export type Props = {
-  readonly classId: d.QClassId;
+  readonly class: d.QClass;
   readonly a: AppState;
 };
 
@@ -20,14 +20,10 @@ const useStyles = makeStyles({
 
 export const ClassCard: React.VFC<Props> = (props) => {
   const classes = useStyles();
-  const qClass = props.a.getClass(props.classId);
-  if (qClass === undefined) {
-    return <Box>クラスの情報を読込中</Box>;
-  }
   return (
-    <Link appState={props.a} location={d.QLocation.Class(props.classId)}>
+    <Link appState={props.a} location={d.QLocation.Class(props.class.id)}>
       <Paper className={classes.card}>
-        <Typography>{qClass.name}</Typography>
+        <Typography>{props.class.name}</Typography>
       </Paper>
     </Link>
   );
