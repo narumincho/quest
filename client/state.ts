@@ -8,9 +8,9 @@ import {
   QuestionListState,
   useLogInState,
 } from "./state/logInState";
-import { QuestionTree, useQuestionMap } from "./state/question";
 import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import { QuestionTree } from "./state/question";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
 import { useAccountMap } from "./state/account";
@@ -115,6 +115,7 @@ export const useAppState = (): AppState => {
     getQuestionById,
     getQuestionDirectChildren,
     getParentQuestionList,
+    getQuestionTreeListInProgram,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -385,7 +386,7 @@ export const useAppState = (): AppState => {
       }
       return getParentQuestionList(id.value);
     },
-    questionTree: questionState.questionTree,
+    questionTree: getQuestionTreeListInProgram,
     getClass: getCreatedClass,
     shareClassInviteLink: (classId) => {
       const qClass = getCreatedClass(classId);

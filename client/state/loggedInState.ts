@@ -1,9 +1,13 @@
 import * as d from "../../data";
-import { mapSet, mapUpdate } from "../../common/map";
 import {
+  QuestionTree,
+  getQuestionTree,
   questionChildren,
   getParentQuestionList as questionMapGetParentQuestionList,
 } from "./question";
+import { mapSet, mapUpdate } from "../../common/map";
+
+export type { QuestionTree };
 
 /** ログインしたときに保存する管理する状態 */
 export type LoggedInState = {
@@ -210,4 +214,17 @@ export const getParentQuestionList = (
     questionId,
     questionListState.questionMap
   );
+};
+
+export const getQuestionTreeListInProgram = (
+  loggedInState: LoggedInState,
+  programId: d.QProgramId
+): ReadonlyArray<QuestionTree> => {
+  const questionListState = loggedInState.questionDict.get(programId);
+  if (questionListState === undefined || questionListState.tag !== "Loaded") {
+    return [];
+  }
+  return getQuestionTree(programId, [
+    ...questionListState.questionMap.values(),
+  ]);
 };
