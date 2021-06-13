@@ -5,7 +5,10 @@ import {
   QuestionListState,
   initLoggedInState,
   addCreatedClass as loggedInStateAddCreatedClass,
+  addCreatedOrEditedQuestion as loggedInStateAddCreatedOrEditedQuestion,
   addJoinedClass as loggedInStateAddJoinedClass,
+  getQuestionById as loggedInStateGetQuestionById,
+  getQuestionDirectChildren as loggedInStateGetQuestionDirectChildren,
   setProgram as loggedInStateSetProgram,
   setQuestionListState as loggedInStateSetQuestionListState,
 } from "./loggedInState";
@@ -71,6 +74,16 @@ export type logInStateResult = {
     classStudentOrGuest: d.QClassStudentOrGuest,
     role: d.QRole
   ) => void;
+  /** 作成した質問か編集した質問をキャッシュに保存する */
+  readonly addCreatedOrEditedQuestion: (question: d.QQuestion) => void;
+  /** 質問をIDから取得する */
+  readonly getQuestionById: (
+    questionId: d.QQuestionId
+  ) => d.QQuestion | undefined;
+  /** 質問の直接的な子を取得する */
+  readonly getQuestionDirectChildren: (
+    questionId: d.QQuestionId
+  ) => ReadonlyArray<d.QQuestionId>;
 };
 
 export const useLogInState = (): logInStateResult => {
@@ -179,6 +192,44 @@ export const useLogInState = (): logInStateResult => {
     []
   );
 
+  const addCreatedQuestion = useCallback((question: d.QQuestion) => {
+    setLogInState((beforeLogInState) => {
+      if (beforeLogInState.tag !== "LoggedIn") {
+        return beforeLogInState;
+      }
+      return {
+        ...beforeLogInState,
+        loggedInState: loggedInStateAddCreatedOrEditedQuestion(
+          beforeLogInState.loggedInState,
+          question
+        ),
+      };
+    });
+  }, []);
+
+  const getQuestionById = useCallback(
+    (questionId: d.QQuestionId): d.QQuestion | undefined => {
+      if (logInState.tag !== "LoggedIn") {
+        return undefined;
+      }
+      return loggedInStateGetQuestionById(logInState.loggedInState, questionId);
+    },
+    [logInState]
+  );
+
+  const getQuestionDirectChildren = useCallback(
+    (questionId: d.QQuestionId): ReadonlyArray<d.QQuestionId> => {
+      if (logInState.tag !== "LoggedIn") {
+        return [];
+      }
+      return loggedInStateGetQuestionDirectChildren(
+        logInState.loggedInState,
+        questionId
+      );
+    },
+    [logInState]
+  );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -191,6 +242,9 @@ export const useLogInState = (): logInStateResult => {
       setQuestionListState,
       addCreatedClass,
       addJoinedClass,
+      addCreatedOrEditedQuestion: addCreatedQuestion,
+      getQuestionById,
+      getQuestionDirectChildren,
     }),
     [
       logInState,
@@ -203,6 +257,9 @@ export const useLogInState = (): logInStateResult => {
       setQuestionListState,
       addCreatedClass,
       addJoinedClass,
+      addCreatedQuestion,
+      getQuestionById,
+      getQuestionDirectChildren,
     ]
   );
 };

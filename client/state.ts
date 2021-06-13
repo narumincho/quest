@@ -111,10 +111,12 @@ export const useAppState = (): AppState => {
     setQuestionListState,
     addCreatedClass,
     addJoinedClass,
+    addCreatedOrEditedQuestion,
+    getQuestionById,
+    getQuestionDirectChildren,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
-  const questionState = useQuestionMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
 
   useEffect(() => {
@@ -230,7 +232,6 @@ export const useAppState = (): AppState => {
       });
       indexedDb.deleteAccountToken();
       useAccountMapResult.deleteAll();
-      questionState.deleteAll();
       setNoLogIn();
     },
     location,
@@ -338,10 +339,11 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`プログラムに属している質問の取得に成功しました`, {
             variant: "success",
           });
-          questionState.setQuestionList(response.ok);
           setQuestionListState(programId, {
             tag: "Loaded",
-            questionIdList: response.ok,
+            questionMap: new Map(
+              response.ok.map((q): [d.QQuestionId, d.QQuestion] => [q.id, q])
+            ),
           });
         });
     },
@@ -370,12 +372,12 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`質問を作成しました`, {
             variant: "success",
           });
-          questionState.setQuestion(response.ok);
+          addCreatedOrEditedQuestion(response.ok);
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
-    question: questionState.questionById,
-    questionChildren: questionState.questionChildren,
+    question: getQuestionById,
+    questionChildren: getQuestionDirectChildren,
     questionParentList: (id) => {
       if (id._ === "Nothing") {
         return [];
@@ -422,7 +424,7 @@ export const useAppState = (): AppState => {
           enqueueSnackbar(`質問を編集しました`, {
             variant: "success",
           });
-          questionState.setQuestion(response.ok);
+          addCreatedOrEditedQuestion(response.ok);
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
@@ -453,7 +455,7 @@ export const useAppState = (): AppState => {
         });
     },
     getQuestionInProgramByQuestionId: (questionId: d.QQuestionId) => {
-      if (questionState.questionById(questionId) !== undefined) {
+      if (getQuestionById(questionId) !== undefined) {
         return;
       }
       const accountToken = getAccountToken();
@@ -472,7 +474,16 @@ export const useAppState = (): AppState => {
             });
             return;
           }
-          questionState.setQuestionList(response.ok);
+          const firstQuestion = response.ok[0];
+          if (firstQuestion === undefined) {
+            return;
+          }
+          setQuestionListState(firstQuestion.programId, {
+            tag: "Loaded",
+            questionMap: new Map(
+              response.ok.map((q): [d.QQuestionId, d.QQuestion] => [q.id, q])
+            ),
+          });
         });
     },
   };

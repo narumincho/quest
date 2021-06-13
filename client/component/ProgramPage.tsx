@@ -147,8 +147,8 @@ export const QuestionList: React.VFC<{
       </Box>
     );
   }
-  const list = props.questionList.questionIdList;
-  if (list.length === 0) {
+  const list = props.questionList.questionMap;
+  if (list.size === 0) {
     return (
       <Box padding={1}>
         <Typography>質問が1つもありません</Typography>

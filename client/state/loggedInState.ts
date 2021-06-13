@@ -1,5 +1,6 @@
 import * as d from "../../data";
 import { mapSet, mapUpdate } from "../../common/map";
+import { questionChildren } from "./question";
 
 /** ログインしたときに保存する管理する状態 */
 export type LoggedInState = {
@@ -30,7 +31,7 @@ export type QuestionListState =
     }
   | {
       readonly tag: "Loaded";
-      readonly questionIdList: ReadonlyArray<d.QQuestion>;
+      readonly questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>;
     };
 
 export const initLoggedInState = (option: {
@@ -121,4 +122,71 @@ export const addJoinedClass = (
       { first: option.classStudentOrGuest, second: option.role },
     ],
   };
+};
+
+export const addCreatedOrEditedQuestion = (
+  beforeLoggedInState: LoggedInState,
+  question: d.QQuestion
+): LoggedInState => {
+  return {
+    ...beforeLoggedInState,
+    questionDict: mapUpdate(
+      beforeLoggedInState.questionDict,
+      question.programId,
+      (questionListState) => {
+        if (questionListState.tag !== "Loaded") {
+          return questionListState;
+        }
+        return {
+          tag: "Loaded",
+          questionMap: mapSet(
+            questionListState.questionMap,
+            question.id,
+            question
+          ),
+        };
+      }
+    ),
+  };
+};
+
+export const getQuestionById = (
+  loggedInState: LoggedInState,
+  questionId: d.QQuestionId
+): d.QQuestion | undefined => {
+  for (const questionListState of loggedInState.questionDict.values()) {
+    const question = getQuestionByIdInQuestionListState(
+      questionListState,
+      questionId
+    );
+    if (question !== undefined) {
+      return question;
+    }
+  }
+};
+
+const getQuestionByIdInQuestionListState = (
+  questionListState: QuestionListState,
+  questionId: d.QQuestionId
+): d.QQuestion | undefined => {
+  if (questionListState.tag !== "Loaded") {
+    return;
+  }
+  return questionListState.questionMap.get(questionId);
+};
+
+/** 質問の直接的な子を取得する */
+export const getQuestionDirectChildren = (
+  loggedInState: LoggedInState,
+  questionId: d.QQuestionId
+): ReadonlyArray<d.QQuestionId> => {
+  const question = getQuestionById(loggedInState, questionId);
+  if (question === undefined) {
+    return [];
+  }
+  const questionListState = loggedInState.questionDict.get(question.programId);
+  if (questionListState === undefined || questionListState.tag !== "Loaded") {
+    return [];
+  }
+  return questionChildren(questionId, questionListState.questionMap);
 };
