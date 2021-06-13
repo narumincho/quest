@@ -116,6 +116,7 @@ export const useAppState = (): AppState => {
     getQuestionDirectChildren,
     getParentQuestionList,
     getQuestionTreeListInProgram,
+    getQuestionThatCanBeParentList,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -430,8 +431,7 @@ export const useAppState = (): AppState => {
           setLocation(d.QLocation.Question(response.ok.id));
         });
     },
-    getQuestionThatCanBeParentList:
-      questionState.getQuestionThatCanBeParentList,
+    getQuestionThatCanBeParentList,
     joinClass: (classInvitationToken) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {

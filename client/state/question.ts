@@ -96,6 +96,26 @@ export const useQuestionMap = (): UseQuestionMapResult => {
   };
 };
 
+export const getQuestionThatCanBeParentList = (
+  programId: d.QProgramId,
+  questionId: d.QQuestionId,
+  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+): ReadonlyArray<d.QQuestion> => {
+  const result: Array<d.QQuestion> = [];
+  for (const question of questionMap.values()) {
+    const validationResult = questionParentIsValid(
+      question.id,
+      questionId,
+      programId,
+      questionMap
+    );
+    if (validationResult.isValid) {
+      result.push(question);
+    }
+  }
+  return result;
+};
+
 /**
  * 質問の直接な子供を取得する
  */

@@ -4,6 +4,7 @@ import {
   getQuestionTree,
   questionChildren,
   getParentQuestionList as questionMapGetParentQuestionList,
+  getQuestionThatCanBeParentList as questionMapGetQuestionThatCanBeParentList,
 } from "./question";
 import { mapSet, mapUpdate } from "../../common/map";
 
@@ -227,4 +228,21 @@ export const getQuestionTreeListInProgram = (
   return getQuestionTree(programId, [
     ...questionListState.questionMap.values(),
   ]);
+};
+
+/** 親の質問になることができる質問を, キャッシュから取得する */
+export const getQuestionThatCanBeParentList = (
+  loggedInState: LoggedInState,
+  programId: d.QProgramId,
+  questionId: d.QQuestionId
+): ReadonlyArray<d.QQuestion> => {
+  const questionListState = loggedInState.questionDict.get(programId);
+  if (questionListState === undefined || questionListState.tag !== "Loaded") {
+    return [];
+  }
+  return questionMapGetQuestionThatCanBeParentList(
+    programId,
+    questionId,
+    questionListState.questionMap
+  );
 };
