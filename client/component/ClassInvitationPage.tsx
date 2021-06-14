@@ -9,8 +9,9 @@ export const ClassInvitationPage: React.VFC<{
   appState: AppState;
   classInvitationToken: d.QClassInvitationToken;
 }> = (props) => {
-  const [className, setClassName] =
-    React.useState<string | undefined>(undefined);
+  const [className, setClassName] = React.useState<string | undefined>(
+    undefined
+  );
   const [isRequestingJoin, setIsRequestingJoin] =
     React.useState<boolean>(false);
 
