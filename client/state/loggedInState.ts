@@ -65,20 +65,19 @@ export const initLoggedInState = (option: {
     accountToken: option.accountToken,
     account: option.accountData.account,
     createdProgramList: new Map<d.QProgramId, ProgramWithClassList>(
-      option.accountData.createdProgramList.map((program): [
-        d.QProgramId,
-        ProgramWithClassList
-      ] => [
-        program.id,
-        {
-          id: program.id,
-          name: program.name,
-          classList: option.accountData.createdClassList.filter(
-            (qClass) => qClass.programId === program.id
-          ),
-          createAccountId: program.createAccountId,
-        },
-      ])
+      option.accountData.createdProgramList.map(
+        (program): [d.QProgramId, ProgramWithClassList] => [
+          program.id,
+          {
+            id: program.id,
+            name: program.name,
+            classList: option.accountData.createdClassList.filter(
+              (qClass) => qClass.programId === program.id
+            ),
+            createAccountId: program.createAccountId,
+          },
+        ]
+      )
     ),
     joinedClassList: option.accountData.joinedClassList,
     questionDict: new Map(),

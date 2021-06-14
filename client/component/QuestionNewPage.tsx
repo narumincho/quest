@@ -58,6 +58,7 @@ export const QuestionNewPage: React.VFC<{
             </Link>
             {[...parentList].reverse().map((parent) => (
               <Link
+                key={parent.id}
                 appState={props.appState}
                 location={d.QLocation.Question(parent.id)}
               >
