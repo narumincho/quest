@@ -66,6 +66,10 @@ export const ClassPage: React.VFC<Props> = (props) => {
           <Typography variant="h5">{qClass.name}</Typography>
         </Box>
         <Box padding={1}>
+          <Typography>クラスの参加者</Typography>
+          <Typography>準備中……</Typography>
+        </Box>
+        <Box padding={1}>
           <Button
             variant="contained"
             fullWidth
