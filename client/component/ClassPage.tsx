@@ -19,7 +19,8 @@ export const ClassPage: React.VFC<Props> = (props) => {
       }
       props.a.requestGetQuestionListInProgram(qClass.programId);
     }
-  }, [props.a, props.classId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.classId]);
 
   const qClass = props.a.getClass(props.classId);
   if (qClass === undefined) {
@@ -64,6 +65,10 @@ export const ClassPage: React.VFC<Props> = (props) => {
         </Box>
         <Box padding={1}>
           <Typography variant="h5">{qClass.name}</Typography>
+        </Box>
+        <Box padding={1}>
+          <Typography>クラスの参加者</Typography>
+          <Typography>準備中……</Typography>
         </Box>
         <Box padding={1}>
           <Button

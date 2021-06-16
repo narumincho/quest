@@ -1,11 +1,9 @@
 import * as admin from "firebase-admin";
 import * as d from "../data";
-import * as fileSystem from "fs-extra";
 import * as functions from "firebase-functions";
 import type * as stream from "stream";
 import type * as typedFirestore from "typed-admin-firestore";
 import { imagePng } from "./mimeType";
-import { nowMode } from "../common/nowMode";
 
 const app = admin.initializeApp();
 const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
@@ -419,8 +417,6 @@ export const joinClassAsStudent = async (
     });
 };
 
-const fakeCloudStoragePath = "./fakeCloudStorage";
-
 /**
  * Cloud Storage for Firebase にファイルを保存する
  */
@@ -429,13 +425,9 @@ export const savePngFile = async (
   binary: Uint8Array
 ): Promise<void> => {
   const fileName = `${hash}.png`;
-  if (nowMode === "production") {
-    await cloudStorageBucket
-      .file(fileName)
-      .save(Buffer.from(binary), { contentType: imagePng });
-    return;
-  }
-  await fileSystem.outputFile(`${fakeCloudStoragePath}/${fileName}`, binary);
+  await cloudStorageBucket
+    .file(fileName)
+    .save(Buffer.from(binary), { contentType: imagePng });
 };
 
 /**
@@ -444,10 +436,7 @@ export const savePngFile = async (
  */
 export const readPngFile = (hash: string): stream.Readable => {
   const fileName = `${hash}.png`;
-  if (nowMode === "production") {
-    return cloudStorageBucket.file(fileName).createReadStream();
-  }
-  return fileSystem.createReadStream(`${fakeCloudStoragePath}/${fileName}`);
+  return cloudStorageBucket.file(fileName).createReadStream();
 };
 
 /**
