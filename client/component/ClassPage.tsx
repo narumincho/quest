@@ -19,7 +19,8 @@ export const ClassPage: React.VFC<Props> = (props) => {
       }
       props.a.requestGetQuestionListInProgram(qClass.programId);
     }
-  }, [props.a, props.classId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.classId]);
 
   const qClass = props.a.getClass(props.classId);
   if (qClass === undefined) {
