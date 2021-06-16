@@ -3,7 +3,7 @@ import { AppState, LoggedInState, useAppState } from "./state";
 import { AdminTopPage } from "./component/AdminTopPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
-import { ClassPage } from "./component/ClassPage";
+import { AdminClassPage } from "./component/AdminClassPage";
 import { LoadingPage } from "./component/LoadingPage";
 import { LogInPage } from "./component/LogInPage";
 import { ProgramNewPage } from "./component/ProgramNewPage";
@@ -87,7 +87,7 @@ const LoggedIn: React.VFC<{
         <ClassNewPage a={props.appState} programId={location.qProgramId} />
       );
     case "Class":
-      return <ClassPage a={props.appState} classId={location.qClassId} />;
+      return <AdminClassPage a={props.appState} classId={location.qClassId} />;
     case "ClassInvitation":
       return (
         <ClassInvitationPage

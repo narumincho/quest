@@ -10,7 +10,10 @@ export type Props = {
   readonly classId: d.QClassId;
 };
 
-export const ClassPage: React.VFC<Props> = (props) => {
+/**
+ * クラス作成者向けのクラス詳細ページ
+ */
+export const AdminClassPage: React.VFC<Props> = (props) => {
   React.useEffect(() => {
     if (props.classId !== undefined) {
       const qClass = props.a.getClass(props.classId);

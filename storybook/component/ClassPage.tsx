@@ -1,14 +1,14 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
 import { mockAppState, mockClassId } from "../mock";
-import { ClassPage } from "../../client/component/ClassPage";
+import { AdminClassPage } from "../../client/component/AdminClassPage";
 
 const meta: Meta = {
-  title: "ClassPage",
-  component: ClassPage,
+  title: "AdminClassPage",
+  component: AdminClassPage,
 };
 export default meta;
 
 export const Default: Story<never> = () => (
-  <ClassPage a={mockAppState} classId={mockClassId} />
+  <AdminClassPage a={mockAppState} classId={mockClassId} />
 );
