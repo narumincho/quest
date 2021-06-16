@@ -119,3 +119,12 @@ export const getQuestionInProgramByQuestionId: ApiCodec<
   request: d.GetQuestionListInProgramByQuestionIdParameter.codec,
   response: d.List.codec(d.QQuestion.codec),
 };
+
+/** 管理者がクラスに参加している生徒とゲストを取得する */
+export const getClassParticipant: ApiCodec<
+  d.GetClassParticipantParameter,
+  ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+> = {
+  request: d.GetClassParticipantParameter.codec,
+  response: d.List.codec(d.Tuple2.codec(d.QAccount.codec, d.QRole.codec)),
+};

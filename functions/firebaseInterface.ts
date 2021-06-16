@@ -401,6 +401,37 @@ export const getJoinClassData = async (
   return doc.data();
 };
 
+export const getJoinClassDataFromClassId = async (
+  classId: d.QClassId
+): Promise<ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>> => {
+  const docs = await firestore
+    .collection("classJoinData")
+    .where("classId", "==", classId)
+    .get();
+  const resultList: Array<d.Tuple2<d.QAccount, d.QRole>> = [];
+  for (const doc of docs.docs) {
+    const data = doc.data();
+    // eslint-disable-next-line no-await-in-loop
+    const accountData = await firestore
+      .collection("account")
+      .doc(data.accountId)
+      .get();
+    const account = accountData.data();
+    if (account === undefined) {
+      throw new Error("クラスの参加者のアカウント情報の取得に失敗しました");
+    }
+    resultList.push({
+      first: {
+        id: accountData.id,
+        name: account.name,
+        iconHash: account.iconHash,
+      },
+      second: data.role,
+    });
+  }
+  return resultList;
+};
+
 export const joinClassAsStudent = async (
   classId: d.QClassId,
   accountId: d.AccountId,

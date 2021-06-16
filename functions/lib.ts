@@ -232,6 +232,19 @@ export const apiFunc: {
     await validateAndGetProgram(account.id, question.programId);
     return firebaseInterface.getQuestionListByProgramId(question.programId);
   },
+  getClassParticipant: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const qClass = await firebaseInterface.getClassByClassId(parameter.classId);
+    if (qClass === undefined) {
+      throw new Error("クラスが存在しません");
+    }
+    if (qClass.createAccountId !== account.id) {
+      throw new Error(
+        "クラスの作成者以外がクラスの参加者を取得することはできません"
+      );
+    }
+    return firebaseInterface.getJoinClassDataFromClassId(parameter.classId);
+  },
 };
 
 const lineLoginClientId = "1655691758";
