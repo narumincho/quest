@@ -1,9 +1,9 @@
 import * as React from "react";
 import { AppState, LoggedInState, useAppState } from "./state";
+import { AdminClassPage } from "./component/AdminClassPage";
 import { AdminTopPage } from "./component/AdminTopPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
-import { AdminClassPage } from "./component/AdminClassPage";
 import { LoadingPage } from "./component/LoadingPage";
 import { LogInPage } from "./component/LogInPage";
 import { ProgramNewPage } from "./component/ProgramNewPage";
