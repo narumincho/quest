@@ -26,7 +26,20 @@ export type ProgramWithClassList = {
   readonly id: d.QProgramId;
   readonly name: string;
   readonly createAccountId: d.AccountId;
-  readonly classList: ReadonlyArray<d.QClass>;
+  readonly classList: ReadonlyArray<ClassWithParticipantList>;
+};
+
+/**
+ * クラスと参加者の一覧
+ */
+export type ClassWithParticipantList = {
+  readonly qClass: d.QClass;
+  /**
+   * 参加者一覧. `undefined` は取得中か失敗
+   */
+  readonly participantList:
+    | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+    | undefined;
 };
 
 /** 質問の取得状態 */
@@ -60,7 +73,7 @@ export type QuestionTreeListWithLoadingState =
 export type ClassAndRole =
   | {
       readonly tag: "admin";
-      readonly qClass: d.QClass;
+      readonly classWithParticipantList: ClassWithParticipantList;
     }
   | {
       readonly tag: "participant";
@@ -85,9 +98,14 @@ export const initLoggedInState = (option: {
           {
             id: program.id,
             name: program.name,
-            classList: option.accountData.createdClassList.filter(
-              (qClass) => qClass.programId === program.id
-            ),
+            classList: option.accountData.createdClassList
+              .filter((qClass) => qClass.programId === program.id)
+              .map(
+                (qClass): ClassWithParticipantList => ({
+                  qClass,
+                  participantList: undefined,
+                })
+              ),
             createAccountId: program.createAccountId,
           },
         ]
@@ -141,7 +159,10 @@ export const addCreatedClass = (
       qClass.programId,
       (beforeClass) => ({
         ...beforeClass,
-        classList: [...beforeClass.classList, qClass],
+        classList: [
+          ...beforeClass.classList,
+          { qClass, participantList: undefined },
+        ],
       })
     ),
   };
@@ -289,11 +310,11 @@ export const getClassAndRole = (
   classId: d.QClassId
 ): ClassAndRole => {
   for (const createdProgram of loggedInState.createdProgramList.values()) {
-    for (const qClass of createdProgram.classList) {
-      if (qClass.id === classId) {
+    for (const classWithParticipantList of createdProgram.classList) {
+      if (classWithParticipantList.qClass.id === classId) {
         return {
           tag: "admin",
-          qClass,
+          classWithParticipantList,
         };
       }
     }

@@ -2,12 +2,13 @@ import * as React from "react";
 import * as d from "../../data";
 import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
 import { AppState } from "../state";
+import { ClassWithParticipantList } from "../state/loggedInState";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 
 export type Props = {
   readonly a: AppState;
-  readonly qClass: d.QClass;
+  readonly classWithParticipantList: ClassWithParticipantList;
 };
 
 /**
@@ -16,13 +17,17 @@ export type Props = {
 export const AdminClassPage: React.VFC<Props> = (props) => {
   React.useEffect(
     () => {
-      props.a.requestGetQuestionListInProgram(props.qClass.programId);
+      props.a.requestGetQuestionListInProgram(
+        props.classWithParticipantList.qClass.programId
+      );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.qClass.id]
+    [props.classWithParticipantList.qClass.id]
   );
 
-  const program = props.a.program(props.qClass.programId);
+  const program = props.a.program(
+    props.classWithParticipantList.qClass.programId
+  );
   return (
     <PageContainer appState={props.a}>
       <Box padding={1}>
@@ -33,7 +38,9 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
             </Link>
             <Link
               appState={props.a}
-              location={d.QLocation.Program(props.qClass.programId)}
+              location={d.QLocation.Program(
+                props.classWithParticipantList.qClass.programId
+              )}
             >
               {program === undefined ? "プログラム" : program.name}
             </Link>
@@ -42,11 +49,15 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
           </Breadcrumbs>
         </Box>
         <Box padding={1}>
-          <Typography variant="h5">{props.qClass.name}</Typography>
+          <Typography variant="h5">
+            {props.classWithParticipantList.qClass.name}
+          </Typography>
         </Box>
         <Box padding={1}>
           <Typography>クラスの参加者</Typography>
-          <Typography>準備中……</Typography>
+          <ParticipantList
+            participantList={props.classWithParticipantList.participantList}
+          />
         </Box>
         <Box padding={1}>
           <Button
@@ -54,16 +65,44 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
             fullWidth
             color="primary"
             onClick={() => {
-              props.a.shareClassInviteLink(props.qClass.id);
+              props.a.shareClassInviteLink(
+                props.classWithParticipantList.qClass.id
+              );
             }}
           >
             招待URLをシェアする
           </Button>
         </Box>
         <Box padding={1}>
-          <Typography>クラスID: {props.qClass.id}</Typography>
+          <Typography>
+            クラスID: {props.classWithParticipantList.qClass.id}
+          </Typography>
         </Box>
       </Box>
     </PageContainer>
+  );
+};
+
+export const ParticipantList: React.VFC<{
+  readonly participantList:
+    | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+    | undefined;
+}> = (props) => {
+  if (props.participantList === undefined) {
+    return <Typography>取得中</Typography>;
+  }
+  if (props.participantList.length === 0) {
+    return <Typography>まだ誰も参加していません</Typography>;
+  }
+  return (
+    <Box>
+      {props.participantList.map((participant) => (
+        <Box padding={1} key={participant.first.id}>
+          {participant.first.name}
+
+          {participant.second === d.QRole.Student ? "(生徒)" : "(ゲスト)"}
+        </Box>
+      ))}
+    </Box>
   );
 };

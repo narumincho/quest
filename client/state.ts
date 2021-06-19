@@ -225,9 +225,9 @@ export const useAppState = (): AppState => {
         return;
       }
       for (const program of logInState.loggedInState.createdProgramList.values()) {
-        for (const qClass of program.classList) {
-          if (qClass.id === qClassId) {
-            return qClass;
+        for (const classWithParticipantList of program.classList) {
+          if (classWithParticipantList.qClass.id === qClassId) {
+            return classWithParticipantList.qClass;
           }
         }
       }

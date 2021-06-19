@@ -141,7 +141,10 @@ export const ClassPage: React.VFC<{ appState: AppState; classId: d.QClassId }> =
         );
       case "admin":
         return (
-          <AdminClassPage a={props.appState} qClass={classAndRole.qClass} />
+          <AdminClassPage
+            a={props.appState}
+            classWithParticipantList={classAndRole.classWithParticipantList}
+          />
         );
       case "participant":
         return <ParticipantClassPage classId={props.classId} />;
