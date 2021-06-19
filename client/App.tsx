@@ -1,11 +1,16 @@
 import * as React from "react";
+import * as d from "../data";
 import { AppState, LoggedInState, useAppState } from "./state";
+import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AdminClassPage } from "./component/AdminClassPage";
 import { AdminTopPage } from "./component/AdminTopPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
+import { Link } from "./component/Link";
 import { LoadingPage } from "./component/LoadingPage";
 import { LogInPage } from "./component/LogInPage";
+import { PageContainer } from "./component/PageContainer";
+import { ParticipantClassPage } from "./component/ParticipantClassPage";
 import { ProgramNewPage } from "./component/ProgramNewPage";
 import { ProgramPage } from "./component/ProgramPage";
 import { QuestionEditPage } from "./component/QuestionEditPage";
@@ -86,8 +91,11 @@ const LoggedIn: React.VFC<{
       return (
         <ClassNewPage a={props.appState} programId={location.qProgramId} />
       );
-    case "Class":
-      return <AdminClassPage a={props.appState} classId={location.qClassId} />;
+    case "Class": {
+      return (
+        <ClassPage appState={props.appState} classId={location.qClassId} />
+      );
+    }
     case "ClassInvitation":
       return (
         <ClassInvitationPage
@@ -105,3 +113,37 @@ const LoggedIn: React.VFC<{
   }
 });
 LoggedIn.displayName = "LoggedIn";
+
+export const ClassPage: React.VFC<{ appState: AppState; classId: d.QClassId }> =
+  (props) => {
+    const classAndRole = props.appState.getClassAndRole(props.classId);
+    switch (classAndRole.tag) {
+      case "none":
+        return (
+          <PageContainer appState={props.appState}>
+            <Box>
+              このクラスは, 存在していないか, 参加または作成していません
+            </Box>
+            <Box padding={1}>
+              <Box padding={1}>
+                <Breadcrumbs>
+                  <Link appState={props.appState} location={d.QLocation.Top}>
+                    作成したプログラム
+                  </Link>
+                  <div></div>
+                </Breadcrumbs>
+              </Box>
+            </Box>
+            <Box padding={1}>
+              <Typography>クラスID: {props.classId}</Typography>
+            </Box>
+          </PageContainer>
+        );
+      case "admin":
+        return (
+          <AdminClassPage a={props.appState} qClass={classAndRole.qClass} />
+        );
+      case "participant":
+        return <ParticipantClassPage classId={props.classId} />;
+    }
+  };

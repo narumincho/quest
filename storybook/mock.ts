@@ -10,6 +10,7 @@ import {
   getQuestionTree,
   questionChildren,
 } from "../client/state/question";
+import { ClassAndRole } from "../client/state/loggedInState";
 import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {
@@ -89,13 +90,10 @@ export const mockAppState: AppState = {
     };
   },
   createClass: action("createClass"),
-  getClass: () => {
+  getClassAndRole: (): ClassAndRole => {
     return {
-      id: mockClassId,
-      name: "サンプルクラス",
-      programId: mockProgramIdA,
-      invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
-      createAccountId: "" as d.AccountId,
+      tag: "admin",
+      qClass: mockClass,
     };
   },
   shareClassInviteLink: action("shareClassInviteLink"),

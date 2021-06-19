@@ -57,6 +57,20 @@ export type QuestionTreeListWithLoadingState =
       readonly questionTreeList: ReadonlyArray<QuestionTree>;
     };
 
+export type ClassAndRole =
+  | {
+      readonly tag: "admin";
+      readonly qClass: d.QClass;
+    }
+  | {
+      readonly tag: "participant";
+      readonly role: d.QRole;
+      readonly qClassForParticipant: d.QClassStudentOrGuest;
+    }
+  | {
+      readonly tag: "none";
+    };
+
 export const initLoggedInState = (option: {
   readonly accountToken: d.AccountToken;
   readonly accountData: d.QAccountData;
@@ -268,4 +282,32 @@ export const getQuestionThatCanBeParentList = (
     questionId,
     questionListState.questionMap
   );
+};
+
+export const getClassAndRole = (
+  loggedInState: LoggedInState,
+  classId: d.QClassId
+): ClassAndRole => {
+  for (const createdProgram of loggedInState.createdProgramList.values()) {
+    for (const qClass of createdProgram.classList) {
+      if (qClass.id === classId) {
+        return {
+          tag: "admin",
+          qClass,
+        };
+      }
+    }
+  }
+  for (const joinClass of loggedInState.joinedClassList) {
+    if (joinClass.first.id === classId) {
+      return {
+        tag: "participant",
+        role: joinClass.second,
+        qClassForParticipant: joinClass.first,
+      };
+    }
+  }
+  return {
+    tag: "none",
+  };
 };

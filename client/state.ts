@@ -2,6 +2,7 @@ import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
 import {
+  ClassAndRole,
   LogInState,
   LoggedInState,
   ProgramWithClassList,
@@ -72,8 +73,8 @@ export type AppState = {
   getQuestionTreeListWithLoadingStateInProgram: (
     id: d.QProgramId
   ) => QuestionTreeListWithLoadingState;
-  /** クラスを取得する */
-  getClass: (id: d.QClassId) => d.QClass | undefined;
+  /** 作成したクラスまたは, 参加したクラスを習得する */
+  getClassAndRole: (id: d.QClassId) => ClassAndRole;
   /** 招待URLをシェアする */
   shareClassInviteLink: (classId: d.QClassId) => void;
   /** 質問を編集する */
@@ -121,6 +122,7 @@ export const useAppState = (): AppState => {
     getParentQuestionList,
     getQuestionTreeListWithLoadingStateInProgram,
     getQuestionThatCanBeParentList,
+    getClassAndRole,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -233,7 +235,7 @@ export const useAppState = (): AppState => {
     [logInState]
   );
 
-  return useMemo(
+  return useMemo<AppState>(
     () => ({
       logInState,
       requestLogin,
@@ -402,7 +404,9 @@ export const useAppState = (): AppState => {
         return getParentQuestionList(id.value);
       },
       getQuestionTreeListWithLoadingStateInProgram,
-      getClass: getCreatedClass,
+      getClassAndRole: (classId) => {
+        return getClassAndRole(classId);
+      },
       shareClassInviteLink: (classId) => {
         const qClass = getCreatedClass(classId);
         if (qClass === undefined) {
@@ -512,6 +516,7 @@ export const useAppState = (): AppState => {
       changeLocation,
       enqueueSnackbar,
       getAccountToken,
+      getClassAndRole,
       getCreatedClass,
       getParentQuestionList,
       getQuestionById,

@@ -1,14 +1,15 @@
 import * as d from "../../data";
 import {
+  ClassAndRole,
   LoggedInState,
   ProgramWithClassList,
   QuestionListState,
-  QuestionTree,
   QuestionTreeListWithLoadingState,
   initLoggedInState,
   addCreatedClass as loggedInStateAddCreatedClass,
   addCreatedOrEditedQuestion as loggedInStateAddCreatedOrEditedQuestion,
   addJoinedClass as loggedInStateAddJoinedClass,
+  getClassAndRole as loggedInStateGetClassAndRole,
   getParentQuestionList as loggedInStateGetParentQuestionList,
   getQuestionById as loggedInStateGetQuestionById,
   getQuestionDirectChildren as loggedInStateGetQuestionDirectChildren,
@@ -24,6 +25,7 @@ export type {
   ProgramWithClassList,
   QuestionListState,
   QuestionTreeListWithLoadingState,
+  ClassAndRole,
 };
 
 export type LogInState =
@@ -107,6 +109,8 @@ export type logInStateResult = {
     programId: d.QProgramId,
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
+  /** クラスとクラスへの所属の種類を取得する */
+  readonly getClassAndRole: (classId: d.QClassId) => ClassAndRole;
 };
 
 export const useLogInState = (): logInStateResult => {
@@ -296,6 +300,16 @@ export const useLogInState = (): logInStateResult => {
     [logInState]
   );
 
+  const getClassAndRole = useCallback(
+    (classId: d.QClassId): ClassAndRole => {
+      if (logInState.tag !== "LoggedIn") {
+        return { tag: "none" };
+      }
+      return loggedInStateGetClassAndRole(logInState.loggedInState, classId);
+    },
+    [logInState]
+  );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -314,6 +328,7 @@ export const useLogInState = (): logInStateResult => {
       getParentQuestionList,
       getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
+      getClassAndRole,
     }),
     [
       logInState,
@@ -332,6 +347,7 @@ export const useLogInState = (): logInStateResult => {
       getParentQuestionList,
       getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
+      getClassAndRole,
     ]
   );
 };
