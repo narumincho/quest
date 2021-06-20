@@ -27,71 +27,78 @@ export type {
 
 export type AppState = {
   /** ログイン状態 */
-  logInState: LogInState;
+  readonly logInState: LogInState;
   /** 現在のページの場所 */
-  location: d.QLocation;
+  readonly location: d.QLocation;
   /** プログラムの情報を得る */
-  program: (id: d.QProgramId) => ProgramWithClassList | undefined;
+  readonly program: (id: d.QProgramId) => ProgramWithClassList | undefined;
   /** アカウントの情報を得る */
-  account: (id: d.AccountId) => d.QAccount | undefined;
+  readonly account: (id: d.AccountId) => d.QAccount | undefined;
   /** 質問を取得する */
-  question: (id: d.QQuestionId) => d.QQuestion | undefined;
+  readonly question: (id: d.QQuestionId) => d.QQuestion | undefined;
   /** 質問を作成中かどうか */
-  isCreatingQuestion: boolean;
+  readonly isCreatingQuestion: boolean;
   /** 質問の子を取得する */
-  questionChildren: (id: d.QQuestionId) => ReadonlyArray<d.QQuestionId>;
+  readonly questionChildren: (
+    id: d.QQuestionId
+  ) => ReadonlyArray<d.QQuestionId>;
 
   /** ログインページを取得して移動させる */
-  requestLogin: () => void;
+  readonly requestLogin: () => void;
   /** ログアウトする */
-  logout: () => void;
+  readonly logout: () => void;
   /** 指定したページへ移動する */
-  jump: (newLocation: d.QLocation) => void;
+  readonly jump: (newLocation: d.QLocation) => void;
   /** 指定したページへ推移するが, 今いたページの履歴を置き換える */
-  changeLocation: (newLocation: d.QLocation) => void;
+  readonly changeLocation: (newLocation: d.QLocation) => void;
   /** ページ推移を戻る */
-  back: () => void;
+  readonly back: () => void;
   /** 通知を表示する */
-  addNotification: (message: string, variant: VariantType) => void;
+  readonly addNotification: (message: string, variant: VariantType) => void;
   /** プログラムを作成する */
-  createProgram: (programName: string) => void;
+  readonly createProgram: (programName: string) => void;
   /** クラスを作成する */
-  createClass: (option: { className: string; programId: d.QProgramId }) => void;
+  readonly createClass: (option: {
+    className: string;
+    programId: d.QProgramId;
+  }) => void;
   /** プログラムに属する質問を取得する */
-  requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
+  readonly requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
   /** 質問を作成する */
-  createQuestion: (
+  readonly createQuestion: (
     programId: d.QProgramId,
     parent: d.QQuestionId | undefined,
     text: string
   ) => void;
   /** 質問の親を取得する. 最初が近い順 */
-  questionParentList: (
+  readonly questionParentList: (
     id: d.Maybe<d.QQuestionId>
   ) => ReadonlyArray<d.QQuestion>;
   /** 質問の木構造を取得する */
-  getQuestionTreeListWithLoadingStateInProgram: (
+  readonly getQuestionTreeListWithLoadingStateInProgram: (
     id: d.QProgramId
   ) => QuestionTreeListWithLoadingState;
   /** 作成したクラスまたは, 参加したクラスを習得する */
-  getClassAndRole: (id: d.QClassId) => ClassAndRole;
+  readonly getClassAndRole: (id: d.QClassId) => ClassAndRole;
   /** 招待URLをシェアする */
-  shareClassInviteLink: (classId: d.QClassId) => void;
+  readonly shareClassInviteLink: (classId: d.QClassId) => void;
   /** 質問を編集する */
-  editQuestion: (
+  readonly editQuestion: (
     questionId: d.QQuestionId,
     name: string,
     parentId: d.Maybe<d.QQuestionId>
   ) => void;
   /** 親の質問になることができる質問を, キャッシュから取得する */
-  getQuestionThatCanBeParentList: (
+  readonly getQuestionThatCanBeParentList: (
     programId: d.QProgramId,
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
   /** クラスに参加する */
-  joinClass: (classInvitationToken: d.QClassInvitationToken) => void;
+  readonly joinClass: (classInvitationToken: d.QClassInvitationToken) => void;
   /** 質問IDからプロジェクトに属する質問を取得する */
-  getQuestionInProgramByQuestionId: (questionId: d.QQuestionId) => void;
+  readonly getQuestionInProgramByQuestionId: (
+    questionId: d.QQuestionId
+  ) => void;
 };
 
 const getAccountTokenFromUrlOrIndexedDb = (
