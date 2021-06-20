@@ -95,10 +95,11 @@ export type AppState = {
   ) => ReadonlyArray<d.QQuestion>;
   /** クラスに参加する */
   readonly joinClass: (classInvitationToken: d.QClassInvitationToken) => void;
-  /** 質問IDからプロジェクトに属する質問を取得する */
+  /** 質問IDからプロジェクトに属する質問をキャッシュから取得する */
   readonly getQuestionInProgramByQuestionId: (
     questionId: d.QQuestionId
   ) => void;
+  readonly requestParticipantListInClass: (classId: d.QClassId) => void;
 };
 
 const getAccountTokenFromUrlOrIndexedDb = (
@@ -130,6 +131,7 @@ export const useAppState = (): AppState => {
     getQuestionTreeListWithLoadingStateInProgram,
     getQuestionThatCanBeParentList,
     getClassAndRole,
+    setClassParticipantList,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -240,6 +242,39 @@ export const useAppState = (): AppState => {
       }
     },
     [logInState]
+  );
+
+  const requestParticipantListInClass = useCallback(
+    (classId: d.QClassId): void => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        enqueueSnackbar(
+          `プログラムに属している質問の取得にはログインが必要です`,
+          {
+            variant: "warning",
+          }
+        );
+        return;
+      }
+      api
+        .getClassParticipant({
+          accountToken,
+          classId,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(
+              `クラスの作成者取得中にエラーが発生しました ${response.error}`,
+              {
+                variant: "warning",
+              }
+            );
+            return;
+          }
+          setClassParticipantList(classId, response.ok);
+        });
+    },
+    []
   );
 
   return useMemo<AppState>(
@@ -515,6 +550,7 @@ export const useAppState = (): AppState => {
             });
           });
       },
+      requestParticipantListInClass,
     }),
     [
       addCreatedClass,
@@ -539,6 +575,7 @@ export const useAppState = (): AppState => {
       setProgram,
       setQuestionListState,
       useAccountMapResult,
+      requestParticipantListInClass,
     ]
   );
 };

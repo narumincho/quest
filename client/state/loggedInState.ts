@@ -332,3 +332,31 @@ export const getClassAndRole = (
     tag: "none",
   };
 };
+
+export const setClassParticipantList = (
+  loggedInState: LoggedInState,
+  classId: d.QClassId,
+  participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+): LoggedInState => {
+  return {
+    ...loggedInState,
+    createdProgramList: new Map<d.QProgramId, ProgramWithClassList>(
+      [...loggedInState.createdProgramList.values()].map((program) => {
+        return [
+          program.id,
+          {
+            ...program,
+            classList: program.classList.map(
+              (qClass): ClassWithParticipantList => {
+                if (qClass.qClass.id === classId) {
+                  return { qClass: qClass.qClass, participantList };
+                }
+                return qClass;
+              }
+            ),
+          },
+        ];
+      })
+    ),
+  };
+};

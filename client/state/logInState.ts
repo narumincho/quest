@@ -15,6 +15,7 @@ import {
   getQuestionDirectChildren as loggedInStateGetQuestionDirectChildren,
   getQuestionThatCanBeParentList as loggedInStateGetQuestionThatCanBeParentList,
   getQuestionTreeListWithLoadingStateInProgram as loggedInStateGetQuestionTreeListWithLoadingStateInProgram,
+  setClassParticipantList as loggedInStateSetClassParticipantList,
   setProgram as loggedInStateSetProgram,
   setQuestionListState as loggedInStateSetQuestionListState,
 } from "./loggedInState";
@@ -111,6 +112,11 @@ export type logInStateResult = {
   ) => ReadonlyArray<d.QQuestion>;
   /** クラスとクラスへの所属の種類を取得する */
   readonly getClassAndRole: (classId: d.QClassId) => ClassAndRole;
+  /** クラスの参加者をキャッシュに保存する */
+  readonly setClassParticipantList: (
+    classId: d.QClassId,
+    participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+  ) => void;
 };
 
 export const useLogInState = (): logInStateResult => {
@@ -310,6 +316,23 @@ export const useLogInState = (): logInStateResult => {
     [logInState]
   );
 
+  const setClassParticipantList = useCallback(
+    (
+      classId: d.QClassId,
+      participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+    ): void => {
+      if (logInState.tag !== "LoggedIn") {
+        return;
+      }
+      loggedInStateSetClassParticipantList(
+        logInState.loggedInState,
+        classId,
+        participantList
+      );
+    },
+    [logInState]
+  );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -329,6 +352,7 @@ export const useLogInState = (): logInStateResult => {
       getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
       getClassAndRole,
+      setClassParticipantList,
     }),
     [
       logInState,
@@ -348,6 +372,7 @@ export const useLogInState = (): logInStateResult => {
       getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
       getClassAndRole,
+      setClassParticipantList,
     ]
   );
 };

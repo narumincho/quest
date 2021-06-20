@@ -106,6 +106,7 @@ export const mockAppState: AppState = {
   },
   joinClass: action("joinClass"),
   getQuestionInProgramByQuestionId: action("getQuestionInProgramByQuestionId"),
+  requestParticipantListInClass: action("requestParticipantListInClass"),
 };
 
 export const mockAccount: d.QAccount = {
