@@ -100,7 +100,9 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography>クラス:</Typography>
           <ClassList
-            classList={program.classList}
+            classList={program.classList.map(
+              (classWithParticipantList) => classWithParticipantList.qClass
+            )}
             a={props.appState}
             programId={props.programId}
           />

@@ -2,6 +2,7 @@ import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
 import {
+  ClassAndRole,
   LogInState,
   LoggedInState,
   ProgramWithClassList,
@@ -10,7 +11,7 @@ import {
   useLogInState,
 } from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { QuestionTree } from "./state/question";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
@@ -26,71 +27,80 @@ export type {
 
 export type AppState = {
   /** ログイン状態 */
-  logInState: LogInState;
+  readonly logInState: LogInState;
   /** 現在のページの場所 */
-  location: d.QLocation;
+  readonly location: d.QLocation;
   /** プログラムの情報を得る */
-  program: (id: d.QProgramId) => ProgramWithClassList | undefined;
+  readonly program: (id: d.QProgramId) => ProgramWithClassList | undefined;
   /** アカウントの情報を得る */
-  account: (id: d.AccountId) => d.QAccount | undefined;
+  readonly account: (id: d.AccountId) => d.QAccount | undefined;
   /** 質問を取得する */
-  question: (id: d.QQuestionId) => d.QQuestion | undefined;
+  readonly question: (id: d.QQuestionId) => d.QQuestion | undefined;
   /** 質問を作成中かどうか */
-  isCreatingQuestion: boolean;
+  readonly isCreatingQuestion: boolean;
   /** 質問の子を取得する */
-  questionChildren: (id: d.QQuestionId) => ReadonlyArray<d.QQuestionId>;
+  readonly questionChildren: (
+    id: d.QQuestionId
+  ) => ReadonlyArray<d.QQuestionId>;
 
   /** ログインページを取得して移動させる */
-  requestLogin: () => void;
+  readonly requestLogin: () => void;
   /** ログアウトする */
-  logout: () => void;
+  readonly logout: () => void;
   /** 指定したページへ移動する */
-  jump: (newLocation: d.QLocation) => void;
+  readonly jump: (newLocation: d.QLocation) => void;
   /** 指定したページへ推移するが, 今いたページの履歴を置き換える */
-  changeLocation: (newLocation: d.QLocation) => void;
+  readonly changeLocation: (newLocation: d.QLocation) => void;
   /** ページ推移を戻る */
-  back: () => void;
+  readonly back: () => void;
   /** 通知を表示する */
-  addNotification: (message: string, variant: VariantType) => void;
+  readonly addNotification: (message: string, variant: VariantType) => void;
   /** プログラムを作成する */
-  createProgram: (programName: string) => void;
+  readonly createProgram: (programName: string) => void;
   /** クラスを作成する */
-  createClass: (option: { className: string; programId: d.QProgramId }) => void;
+  readonly createClass: (option: {
+    className: string;
+    programId: d.QProgramId;
+  }) => void;
   /** プログラムに属する質問を取得する */
-  requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
+  readonly requestGetQuestionListInProgram: (programId: d.QProgramId) => void;
   /** 質問を作成する */
-  createQuestion: (
+  readonly createQuestion: (
     programId: d.QProgramId,
     parent: d.QQuestionId | undefined,
     text: string
   ) => void;
   /** 質問の親を取得する. 最初が近い順 */
-  questionParentList: (
+  readonly questionParentList: (
     id: d.Maybe<d.QQuestionId>
   ) => ReadonlyArray<d.QQuestion>;
   /** 質問の木構造を取得する */
-  getQuestionTreeListWithLoadingStateInProgram: (
+  readonly getQuestionTreeListWithLoadingStateInProgram: (
     id: d.QProgramId
   ) => QuestionTreeListWithLoadingState;
-  /** クラスを取得する */
-  getClass: (id: d.QClassId) => d.QClass | undefined;
+  /** 作成したクラスまたは, 参加したクラスを習得する */
+  readonly getClassAndRole: (id: d.QClassId) => ClassAndRole;
   /** 招待URLをシェアする */
-  shareClassInviteLink: (classId: d.QClassId) => void;
+  readonly shareClassInviteLink: (classId: d.QClassId) => void;
   /** 質問を編集する */
-  editQuestion: (
+  readonly editQuestion: (
     questionId: d.QQuestionId,
     name: string,
     parentId: d.Maybe<d.QQuestionId>
   ) => void;
   /** 親の質問になることができる質問を, キャッシュから取得する */
-  getQuestionThatCanBeParentList: (
+  readonly getQuestionThatCanBeParentList: (
     programId: d.QProgramId,
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
   /** クラスに参加する */
-  joinClass: (classInvitationToken: d.QClassInvitationToken) => void;
-  /** 質問IDからプロジェクトに属する質問を取得する */
-  getQuestionInProgramByQuestionId: (questionId: d.QQuestionId) => void;
+  readonly joinClass: (classInvitationToken: d.QClassInvitationToken) => void;
+  /** 質問IDからプロジェクトに属する質問をキャッシュから取得する */
+  readonly getQuestionInProgramByQuestionId: (
+    questionId: d.QQuestionId
+  ) => void;
+  /** クラスの参加者を取得する */
+  readonly requestParticipantListInClass: (classId: d.QClassId) => void;
 };
 
 const getAccountTokenFromUrlOrIndexedDb = (
@@ -121,6 +131,8 @@ export const useAppState = (): AppState => {
     getParentQuestionList,
     getQuestionTreeListWithLoadingStateInProgram,
     getQuestionThatCanBeParentList,
+    getClassAndRole,
+    setClassParticipantList,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -164,15 +176,15 @@ export const useAppState = (): AppState => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getAccountToken = (): d.AccountToken | undefined => {
+  const getAccountToken = useCallback((): d.AccountToken | undefined => {
     switch (logInState.tag) {
       case "LoggedIn":
         return logInState.loggedInState.accountToken;
     }
     return undefined;
-  };
+  }, [logInState]);
 
-  const jump = (newLocation: d.QLocation): void => {
+  const jump = useCallback((newLocation: d.QLocation): void => {
     window.history.pushState(
       undefined,
       "",
@@ -184,9 +196,9 @@ export const useAppState = (): AppState => {
         .toString()
     );
     setLocation(newLocation);
-  };
+  }, []);
 
-  const requestLogin = () => {
+  const requestLogin = useCallback(() => {
     setRequestingLogInUrl();
     api.requestLineLoginUrl(undefined).then((response) => {
       if (response._ === "Error") {
@@ -201,9 +213,9 @@ export const useAppState = (): AppState => {
         window.location.href = response.ok;
       });
     });
-  };
+  }, [enqueueSnackbar, setJumpingPage, setRequestingLogInUrl]);
 
-  const changeLocation = (newLocation: d.QLocation): void => {
+  const changeLocation = useCallback((newLocation: d.QLocation): void => {
     window.history.replaceState(
       undefined,
       "",
@@ -215,284 +227,359 @@ export const useAppState = (): AppState => {
         .toString()
     );
     setLocation(newLocation);
-  };
+  }, []);
 
-  const getCreatedClass = (qClassId: d.QClassId): d.QClass | undefined => {
-    if (logInState.tag !== "LoggedIn") {
-      return;
-    }
-    for (const program of logInState.loggedInState.createdProgramList.values()) {
-      for (const qClass of program.classList) {
-        if (qClass.id === qClassId) {
-          return qClass;
-        }
-      }
-    }
-  };
-
-  return {
-    logInState,
-    requestLogin,
-    logout: (): void => {
-      enqueueSnackbar(`ログアウトしました`, {
-        variant: "success",
-      });
-      indexedDb.deleteAccountToken();
-      useAccountMapResult.deleteAll();
-      setNoLogIn();
-    },
-    location,
-    jump,
-    changeLocation,
-    back,
-    isCreatingQuestion,
-    addNotification: (text, variant) => {
-      enqueueSnackbar(text, { variant });
-    },
-    createProgram: (programName) => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(`プログラムの作成にはログインが必要です`, {
-          variant: "error",
-        });
-        return;
-      }
-      const projectNameResult = stringToValidProgramName(programName);
-      if (projectNameResult._ === "Error") {
-        return;
-      }
-      api
-        .createProgram({
-          accountToken,
-          programName: projectNameResult.ok,
-        })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(`プログラム作成に失敗しました ${response.error}`, {
-              variant: "error",
-            });
-            return;
-          }
-          enqueueSnackbar(`プログラム 「${response.ok.name}」を作成しました`, {
-            variant: "success",
-          });
-          setProgram(response.ok);
-          changeLocation(d.QLocation.Program(response.ok.id));
-        });
-    },
-    createClass: (option) => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(`クラスの作成にはログインが必要です`, {
-          variant: "error",
-        });
-        return;
-      }
-      api
-        .createClass({
-          accountToken,
-          className: option.className,
-          programId: option.programId,
-        })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(`クラスの作成に失敗しました ${response.error}`, {
-              variant: "error",
-            });
-            return;
-          }
-          enqueueSnackbar(`クラス 「${response.ok.name}」を作成しました`, {
-            variant: "success",
-          });
-          addCreatedClass(response.ok);
-          changeLocation(d.QLocation.Class(response.ok.id));
-        });
-    },
-    program: (programId: d.QProgramId): ProgramWithClassList | undefined => {
+  const getCreatedClass = useCallback(
+    (qClassId: d.QClassId): d.QClass | undefined => {
       if (logInState.tag !== "LoggedIn") {
         return;
       }
-      return logInState.loggedInState.createdProgramList.get(programId);
+      for (const program of logInState.loggedInState.createdProgramList.values()) {
+        for (const classWithParticipantList of program.classList) {
+          if (classWithParticipantList.qClass.id === qClassId) {
+            return classWithParticipantList.qClass;
+          }
+        }
+      }
     },
-    account: useAccountMapResult.getById,
-    requestGetQuestionListInProgram: (programId) => {
+    [logInState]
+  );
+
+  const requestParticipantListInClass = useCallback(
+    (classId: d.QClassId): void => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
-        enqueueSnackbar(
-          `プログラムに属している質問の取得にはログインが必要です`,
-          {
-            variant: "warning",
-          }
-        );
+        enqueueSnackbar(`クラスのの参加者の取得にはログインが必要です`, {
+          variant: "warning",
+        });
         return;
       }
-      setQuestionListState(programId, { tag: "Requesting" });
       api
-        .getQuestionInCreatedProgram({
+        .getClassParticipant({
           accountToken,
-          programId,
+          classId,
         })
         .then((response) => {
           if (response._ === "Error") {
-            setQuestionListState(programId, { tag: "Error" });
             enqueueSnackbar(
-              `プログラムに属している質問の取得に失敗しました ${response.error}`,
+              `クラスの参加者取得中にエラーが発生しました ${response.error}`,
               {
-                variant: "error",
+                variant: "warning",
               }
             );
             return;
           }
-          enqueueSnackbar(`プログラムに属している質問の取得に成功しました`, {
+          enqueueSnackbar("クラスの参加者取得に成功しました", {
             variant: "success",
           });
-          setQuestionListState(programId, {
-            tag: "Loaded",
-            questionMap: new Map(
-              response.ok.map((q): [d.QQuestionId, d.QQuestion] => [q.id, q])
-            ),
-          });
+          console.log("取得した", response.ok);
+          setClassParticipantList(classId, response.ok);
         });
     },
-    createQuestion: (programId, parent, questionText) => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        return;
-      }
-      setIsCreatingQuestion(true);
-      api
-        .createQuestion({
-          accountToken,
-          programId,
-          parent:
-            parent === undefined ? d.Maybe.Nothing() : d.Maybe.Just(parent),
-          questionText,
-        })
-        .then((response) => {
-          setIsCreatingQuestion(false);
-          if (response._ === "Error") {
-            enqueueSnackbar(`質問の作成に失敗した ${response.error}`, {
-              variant: "error",
+    [enqueueSnackbar, getAccountToken, setClassParticipantList]
+  );
+
+  return useMemo<AppState>(
+    () => ({
+      logInState,
+      requestLogin,
+      logout: (): void => {
+        enqueueSnackbar(`ログアウトしました`, {
+          variant: "success",
+        });
+        indexedDb.deleteAccountToken();
+        useAccountMapResult.deleteAll();
+        setNoLogIn();
+      },
+      location,
+      jump,
+      changeLocation,
+      back,
+      isCreatingQuestion,
+      addNotification: (text, variant) => {
+        enqueueSnackbar(text, { variant });
+      },
+      createProgram: (programName) => {
+        const accountToken = getAccountToken();
+        if (accountToken === undefined) {
+          enqueueSnackbar(`プログラムの作成にはログインが必要です`, {
+            variant: "error",
+          });
+          return;
+        }
+        const projectNameResult = stringToValidProgramName(programName);
+        if (projectNameResult._ === "Error") {
+          return;
+        }
+        api
+          .createProgram({
+            accountToken,
+            programName: projectNameResult.ok,
+          })
+          .then((response) => {
+            if (response._ === "Error") {
+              enqueueSnackbar(
+                `プログラム作成に失敗しました ${response.error}`,
+                {
+                  variant: "error",
+                }
+              );
+              return;
+            }
+            enqueueSnackbar(
+              `プログラム 「${response.ok.name}」を作成しました`,
+              {
+                variant: "success",
+              }
+            );
+            setProgram(response.ok);
+            changeLocation(d.QLocation.Program(response.ok.id));
+          });
+      },
+      createClass: (option) => {
+        const accountToken = getAccountToken();
+        if (accountToken === undefined) {
+          enqueueSnackbar(`クラスの作成にはログインが必要です`, {
+            variant: "error",
+          });
+          return;
+        }
+        api
+          .createClass({
+            accountToken,
+            className: option.className,
+            programId: option.programId,
+          })
+          .then((response) => {
+            if (response._ === "Error") {
+              enqueueSnackbar(`クラスの作成に失敗しました ${response.error}`, {
+                variant: "error",
+              });
+              return;
+            }
+            enqueueSnackbar(`クラス 「${response.ok.name}」を作成しました`, {
+              variant: "success",
             });
-            return;
-          }
-          enqueueSnackbar(`質問を作成しました`, {
-            variant: "success",
+            addCreatedClass(response.ok);
+            changeLocation(d.QLocation.Class(response.ok.id));
           });
-          addCreatedOrEditedQuestion(response.ok);
-          setLocation(d.QLocation.Question(response.ok.id));
-        });
-    },
-    question: getQuestionById,
-    questionChildren: getQuestionDirectChildren,
-    questionParentList: (id) => {
-      if (id._ === "Nothing") {
-        return [];
-      }
-      return getParentQuestionList(id.value);
-    },
-    getQuestionTreeListWithLoadingStateInProgram,
-    getClass: getCreatedClass,
-    shareClassInviteLink: (classId) => {
-      const qClass = getCreatedClass(classId);
-      if (qClass === undefined) {
-        return;
-      }
-      navigator
-        .share({
-          url: commonUrl
-            .locationToUrl(d.QLocation.ClassInvitation(qClass.invitationToken))
-            .toString(),
-          title: `${qClass.name}の招待リンク`,
-        })
-        .then((e) => {
-          console.log(e);
-        });
-    },
-    editQuestion: (questionId, name, parentId) => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        return;
-      }
-      api
-        .editQuestion({
-          accountToken,
-          questionId,
-          name,
-          parentId,
-        })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(`質問の編集に失敗した ${response.error}`, {
-              variant: "error",
+      },
+      program: (programId: d.QProgramId): ProgramWithClassList | undefined => {
+        if (logInState.tag !== "LoggedIn") {
+          return;
+        }
+        return logInState.loggedInState.createdProgramList.get(programId);
+      },
+      account: useAccountMapResult.getById,
+      requestGetQuestionListInProgram: (programId) => {
+        const accountToken = getAccountToken();
+        if (accountToken === undefined) {
+          enqueueSnackbar(
+            `プログラムに属している質問の取得にはログインが必要です`,
+            {
+              variant: "warning",
+            }
+          );
+          return;
+        }
+        setQuestionListState(programId, { tag: "Requesting" });
+        api
+          .getQuestionInCreatedProgram({
+            accountToken,
+            programId,
+          })
+          .then((response) => {
+            if (response._ === "Error") {
+              setQuestionListState(programId, { tag: "Error" });
+              enqueueSnackbar(
+                `プログラムに属している質問の取得に失敗しました ${response.error}`,
+                {
+                  variant: "error",
+                }
+              );
+              return;
+            }
+            enqueueSnackbar(`プログラムに属している質問の取得に成功しました`, {
+              variant: "success",
             });
-            return;
-          }
-          enqueueSnackbar(`質問を編集しました`, {
-            variant: "success",
-          });
-          addCreatedOrEditedQuestion(response.ok);
-          setLocation(d.QLocation.Question(response.ok.id));
-        });
-    },
-    getQuestionThatCanBeParentList,
-    joinClass: (classInvitationToken) => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(`クラスの参加にはログインする必要があります`, {
-          variant: "error",
-        });
-        return;
-      }
-      api
-        .joinClassAsStudent({ accountToken, classInvitationToken })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(`クラスの参加に失敗しました ${response.error}`, {
-              variant: "error",
+            setQuestionListState(programId, {
+              tag: "Loaded",
+              questionMap: new Map(
+                response.ok.map((q): [d.QQuestionId, d.QQuestion] => [q.id, q])
+              ),
             });
-            return;
-          }
-          enqueueSnackbar(`クラスに参加しました`, {
-            variant: "success",
           });
-          addJoinedClass(response.ok, d.QRole.Student);
-          setLocation(d.QLocation.Class(response.ok.id));
-        });
-    },
-    getQuestionInProgramByQuestionId: (questionId: d.QQuestionId) => {
-      if (getQuestionById(questionId) !== undefined) {
-        return;
-      }
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(`質問の取得にはログインする必要があります`, {
-          variant: "error",
-        });
-        return;
-      }
-      api
-        .getQuestionInProgramByQuestionId({ accountToken, questionId })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(`プログラムに属する質問の取得にに失敗しました`, {
-              variant: "error",
+      },
+      createQuestion: (programId, parent, questionText) => {
+        const accountToken = getAccountToken();
+        if (accountToken === undefined) {
+          return;
+        }
+        setIsCreatingQuestion(true);
+        api
+          .createQuestion({
+            accountToken,
+            programId,
+            parent:
+              parent === undefined ? d.Maybe.Nothing() : d.Maybe.Just(parent),
+            questionText,
+          })
+          .then((response) => {
+            setIsCreatingQuestion(false);
+            if (response._ === "Error") {
+              enqueueSnackbar(`質問の作成に失敗した ${response.error}`, {
+                variant: "error",
+              });
+              return;
+            }
+            enqueueSnackbar(`質問を作成しました`, {
+              variant: "success",
             });
-            return;
-          }
-          const firstQuestion = response.ok[0];
-          if (firstQuestion === undefined) {
-            return;
-          }
-          setQuestionListState(firstQuestion.programId, {
-            tag: "Loaded",
-            questionMap: new Map(
-              response.ok.map((q): [d.QQuestionId, d.QQuestion] => [q.id, q])
-            ),
+            addCreatedOrEditedQuestion(response.ok);
+            setLocation(d.QLocation.Question(response.ok.id));
           });
-        });
-    },
-  };
+      },
+      question: getQuestionById,
+      questionChildren: getQuestionDirectChildren,
+      questionParentList: (id) => {
+        if (id._ === "Nothing") {
+          return [];
+        }
+        return getParentQuestionList(id.value);
+      },
+      getQuestionTreeListWithLoadingStateInProgram,
+      getClassAndRole: (classId) => {
+        return getClassAndRole(classId);
+      },
+      shareClassInviteLink: (classId) => {
+        const qClass = getCreatedClass(classId);
+        if (qClass === undefined) {
+          return;
+        }
+        navigator
+          .share({
+            url: commonUrl
+              .locationToUrl(
+                d.QLocation.ClassInvitation(qClass.invitationToken)
+              )
+              .toString(),
+            title: `${qClass.name}の招待リンク`,
+          })
+          .then((e) => {
+            console.log(e);
+          });
+      },
+      editQuestion: (questionId, name, parentId) => {
+        const accountToken = getAccountToken();
+        if (accountToken === undefined) {
+          return;
+        }
+        api
+          .editQuestion({
+            accountToken,
+            questionId,
+            name,
+            parentId,
+          })
+          .then((response) => {
+            if (response._ === "Error") {
+              enqueueSnackbar(`質問の編集に失敗した ${response.error}`, {
+                variant: "error",
+              });
+              return;
+            }
+            enqueueSnackbar(`質問を編集しました`, {
+              variant: "success",
+            });
+            addCreatedOrEditedQuestion(response.ok);
+            setLocation(d.QLocation.Question(response.ok.id));
+          });
+      },
+      getQuestionThatCanBeParentList,
+      joinClass: (classInvitationToken) => {
+        const accountToken = getAccountToken();
+        if (accountToken === undefined) {
+          enqueueSnackbar(`クラスの参加にはログインする必要があります`, {
+            variant: "error",
+          });
+          return;
+        }
+        api
+          .joinClassAsStudent({ accountToken, classInvitationToken })
+          .then((response) => {
+            if (response._ === "Error") {
+              enqueueSnackbar(`クラスの参加に失敗しました ${response.error}`, {
+                variant: "error",
+              });
+              return;
+            }
+            enqueueSnackbar(`クラスに参加しました`, {
+              variant: "success",
+            });
+            addJoinedClass(response.ok, d.QRole.Student);
+            setLocation(d.QLocation.Class(response.ok.id));
+          });
+      },
+      getQuestionInProgramByQuestionId: (questionId: d.QQuestionId) => {
+        if (getQuestionById(questionId) !== undefined) {
+          return;
+        }
+        const accountToken = getAccountToken();
+        if (accountToken === undefined) {
+          enqueueSnackbar(`質問の取得にはログインする必要があります`, {
+            variant: "error",
+          });
+          return;
+        }
+        api
+          .getQuestionInProgramByQuestionId({ accountToken, questionId })
+          .then((response) => {
+            if (response._ === "Error") {
+              enqueueSnackbar(`プログラムに属する質問の取得にに失敗しました`, {
+                variant: "error",
+              });
+              return;
+            }
+            const firstQuestion = response.ok[0];
+            if (firstQuestion === undefined) {
+              return;
+            }
+            setQuestionListState(firstQuestion.programId, {
+              tag: "Loaded",
+              questionMap: new Map(
+                response.ok.map((q): [d.QQuestionId, d.QQuestion] => [q.id, q])
+              ),
+            });
+          });
+      },
+      requestParticipantListInClass,
+    }),
+    [
+      addCreatedClass,
+      addCreatedOrEditedQuestion,
+      addJoinedClass,
+      changeLocation,
+      enqueueSnackbar,
+      getAccountToken,
+      getClassAndRole,
+      getCreatedClass,
+      getParentQuestionList,
+      getQuestionById,
+      getQuestionDirectChildren,
+      getQuestionThatCanBeParentList,
+      getQuestionTreeListWithLoadingStateInProgram,
+      isCreatingQuestion,
+      jump,
+      location,
+      logInState,
+      requestLogin,
+      setNoLogIn,
+      setProgram,
+      setQuestionListState,
+      useAccountMapResult,
+      requestParticipantListInClass,
+    ]
+  );
 };
 
 const back = (): void => {

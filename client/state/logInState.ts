@@ -1,19 +1,21 @@
 import * as d from "../../data";
 import {
+  ClassAndRole,
   LoggedInState,
   ProgramWithClassList,
   QuestionListState,
-  QuestionTree,
   QuestionTreeListWithLoadingState,
   initLoggedInState,
   addCreatedClass as loggedInStateAddCreatedClass,
   addCreatedOrEditedQuestion as loggedInStateAddCreatedOrEditedQuestion,
   addJoinedClass as loggedInStateAddJoinedClass,
+  getClassAndRole as loggedInStateGetClassAndRole,
   getParentQuestionList as loggedInStateGetParentQuestionList,
   getQuestionById as loggedInStateGetQuestionById,
   getQuestionDirectChildren as loggedInStateGetQuestionDirectChildren,
   getQuestionThatCanBeParentList as loggedInStateGetQuestionThatCanBeParentList,
   getQuestionTreeListWithLoadingStateInProgram as loggedInStateGetQuestionTreeListWithLoadingStateInProgram,
+  setClassParticipantList as loggedInStateSetClassParticipantList,
   setProgram as loggedInStateSetProgram,
   setQuestionListState as loggedInStateSetQuestionListState,
 } from "./loggedInState";
@@ -24,6 +26,7 @@ export type {
   ProgramWithClassList,
   QuestionListState,
   QuestionTreeListWithLoadingState,
+  ClassAndRole,
 };
 
 export type LogInState =
@@ -107,6 +110,13 @@ export type logInStateResult = {
     programId: d.QProgramId,
     questionId: d.QQuestionId
   ) => ReadonlyArray<d.QQuestion>;
+  /** クラスとクラスへの所属の種類を取得する */
+  readonly getClassAndRole: (classId: d.QClassId) => ClassAndRole;
+  /** クラスの参加者をキャッシュに保存する */
+  readonly setClassParticipantList: (
+    classId: d.QClassId,
+    participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+  ) => void;
 };
 
 export const useLogInState = (): logInStateResult => {
@@ -296,6 +306,38 @@ export const useLogInState = (): logInStateResult => {
     [logInState]
   );
 
+  const getClassAndRole = useCallback(
+    (classId: d.QClassId): ClassAndRole => {
+      if (logInState.tag !== "LoggedIn") {
+        return { tag: "none" };
+      }
+      return loggedInStateGetClassAndRole(logInState.loggedInState, classId);
+    },
+    [logInState]
+  );
+
+  const setClassParticipantList = useCallback(
+    (
+      classId: d.QClassId,
+      participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+    ): void => {
+      setLogInState((beforeLogInState) => {
+        if (beforeLogInState.tag !== "LoggedIn") {
+          return beforeLogInState;
+        }
+        return {
+          ...beforeLogInState,
+          loggedInState: loggedInStateSetClassParticipantList(
+            beforeLogInState.loggedInState,
+            classId,
+            participantList
+          ),
+        };
+      });
+    },
+    []
+  );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -314,6 +356,8 @@ export const useLogInState = (): logInStateResult => {
       getParentQuestionList,
       getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
+      getClassAndRole,
+      setClassParticipantList,
     }),
     [
       logInState,
@@ -332,6 +376,8 @@ export const useLogInState = (): logInStateResult => {
       getParentQuestionList,
       getQuestionTreeListWithLoadingStateInProgram,
       getQuestionThatCanBeParentList,
+      getClassAndRole,
+      setClassParticipantList,
     ]
   );
 };

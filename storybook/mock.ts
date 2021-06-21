@@ -6,6 +6,10 @@ import {
   QuestionTreeListWithLoadingState,
 } from "../client/state";
 import {
+  ClassAndRole,
+  ClassWithParticipantList,
+} from "../client/state/loggedInState";
+import {
   getParentQuestionList,
   getQuestionTree,
   questionChildren,
@@ -33,7 +37,7 @@ export const mockAppState: AppState = {
             tag: "Loaded",
             questionIdList: [...questionMap.keys()],
           },
-          classList: [mockClass],
+          classList: [mockClassWithParticipantListLoadingParticipant],
         };
       case mockProgramIdB:
         return {
@@ -89,13 +93,10 @@ export const mockAppState: AppState = {
     };
   },
   createClass: action("createClass"),
-  getClass: () => {
+  getClassAndRole: (): ClassAndRole => {
     return {
-      id: mockClassId,
-      name: "サンプルクラス",
-      programId: mockProgramIdA,
-      invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
-      createAccountId: "" as d.AccountId,
+      tag: "admin",
+      classWithParticipantList: mockClassWithParticipantListLoadingParticipant,
     };
   },
   shareClassInviteLink: action("shareClassInviteLink"),
@@ -105,6 +106,7 @@ export const mockAppState: AppState = {
   },
   joinClass: action("joinClass"),
   getQuestionInProgramByQuestionId: action("getQuestionInProgramByQuestionId"),
+  requestParticipantListInClass: action("requestParticipantListInClass"),
 };
 
 export const mockAccount: d.QAccount = {
@@ -112,6 +114,17 @@ export const mockAccount: d.QAccount = {
   iconHash: "fakeIconHash" as d.ImageHash,
   name: "サンプルアカウント名",
 };
+export const mockAccount2: d.QAccount = {
+  id: "fakeAccountId2" as d.AccountId,
+  iconHash: "fakeIconHash2" as d.ImageHash,
+  name: "なんとかさん",
+};
+export const mockAccount3: d.QAccount = {
+  id: "fakeAccountId3" as d.AccountId,
+  iconHash: "fakeIconHash3" as d.ImageHash,
+  name: "大将",
+};
+
 export const mockAccountId = "mockAccountId" as d.AccountId;
 export const mockAccountToken = "mockAccountToken" as d.AccountToken;
 
@@ -127,6 +140,12 @@ export const mockClass: d.QClass = {
   invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
   createAccountId: "" as d.AccountId,
 };
+
+export const mockClassWithParticipantListLoadingParticipant: ClassWithParticipantList =
+  {
+    qClass: mockClass,
+    participantList: undefined,
+  };
 
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
@@ -240,7 +259,7 @@ const programA: ProgramWithClassList = {
   name: "サンプルプログラム名A",
   createAccountId: mockAccountId,
   id: mockProgramIdA,
-  classList: [mockClass],
+  classList: [mockClassWithParticipantListLoadingParticipant],
 };
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,

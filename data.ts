@@ -270,7 +270,7 @@
   * Maybe. nullableのようなもの. 今後はRustのstd::Optionに出力するために属性をつけよう (確信)
   * @typePartId 304f21ae8208a21d08731aa6d183742d
   */
- export type Maybe<value extends unknown> = { /** ある */ readonly _: "Just"; readonly value: value } | { /** ない */ readonly _: "Nothing" };
+ export type Maybe<value extends unknown> = { readonly _: "Just"; readonly value: value } | { readonly _: "Nothing" };
  
  
  /**
@@ -449,6 +449,21 @@
   * @typePartId 4fe2f5da0a887c2a6b33c16c5d52058f
   */
  export type QProgramId = string & { readonly _qProgramId: never };
+ 
+ 
+ /**
+  * クラスの参加者を取得するときに必要なパラメータ
+  * @typePartId 510d8ea5d62965942071b7ed6b4edae8
+  */
+ export type GetClassParticipantParameter = { 
+ /**
+  * アカウントトークン
+  */
+ readonly accountToken: AccountToken; 
+ /**
+  * クラスID
+  */
+ readonly classId: QClassId };
  
  
  /**
@@ -3622,6 +3637,29 @@
   * 独自のバイナリ形式の変換処理ができるコーデック
   */
  readonly codec: Codec<QProgramId> } = { typePartId: "4fe2f5da0a887c2a6b33c16c5d52058f" as TypePartId, codec: { encode: (value: QProgramId): ReadonlyArray<number> => (encodeId(value)), decode: (index: number, binary: Uint8Array): { readonly result: QProgramId; readonly nextIndex: number } => (decodeId(index, binary) as { readonly result: QProgramId; readonly nextIndex: number }) } };
+ 
+ 
+ /**
+  * クラスの参加者を取得するときに必要なパラメータ
+  * @typePartId 510d8ea5d62965942071b7ed6b4edae8
+  */
+ export const GetClassParticipantParameter: { 
+ /**
+  * definy.app内 の 型パーツの Id
+  */
+ readonly typePartId: TypePartId; 
+ /**
+  * 独自のバイナリ形式の変換処理ができるコーデック
+  */
+ readonly codec: Codec<GetClassParticipantParameter>; 
+ /**
+  * 型を合わせる上で便利なヘルパー関数
+  */
+ readonly helper: (a: GetClassParticipantParameter) => GetClassParticipantParameter } = { typePartId: "510d8ea5d62965942071b7ed6b4edae8" as TypePartId, helper: (getClassParticipantParameter: GetClassParticipantParameter): GetClassParticipantParameter => getClassParticipantParameter, codec: { encode: (value: GetClassParticipantParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QClassId.codec.encode(value.classId))), decode: (index: number, binary: Uint8Array): { readonly result: GetClassParticipantParameter; readonly nextIndex: number } => {
+   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+   const classIdAndNextIndex: { readonly result: QClassId; readonly nextIndex: number } = QClassId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+   return { result: { accountToken: accountTokenAndNextIndex.result, classId: classIdAndNextIndex.result }, nextIndex: classIdAndNextIndex.nextIndex };
+ } } };
  
  
  /**
