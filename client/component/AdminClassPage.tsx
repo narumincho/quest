@@ -20,6 +20,9 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
       props.a.requestGetQuestionListInProgram(
         props.classWithParticipantList.qClass.programId
       );
+      props.a.requestParticipantListInClass(
+        props.classWithParticipantList.qClass.id
+      );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.classWithParticipantList.qClass.id]

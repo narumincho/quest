@@ -321,16 +321,21 @@ export const useLogInState = (): logInStateResult => {
       classId: d.QClassId,
       participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
     ): void => {
-      if (logInState.tag !== "LoggedIn") {
-        return;
-      }
-      loggedInStateSetClassParticipantList(
-        logInState.loggedInState,
-        classId,
-        participantList
-      );
+      setLogInState((beforeLogInState) => {
+        if (beforeLogInState.tag !== "LoggedIn") {
+          return beforeLogInState;
+        }
+        return {
+          ...beforeLogInState,
+          loggedInState: loggedInStateSetClassParticipantList(
+            beforeLogInState.loggedInState,
+            classId,
+            participantList
+          ),
+        };
+      });
     },
-    [logInState]
+    []
   );
 
   return useMemo<logInStateResult>(

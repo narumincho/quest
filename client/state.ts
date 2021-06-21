@@ -99,6 +99,7 @@ export type AppState = {
   readonly getQuestionInProgramByQuestionId: (
     questionId: d.QQuestionId
   ) => void;
+  /** クラスの参加者を取得する */
   readonly requestParticipantListInClass: (classId: d.QClassId) => void;
 };
 
@@ -248,12 +249,9 @@ export const useAppState = (): AppState => {
     (classId: d.QClassId): void => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
-        enqueueSnackbar(
-          `プログラムに属している質問の取得にはログインが必要です`,
-          {
-            variant: "warning",
-          }
-        );
+        enqueueSnackbar(`クラスのの参加者の取得にはログインが必要です`, {
+          variant: "warning",
+        });
         return;
       }
       api
@@ -264,17 +262,21 @@ export const useAppState = (): AppState => {
         .then((response) => {
           if (response._ === "Error") {
             enqueueSnackbar(
-              `クラスの作成者取得中にエラーが発生しました ${response.error}`,
+              `クラスの参加者取得中にエラーが発生しました ${response.error}`,
               {
                 variant: "warning",
               }
             );
             return;
           }
+          enqueueSnackbar("クラスの参加者取得に成功しました", {
+            variant: "success",
+          });
+          console.log("取得した", response.ok);
           setClassParticipantList(classId, response.ok);
         });
     },
-    []
+    [enqueueSnackbar, getAccountToken, setClassParticipantList]
   );
 
   return useMemo<AppState>(
