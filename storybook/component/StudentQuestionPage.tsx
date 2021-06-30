@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
+import { mockAppState, muzintou } from "../mock";
 import { StudentQuestionPage } from "../../client/component/StudentQuestionPage";
 
 const meta: Meta = {
@@ -8,4 +9,6 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<never> = () => <StudentQuestionPage />;
+export const Default: Story<never> = () => (
+  <StudentQuestionPage appState={mockAppState} questionId={muzintou} />
+);
