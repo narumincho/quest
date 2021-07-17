@@ -17,6 +17,9 @@ export const stringToValidProgramName = (
   return d.Result.Ok(normalized);
 };
 
+/**
+ * 質問文を正規化, 検証する
+ */
 export const stringToValidQuestionText = (
   text: string
 ): d.Result<string, string> => {
@@ -27,6 +30,23 @@ export const stringToValidQuestionText = (
   }
   if (length > 1000) {
     return d.Result.Error("質問文は1000文字以内である必要があります");
+  }
+  return d.Result.Ok(normalized);
+};
+
+/**
+ * 回答を正規化, 検証する
+ */
+export const stringToValidAnswerText = (
+  text: string
+): d.Result<string, string> => {
+  const normalized = normalizeMultiLineString(text);
+  const length = [...normalized].length;
+  if (length <= 0) {
+    return d.Result.Error("回答が空です");
+  }
+  if (length > 1000) {
+    return d.Result.Error("回答は1000文字以内である必要があります");
   }
   return d.Result.Ok(normalized);
 };
