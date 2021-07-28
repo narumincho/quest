@@ -16,15 +16,6 @@ export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
 };
 
 /**
- * アカウントトークンからアカウント情報を取得する
- * @deprecated
- */
-export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.QAccount> = {
-  request: d.AccountToken.codec,
-  response: d.QAccount.codec,
-};
-
-/**
  * アカウントトークンから, アカウントに関連するデータ (アカウント情報, 作成したプログラム, 参加/作成したクラス等) を取得する
  */
 export const getAccountData: ApiCodec<d.AccountToken, d.QAccountData> = {

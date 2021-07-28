@@ -21,21 +21,6 @@ export const apiFunc: {
     await firebaseInterface.createLogInState(state);
     return generateLineLogInUrl(state).toString();
   },
-  getAccountByAccountToken: async (accountToken) => {
-    const result = await firebaseInterface.getAccountByAccountTokenHash(
-      hashAccountToken(accountToken)
-    );
-    if (result === undefined) {
-      throw new Error(
-        "指定したアカウントトークンのアカウントを見つけられなかった"
-      );
-    }
-    return {
-      name: result.name,
-      iconHash: result.iconHash,
-      id: result.id,
-    };
-  },
   getAccountData: async (accountToken) => {
     const account = await validateAndGetAccount(accountToken);
     const [createdProgramList, createdClassList, joinedClassList] =
