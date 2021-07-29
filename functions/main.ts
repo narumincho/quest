@@ -3,7 +3,6 @@ import * as d from "../data";
 import * as firebaseInterface from "./firebaseInterface";
 import * as functions from "firebase-functions";
 import * as lib from "./lib";
-import * as url from "../common/url";
 import { imagePng } from "./mimeType";
 import { nowMode } from "../common/nowMode";
 
@@ -79,39 +78,6 @@ const callApiFromCodecAndFunction = async <Request, Response>(
   );
   return codec.response.encode(response);
 };
-
-/*
- * =====================================================================
- *               lineLoginCallback ソーシャルログインのコールバック先
- *         http://localhost:5000/lineLoginCallback/?state=&code=
- *      https://north-quest.web.app/lineLoginCallback/?state=&code=
- *                            など
- *            ↓ Firebase Hosting firebase.json rewrite
- *           Cloud Functions for Firebase / lineLoginCallback
- * =====================================================================
- */
-export const lineLoginCallback = functions.https.onRequest(
-  (request, response) => {
-    const code: unknown = request.query.code;
-    const state: unknown = request.query.state;
-    if (!(typeof code === "string" && typeof state === "string")) {
-      console.log("codeかstateが送られて来なかった。ユーザーがキャンセルした?");
-      response.redirect(
-        301,
-        url
-          .urlDataToUrl({
-            location: d.QLocation.Top,
-            accountToken: undefined,
-          })
-          .toString()
-      );
-      return;
-    }
-    lib.lineLoginCallback(code, state).then((result) => {
-      response.redirect(301, url.urlDataToUrl(result).toString());
-    });
-  }
-);
 
 /*
  * =====================================================================

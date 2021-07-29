@@ -103,15 +103,6 @@ export type AppState = {
   readonly requestParticipantListInClass: (classId: d.QClassId) => void;
 };
 
-const getAccountTokenFromUrlOrIndexedDb = (
-  urlData: commonUrl.UrlData
-): Promise<d.AccountToken | undefined> => {
-  if (urlData.accountToken !== undefined) {
-    return Promise.resolve(urlData.accountToken);
-  }
-  return indexedDb.getAccountToken();
-};
-
 export const useAppState = (): AppState => {
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -141,40 +132,73 @@ export const useAppState = (): AppState => {
   useEffect(() => {
     // ブラウザで戻るボタンを押したときのイベントを登録
     window.addEventListener("popstate", () => {
-      setLocation(
-        commonUrl.urlToUrlData(new URL(window.location.href)).location
-      );
+      const urlData = commonUrl.urlToUrlData(new URL(window.location.href));
+      if (urlData._ === "Normal") {
+        setLocation(urlData.qLocation);
+      }
     });
 
     const urlData = commonUrl.urlToUrlData(new URL(window.location.href));
-    setLocation(urlData.location);
-    getAccountTokenFromUrlOrIndexedDb(urlData).then((accountToken) => {
-      if (accountToken === undefined) {
-        setNoLogIn();
-        return;
-      }
-      indexedDb.setAccountToken(accountToken);
-      setVerifyingAccountToken(accountToken);
-      history.replaceState(
-        undefined,
-        "",
-        commonUrl.locationToUrl(urlData.location).toString()
-      );
-      api.getAccountData(accountToken).then((response) => {
-        if (response._ === "Error") {
-          enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
-            variant: "error",
-          });
+    if (urlData._ === "Normal") {
+      setLocation(urlData.qLocation);
+      indexedDb.getAccountToken().then((accountToken) => {
+        if (accountToken === undefined) {
           setNoLogIn();
-          indexedDb.deleteAccountToken();
           return;
         }
-        setLoggedIn(response.ok, accountToken);
-        useAccountMapResult.set(response.ok.account);
+        setLogInData({ accountToken, qLocation: urlData.qLocation });
       });
-    });
+    } else {
+      api
+        .getAccountTokenAndLocationByCodeAndState(urlData.codeAndState)
+        .then((response) => {
+          if (response._ === "Ok") {
+            if (response.ok._ === "Just") {
+              enqueueSnackbar(`ログインに成功しました`, {
+                variant: "success",
+              });
+              setLogInData(response.ok.value);
+            } else {
+              enqueueSnackbar(`ログインに失敗しました`, {
+                variant: "error",
+              });
+            }
+          } else {
+            enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
+              variant: "error",
+            });
+          }
+        });
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const setLogInData = async ({
+    accountToken,
+    qLocation,
+  }: d.AccountTokenAndQLocation): Promise<void> => {
+    indexedDb.setAccountToken(accountToken);
+    setVerifyingAccountToken(accountToken);
+    history.replaceState(
+      undefined,
+      "",
+      commonUrl.locationToUrl(qLocation).toString()
+    );
+
+    const response = await api.getAccountData(accountToken);
+    if (response._ === "Error") {
+      enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
+        variant: "error",
+      });
+      setNoLogIn();
+      indexedDb.deleteAccountToken();
+      return;
+    }
+    setLoggedIn(response.ok, accountToken);
+    setLocation(qLocation);
+    useAccountMapResult.set(response.ok.account);
+  };
 
   const getAccountToken = useCallback((): d.AccountToken | undefined => {
     switch (logInState.tag) {
@@ -188,12 +212,7 @@ export const useAppState = (): AppState => {
     window.history.pushState(
       undefined,
       "",
-      commonUrl
-        .urlDataToUrl({
-          location: newLocation,
-          accountToken: undefined,
-        })
-        .toString()
+      commonUrl.locationToUrl(newLocation).toString()
     );
     setLocation(newLocation);
   }, []);
@@ -219,12 +238,7 @@ export const useAppState = (): AppState => {
     window.history.replaceState(
       undefined,
       "",
-      commonUrl
-        .urlDataToUrl({
-          location: newLocation,
-          accountToken: undefined,
-        })
-        .toString()
+      commonUrl.locationToUrl(newLocation).toString()
     );
     setLocation(newLocation);
   }, []);

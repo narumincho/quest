@@ -5,9 +5,9 @@ import * as firebaseInterface from "./firebaseInterface";
 import * as jimp from "jimp";
 import * as jsonWebToken from "jsonwebtoken";
 import * as validation from "../common/validation";
-import { UrlData, lineLoginCallbackUrl } from "../common/url";
 import axios from "axios";
 import { imagePng } from "./mimeType";
+import { lineLoginCallbackUrl } from "../common/url";
 
 type ApiCodecType = typeof apiCodec;
 
@@ -20,6 +20,9 @@ export const apiFunc: {
     const state = createRandomId();
     await firebaseInterface.createLogInState(state);
     return generateLineLogInUrl(state).toString();
+  },
+  getAccountTokenAndLocationByCodeAndState: (codeAndState) => {
+    return lineLoginCallback(codeAndState.code, codeAndState.state);
   },
   getAccountData: async (accountToken) => {
     const account = await validateAndGetAccount(accountToken);
@@ -244,16 +247,13 @@ const generateLineLogInUrl = (state: string): URL => {
   return url;
 };
 
-export const lineLoginCallback = async (
+const lineLoginCallback = async (
   code: string,
   state: string
-): Promise<UrlData> => {
+): Promise<d.Maybe<d.AccountTokenAndQLocation>> => {
   const isValid = await firebaseInterface.existsLoginState(state);
   if (!isValid) {
-    return {
-      location: d.QLocation.Top,
-      accountToken: undefined,
-    };
+    return d.Maybe.Nothing();
   }
   await firebaseInterface.deleteLoginState(state);
   const profile = await getLineProfile(code);
@@ -274,10 +274,10 @@ export const lineLoginCallback = async (
       accountTokenAndHash.accountTokenHash
     );
   }
-  return {
-    location: d.QLocation.Top,
+  return d.Maybe.Just({
+    qLocation: d.QLocation.Top,
     accountToken: accountTokenAndHash.accountToken,
-  };
+  });
 };
 
 /**
