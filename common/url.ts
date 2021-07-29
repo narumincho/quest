@@ -7,24 +7,6 @@ const origin =
     ? "http://localhost:5000"
     : "https://north-quest.web.app";
 
-/** URLに含めるデータ */
-export type UrlData = {
-  location: d.QLocation;
-  accountToken: d.AccountToken | undefined;
-};
-
-/** アカウントトークンを含んだ パスとハッシュを生成する */
-export const urlDataToUrl = (urlData: UrlData): URL => {
-  const url = locationToStructuredUrl(urlData.location);
-  if (typeof urlData.accountToken === "string") {
-    return structuredUrlToUrl({
-      ...url,
-      hash: new Map([[accountTokenKey, urlData.accountToken]]),
-    });
-  }
-  return structuredUrlToUrl(url);
-};
-
 export const locationToUrl = (location: d.QLocation): URL => {
   return structuredUrlToUrl(locationToStructuredUrl(location));
 };
@@ -110,20 +92,9 @@ const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
  * URLから quest 内の場所と, アカウントトークンを得る
  * オリジンは無視される
  */
-export const urlToUrlData = (url: URL): UrlData => {
+export const urlToUrlData = (url: URL): d.QUrlData => {
   const structuredUrl = urlToStructuredUrl(url);
-  const location: d.QLocation = structuredUrlToLocation(structuredUrl);
-  const accountTokenResult = structuredUrl.hash.get(accountTokenKey);
-  if (typeof accountTokenResult === "string") {
-    return {
-      accountToken: accountTokenResult as d.AccountToken,
-      location,
-    };
-  }
-  return {
-    location,
-    accountToken: undefined,
-  };
+  return structuredUrlToLocation(structuredUrl);
 };
 
 const defaultLocation: d.QLocation = d.QLocation.Top;
@@ -131,61 +102,81 @@ const defaultLocation: d.QLocation = d.QLocation.Top;
  * URL から quest 内の場所を得る.
  * アカウントトークンとオリジンは無視する
  */
-const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.QLocation => {
+const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.QUrlData => {
   switch (structuredUrl.resourceName) {
     case settingPath:
-      return d.QLocation.Setting;
+      return d.QUrlData.Normal(d.QLocation.Setting);
     case newProgramPath:
-      return d.QLocation.NewProgram;
+      return d.QUrlData.Normal(d.QLocation.NewProgram);
     case programPath:
       if (typeof structuredUrl.resourceId === "string") {
-        return d.QLocation.Program(structuredUrl.resourceId as d.QProgramId);
+        return d.QUrlData.Normal(
+          d.QLocation.Program(structuredUrl.resourceId as d.QProgramId)
+        );
       }
-      return defaultLocation;
+      return d.QUrlData.Normal(defaultLocation);
     case newQuestionPath: {
       const programId = structuredUrl.searchParams.get(newQuestionProgramId);
       const parent = structuredUrl.searchParams.get(newQuestionParent);
       const text = structuredUrl.searchParams.get(newQuestionText);
       if (typeof programId === "string" && typeof text === "string") {
-        return d.QLocation.NewQuestion({
-          programId: programId as d.QProgramId,
-          parent:
-            typeof parent === "string"
-              ? d.Maybe.Just(parent as d.QQuestionId)
-              : d.Maybe.Nothing(),
-          text,
-        });
+        return d.QUrlData.Normal(
+          d.QLocation.NewQuestion({
+            programId: programId as d.QProgramId,
+            parent:
+              typeof parent === "string"
+                ? d.Maybe.Just(parent as d.QQuestionId)
+                : d.Maybe.Nothing(),
+            text,
+          })
+        );
       }
-      return defaultLocation;
+      return d.QUrlData.Normal(defaultLocation);
     }
     case questionPath:
       if (typeof structuredUrl.resourceId === "string") {
-        return d.QLocation.Question(structuredUrl.resourceId as d.QQuestionId);
+        return d.QUrlData.Normal(
+          d.QLocation.Question(structuredUrl.resourceId as d.QQuestionId)
+        );
       }
-      return defaultLocation;
+      return d.QUrlData.Normal(defaultLocation);
     case classPath:
       if (typeof structuredUrl.resourceId === "string") {
-        return d.QLocation.Class(structuredUrl.resourceId as d.QClassId);
+        return d.QUrlData.Normal(
+          d.QLocation.Class(structuredUrl.resourceId as d.QClassId)
+        );
       }
-      return defaultLocation;
+      return d.QUrlData.Normal(defaultLocation);
     case newClassPath: {
       const programId = structuredUrl.searchParams.get(newClassProgramId);
       if (typeof programId === "string") {
-        return d.QLocation.NewClass(programId as d.QProgramId);
+        return d.QUrlData.Normal(
+          d.QLocation.NewClass(programId as d.QProgramId)
+        );
       }
-      return defaultLocation;
+      return d.QUrlData.Normal(defaultLocation);
     }
     case classInvitationPath: {
       const classInvitationToken = structuredUrl.resourceId;
       if (typeof classInvitationToken === "string") {
-        return d.QLocation.ClassInvitation(
-          classInvitationToken as d.QClassInvitationToken
+        return d.QUrlData.Normal(
+          d.QLocation.ClassInvitation(
+            classInvitationToken as d.QClassInvitationToken
+          )
         );
       }
-      return defaultLocation;
+      return d.QUrlData.Normal(defaultLocation);
+    }
+    case lineLoginCallbackPath: {
+      const code = structuredUrl.searchParams.get("code");
+      const state = structuredUrl.searchParams.get("state");
+      if (typeof code === "string" && typeof state === "string") {
+        return d.QUrlData.LogInCallback({ code, state });
+      }
+      return d.QUrlData.Normal(defaultLocation);
     }
   }
-  return defaultLocation;
+  return d.QUrlData.Normal(defaultLocation);
 };
 
 /** LINEログインで指定する. コールバックURL */
@@ -198,7 +189,6 @@ export const imageUrl = (imageHash: d.ImageHash): URL =>
 const addNewPrefix = (path: string): string => "new-" + path;
 const addEditPrefix = (path: string): string => "edit-" + path;
 
-const accountTokenKey = "account-token";
 const settingPath = "setting";
 const programPath = "program";
 const newProgramPath = addNewPrefix(programPath);
@@ -212,6 +202,8 @@ const newClassPath = addNewPrefix(classPath);
 const newClassProgramId = "programId";
 const classInvitationPath = "class-invitation";
 const editQuestionPath = addEditPrefix(questionPath);
+
+const lineLoginCallbackPath = "lineLoginCallback";
 
 /**
  * 構造化されたURL

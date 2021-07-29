@@ -94,10 +94,6 @@ const generateFirebaseJson = (clientMode: Mode): Promise<void> => {
             function: "api",
           },
           {
-            source: "/lineLoginCallback",
-            function: "lineLoginCallback",
-          },
-          {
             source: "/file/**",
             function: "file",
           },

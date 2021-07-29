@@ -65,6 +65,18 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     };
     subCollections: Record<never, never>;
   };
+  answer: {
+    key: `${d.QQuestionId}_${d.QProgramId}_${d.AccountId}`;
+    value: {
+      text: string;
+      questionId: d.QQuestionId;
+      programId: d.QProgramId;
+      accountId: d.AccountId;
+      createTime: admin.firestore.Timestamp;
+      updateTime: admin.firestore.Timestamp;
+    };
+    subCollections: Record<never, never>;
+  };
 }>;
 const cloudStorageBucket = app.storage().bucket();
 
@@ -445,6 +457,27 @@ export const joinClassAsStudent = async (
       classId,
       joinTime: admin.firestore.Timestamp.fromDate(date),
       role: d.QRole.Student,
+    });
+};
+
+export const setAnswer = async (option: {
+  readonly text: string;
+  readonly questionId: d.QQuestionId;
+  readonly programId: d.QProgramId;
+  readonly accountId: d.AccountId;
+  readonly createTime: Date;
+  readonly updateTime: Date;
+}): Promise<void> => {
+  await firestore
+    .collection("answer")
+    .doc(`${option.questionId}_${option.programId}_${option.accountId}`)
+    .create({
+      text: option.text,
+      questionId: option.questionId,
+      programId: option.programId,
+      accountId: option.accountId,
+      createTime: admin.firestore.Timestamp.fromDate(option.createTime),
+      updateTime: admin.firestore.Timestamp.fromDate(option.updateTime),
     });
 };
 

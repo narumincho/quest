@@ -16,12 +16,14 @@ export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
 };
 
 /**
- * アカウントトークンからアカウント情報を取得する
- * @deprecated
+ * アカウントトークンを取得する
  */
-export const getAccountByAccountToken: ApiCodec<d.AccountToken, d.QAccount> = {
-  request: d.AccountToken.codec,
-  response: d.QAccount.codec,
+export const getAccountTokenAndLocationByCodeAndState: ApiCodec<
+  d.CodeAndState,
+  d.Maybe<d.AccountTokenAndQLocation>
+> = {
+  request: d.CodeAndState.codec,
+  response: d.Maybe.codec(d.AccountTokenAndQLocation.codec),
 };
 
 /**

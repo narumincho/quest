@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CssBaseline, ThemeProvider, createMuiTheme } from "@material-ui/core";
+import { CssBaseline, ThemeProvider, createTheme } from "@material-ui/core";
 import { App } from "./App";
 import { PaletteOptions } from "@material-ui/core/styles/createPalette";
 import { SnackbarProvider } from "notistack";
@@ -23,7 +23,7 @@ export const ThemedApp: React.FC<Record<never, never>> = () => {
       });
   }, []);
 
-  const theme = createMuiTheme({
+  const theme = createTheme({
     palette: {
       type: darkOrLight,
     },

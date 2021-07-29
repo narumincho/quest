@@ -1,12 +1,9 @@
 describe("ログイン後", () => {
-  // http://localhost:5000/#account-token=a5b7058a6c75fe48875a8591abe7a49f82f5c3aaf52614f4fbc971ae9db1c91b
-  const accountToken =
-    "a5b7058a6c75fe48875a8591abe7a49f82f5c3aaf52614f4fbc971ae9db1c91b";
-  it("アカウントトークンを使ってログインする", () => {
-    cy.visit(`http://localhost:5000/#account-token=${accountToken}`);
+  it("テストアカウントとしてログインする", () => {
+    cy.visit(`http://localhost:5000/`);
 
+    cy.get("[data-cy=logInAsTestAccount]").click();
     cy.contains("作成したプログラム");
-    cy.url().should("not.include", accountToken);
     cy.contains("作成したプログラム");
     cy.contains("プログラム作成").click();
     cy.get("[data-cy=programNameInput]").type("やあ");

@@ -22,6 +22,9 @@ export const mockAppState: AppState = {
   changeLocation: action("履歴を置き換える形で移動しようとした"),
   location: d.QLocation.Top,
   requestLogin: action("ログインURLを発行して, 推移しようとした"),
+  requestLogInAsTestAccount: action(
+    "テストアカウントとしてログインしようとした"
+  ),
   logout: action("ログアウトしようとした"),
   addNotification: action("通知を追加しようとした"),
   back: action("戻ろうとした"),
