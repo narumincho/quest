@@ -16,6 +16,17 @@ export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
 };
 
 /**
+ * アカウントトークンを取得する
+ */
+export const getAccountTokenAndLocationByCodeAndState: ApiCodec<
+  d.CodeAndState,
+  d.Maybe<d.AccountTokenAndQLocation>
+> = {
+  request: d.CodeAndState.codec,
+  response: d.Maybe.codec(d.AccountTokenAndQLocation.codec),
+};
+
+/**
  * アカウントトークンから, アカウントに関連するデータ (アカウント情報, 作成したプログラム, 参加/作成したクラス等) を取得する
  */
 export const getAccountData: ApiCodec<d.AccountToken, d.QAccountData> = {
