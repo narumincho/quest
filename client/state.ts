@@ -45,6 +45,8 @@ export type AppState = {
 
   /** ログインページを取得して移動させる */
   readonly requestLogin: () => void;
+  /** テストアカウントとしてログインする */
+  readonly requestLogInAsTestAccount: () => void;
   /** ログアウトする */
   readonly logout: () => void;
   /** 指定したページへ移動する */
@@ -297,6 +299,14 @@ export const useAppState = (): AppState => {
     () => ({
       logInState,
       requestLogin,
+      requestLogInAsTestAccount: (): void => {
+        setLogInData({
+          accountToken: d.AccountToken.fromString(
+            "a5b7058a6c75fe48875a8591abe7a49f82f5c3aaf52614f4fbc971ae9db1c91b"
+          ),
+          qLocation: d.QLocation.Top,
+        });
+      },
       logout: (): void => {
         enqueueSnackbar(`ログアウトしました`, {
           variant: "success",
