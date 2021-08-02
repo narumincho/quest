@@ -10,8 +10,8 @@ export type ApiCodec<Request, Response> = {
 /**
  * LINE ログインの URL を生成して取得する
  */
-export const requestLineLoginUrl: ApiCodec<d.Unit, d.String> = {
-  request: d.Unit.codec,
+export const requestLineLoginUrl: ApiCodec<d.QLocation, d.String> = {
+  request: d.QLocation.codec,
   response: d.String.codec,
 };
 
@@ -113,7 +113,7 @@ export const joinClassAsStudent: ApiCodec<
   response: d.QClass.codec,
 };
 
-/** プログラムに属する質問をある, 質問IDから得る */
+/** プログラムに属する質問をすべてをある, 質問IDから得る */
 export const getQuestionInProgramByQuestionId: ApiCodec<
   d.GetQuestionListInProgramByQuestionIdParameter,
   d.List<d.QQuestion>

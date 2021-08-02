@@ -16,9 +16,9 @@ export const apiFunc: {
     request: apiCodec.GetCodecType<ApiCodecType[apiName]["request"]>
   ) => Promise<apiCodec.GetCodecType<ApiCodecType[apiName]["response"]>>;
 } = {
-  requestLineLoginUrl: async () => {
+  requestLineLoginUrl: async (qLocation) => {
     const state = createRandomId();
-    await firebaseInterface.createLogInState(state);
+    await firebaseInterface.createLogInState(state, qLocation);
     return generateLineLogInUrl(state).toString();
   },
   getAccountTokenAndLocationByCodeAndState: (codeAndState) => {
@@ -251,8 +251,8 @@ const lineLoginCallback = async (
   code: string,
   state: string
 ): Promise<d.Maybe<d.AccountTokenAndQLocation>> => {
-  const isValid = await firebaseInterface.existsLoginState(state);
-  if (!isValid) {
+  const locationMaybe = await firebaseInterface.existsLoginState(state);
+  if (locationMaybe === undefined) {
     return d.Maybe.Nothing();
   }
   await firebaseInterface.deleteLoginState(state);
@@ -275,7 +275,7 @@ const lineLoginCallback = async (
     );
   }
   return d.Maybe.Just({
-    qLocation: d.QLocation.Top,
+    qLocation: locationMaybe,
     accountToken: accountTokenAndHash.accountToken,
   });
 };

@@ -176,31 +176,40 @@ export const useAppState = (): AppState => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const setLogInData = async ({
-    accountToken,
-    qLocation,
-  }: d.AccountTokenAndQLocation): Promise<void> => {
-    indexedDb.setAccountToken(accountToken);
-    setVerifyingAccountToken(accountToken);
-    history.replaceState(
-      undefined,
-      "",
-      commonUrl.locationToUrl(qLocation).toString()
-    );
+  const setLogInData = useCallback(
+    async ({
+      accountToken,
+      qLocation,
+    }: d.AccountTokenAndQLocation): Promise<void> => {
+      indexedDb.setAccountToken(accountToken);
+      setVerifyingAccountToken(accountToken);
+      history.replaceState(
+        undefined,
+        "",
+        commonUrl.locationToUrl(qLocation).toString()
+      );
 
-    const response = await api.getAccountData(accountToken);
-    if (response._ === "Error") {
-      enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
-        variant: "error",
-      });
-      setNoLogIn();
-      indexedDb.deleteAccountToken();
-      return;
-    }
-    setLoggedIn(response.ok, accountToken);
-    setLocation(qLocation);
-    useAccountMapResult.set(response.ok.account);
-  };
+      const response = await api.getAccountData(accountToken);
+      if (response._ === "Error") {
+        enqueueSnackbar(`ログインに失敗しました ${response.error}`, {
+          variant: "error",
+        });
+        setNoLogIn();
+        indexedDb.deleteAccountToken();
+        return;
+      }
+      setLoggedIn(response.ok, accountToken);
+      setLocation(qLocation);
+      useAccountMapResult.set(response.ok.account);
+    },
+    [
+      enqueueSnackbar,
+      setLoggedIn,
+      setNoLogIn,
+      setVerifyingAccountToken,
+      useAccountMapResult,
+    ]
+  );
 
   const getAccountToken = useCallback((): d.AccountToken | undefined => {
     switch (logInState.tag) {
@@ -221,7 +230,7 @@ export const useAppState = (): AppState => {
 
   const requestLogin = useCallback(() => {
     setRequestingLogInUrl();
-    api.requestLineLoginUrl(undefined).then((response) => {
+    api.requestLineLoginUrl(location).then((response) => {
       if (response._ === "Error") {
         enqueueSnackbar(
           `LINEログインのURLを発行できませんでした ${response.error}`,
@@ -234,7 +243,7 @@ export const useAppState = (): AppState => {
         window.location.href = response.ok;
       });
     });
-  }, [enqueueSnackbar, setJumpingPage, setRequestingLogInUrl]);
+  }, [enqueueSnackbar, location, setJumpingPage, setRequestingLogInUrl]);
 
   const changeLocation = useCallback((newLocation: d.QLocation): void => {
     window.history.replaceState(
@@ -579,29 +588,30 @@ export const useAppState = (): AppState => {
       requestParticipantListInClass,
     }),
     [
-      addCreatedClass,
-      addCreatedOrEditedQuestion,
-      addJoinedClass,
-      changeLocation,
-      enqueueSnackbar,
-      getAccountToken,
-      getClassAndRole,
-      getCreatedClass,
-      getParentQuestionList,
-      getQuestionById,
-      getQuestionDirectChildren,
-      getQuestionThatCanBeParentList,
-      getQuestionTreeListWithLoadingStateInProgram,
-      isCreatingQuestion,
-      jump,
-      location,
       logInState,
       requestLogin,
-      setNoLogIn,
-      setProgram,
-      setQuestionListState,
+      location,
+      jump,
+      changeLocation,
+      isCreatingQuestion,
       useAccountMapResult,
+      getQuestionById,
+      getQuestionDirectChildren,
+      getQuestionTreeListWithLoadingStateInProgram,
+      getQuestionThatCanBeParentList,
       requestParticipantListInClass,
+      setLogInData,
+      enqueueSnackbar,
+      setNoLogIn,
+      getAccountToken,
+      setProgram,
+      addCreatedClass,
+      setQuestionListState,
+      addCreatedOrEditedQuestion,
+      getParentQuestionList,
+      getClassAndRole,
+      getCreatedClass,
+      addJoinedClass,
     ]
   );
 };

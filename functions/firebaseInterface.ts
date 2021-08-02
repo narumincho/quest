@@ -11,6 +11,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     key: string;
     value: {
       createTime: admin.firestore.Timestamp;
+      location: d.QLocation;
     };
     subCollections: Record<never, never>;
   };
@@ -80,17 +81,23 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
 }>;
 const cloudStorageBucket = app.storage().bucket();
 
-export const createLogInState = async (state: string): Promise<void> => {
+export const createLogInState = async (
+  state: string,
+  location: d.QLocation
+): Promise<void> => {
   await firestore.collection("loginState").doc(state).create({
     createTime: admin.firestore.Timestamp.now(),
+    location,
   });
 };
 
-export const existsLoginState = async (state: string): Promise<boolean> => {
+export const existsLoginState = async (
+  state: string
+): Promise<d.QLocation | undefined> => {
   const document = (
     await firestore.collection("loginState").doc(state).get()
   ).data();
-  return document !== undefined;
+  return document?.location;
 };
 
 export const deleteLoginState = async (state: string): Promise<void> => {

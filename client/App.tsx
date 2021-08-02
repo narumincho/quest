@@ -147,6 +147,12 @@ export const ClassPage: React.VFC<{ appState: AppState; classId: d.QClassId }> =
           />
         );
       case "participant":
-        return <ParticipantClassPage classId={props.classId} />;
+        return (
+          <ParticipantClassPage
+            appState={props.appState}
+            role={classAndRole.role}
+            qClassForParticipant={classAndRole.qClassForParticipant}
+          />
+        );
     }
   };
