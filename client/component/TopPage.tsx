@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const AdminTopPage: React.VFC<Props> = (props) => {
+export const TopPage: React.VFC<Props> = (props) => {
   const classes = useStyles();
   return (
     <PageContainer isHideBack appState={props.appState}>
