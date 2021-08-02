@@ -1,11 +1,8 @@
 import * as React from "react";
 import * as d from "../../data";
 import { Meta, Story } from "@storybook/react";
-import {
-  ParticipantClassPage,
-  Props as ParticipantClassPageProps,
-} from "../../client/component/ParticipantClassPage";
 import { mockAppState, mockQClassStudentOrGuest } from "../mock";
+import { ParticipantClassPage } from "../../client/component/ParticipantClassPage";
 
 const meta: Meta = {
   title: "ParticipantClassPage",

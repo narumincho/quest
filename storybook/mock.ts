@@ -136,11 +136,14 @@ export const mockProgramIdB = "mockProgramB" as d.QProgramId;
 export const mockProgramIdLong = "mockProgramLong" as d.QProgramId;
 export const mockClassId = "mockClassId" as d.QClassId;
 
+export const mockClassInvitationToken =
+  "5dc8e350896ab32e0db92d3edf8c6a9f59877d5175879843ccf546abcaec70e5" as d.QClassInvitationToken;
+
 export const mockClass: d.QClass = {
   id: mockClassId,
   name: "サンプルクラス",
   programId: mockProgramIdA,
-  invitationToken: "sampleInviteToken" as d.QClassInvitationToken,
+  invitationToken: mockClassInvitationToken,
   createAccountId: "" as d.AccountId,
 };
 

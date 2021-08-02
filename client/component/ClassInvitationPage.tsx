@@ -34,18 +34,21 @@ export const ClassInvitationPage: React.VFC<{
 
   return (
     <PageContainer isHideBack appState={props.appState}>
-      <Box>招待URLを開いたようだね</Box>
-      {className === undefined ? (
-        <Box>確認中……</Box>
-      ) : (
-        <Button
-          variant="contained"
-          disabled={isRequestingJoin}
-          onClick={requestJoin}
-        >
-          {isRequestingJoin ? className + "に参加中" : className + "に参加する"}
-        </Button>
-      )}
+      <Box padding={1}>
+        {className === undefined ? (
+          "確認中……"
+        ) : (
+          <Button
+            variant="contained"
+            disabled={isRequestingJoin}
+            onClick={requestJoin}
+          >
+            {isRequestingJoin
+              ? className + "に参加中……"
+              : className + "に参加する"}
+          </Button>
+        )}
+      </Box>
     </PageContainer>
   );
 };

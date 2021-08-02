@@ -9,12 +9,18 @@ export type Props = {
   readonly appState: AppState;
 };
 
+/**
+ * ログインページ. ログインしていない時に表示されるページ
+ */
 export const LogInPage: React.VFC<Props> = (props) => {
   return (
     <PageContainer appState={props.appState} isHideBack>
       <Box padding={1}>
         <Typography variant="body1">
           クエストを使うためにはLINEログインが必要です
+          {props.appState.location._ === "ClassInvitation"
+            ? ". ログインした後にクラスに参加することができます"
+            : ""}
         </Typography>
       </Box>
       <Box padding={1}>
