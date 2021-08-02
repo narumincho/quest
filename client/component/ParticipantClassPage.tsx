@@ -1,15 +1,31 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState } from "../state";
+import { GuestClassPage } from "./GuestClassPage";
+import { StudentClassPage } from "./StudentClassPage";
 
 export type Props = {
-  readonly classId: d.QClassId;
+  readonly appState: AppState;
+  readonly role: d.QRole;
+  readonly qClassForParticipant: d.QClassStudentOrGuest;
 };
 
+/**
+ * クラス参加者の詳細ページ
+ */
 export const ParticipantClassPage: React.VFC<Props> = (props) => {
+  if (props.role === "Guest") {
+    return (
+      <GuestClassPage
+        appState={props.appState}
+        qClassForParticipant={props.qClassForParticipant}
+      />
+    );
+  }
   return (
-    <div>
-      参加者向けのクラスページ!
-      <div>classId: {props.classId}</div>
-    </div>
+    <StudentClassPage
+      appState={props.appState}
+      qClassForParticipant={props.qClassForParticipant}
+    />
   );
 };

@@ -52,12 +52,12 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
           </Breadcrumbs>
         </Box>
         <Box padding={1}>
-          <Typography variant="h5">
+          <Typography variant="h4">
             {props.classWithParticipantList.qClass.name}
           </Typography>
         </Box>
         <Box padding={1}>
-          <Typography>クラスの参加者</Typography>
+          <Typography variant="h6">クラスの参加者</Typography>
           <ParticipantList
             participantList={props.classWithParticipantList.participantList}
           />

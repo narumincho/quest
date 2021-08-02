@@ -273,3 +273,9 @@ export const mockLoggedInState: LoggedInState = {
   questionDict: new Map(),
   joinedClassList: [],
 };
+
+export const mockQClassStudentOrGuest: d.QClassStudentOrGuest = {
+  id: mockClassId,
+  name: "サンプルクラス名",
+  createAccountId: mockAccountId,
+};
