@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d from "../../data";
 import { AppState, LoggedInState, ProgramWithClassList } from "../state";
-import { Box, Fab, Typography, makeStyles } from "@material-ui/core";
+import { Box, Button, Paper, Typography, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
@@ -12,16 +12,7 @@ export type Props = {
   loggedInState: LoggedInState;
 };
 
-const useStyles = makeStyles({
-  fab: {
-    position: "fixed",
-    bottom: 16,
-    right: 16,
-  },
-});
-
 export const TopPage: React.VFC<Props> = (props) => {
-  const classes = useStyles();
   return (
     <PageContainer isHideBack appState={props.appState}>
       <Box padding={1}>
@@ -31,23 +22,24 @@ export const TopPage: React.VFC<Props> = (props) => {
         appState={props.appState}
         createdProgramList={props.loggedInState.createdProgramList}
       />
-      <Link location={d.QLocation.NewProgram} appState={props.appState}>
-        <Fab
-          color="primary"
-          variant="extended"
-          aria-label="add"
-          className={classes.fab}
-        >
-          <Add />
+      <Box padding={1}>
+        <Button variant="contained" startIcon={<Add />} fullWidth>
           プログラム作成
-        </Fab>
-      </Link>
+        </Button>
+      </Box>
+      <Box padding={1}>
+        <Typography variant="h5">参加したクラス</Typography>
+      </Box>
+      <JoinedClassList
+        appState={props.appState}
+        joinedClassList={props.loggedInState.joinedClassList}
+      />
     </PageContainer>
   );
 };
 
 const useCreatedProgramListStyles = makeStyles({
-  box: {
+  container: {
     display: "grid",
     gap: 8,
     padding: 8,
@@ -67,7 +59,7 @@ export const CreatedProgramList: React.VFC<{
     );
   }
   return (
-    <Box className={classes.box}>
+    <Box className={classes.container}>
       {[...props.createdProgramList].map(([programId]) => (
         <ProgramCard
           key={programId}
@@ -76,5 +68,71 @@ export const CreatedProgramList: React.VFC<{
         />
       ))}
     </Box>
+  );
+};
+
+const useJoinedClassListStyles = makeStyles({
+  container: {
+    display: "grid",
+    gap: 8,
+    padding: 8,
+  },
+});
+
+const JoinedClassList = (props: {
+  readonly appState: AppState;
+  readonly joinedClassList: ReadonlyArray<
+    d.Tuple2<d.QClassStudentOrGuest, d.QRole>
+  >;
+}): React.ReactElement => {
+  const classes = useJoinedClassListStyles();
+  if (props.joinedClassList.length === 0) {
+    return (
+      <Box padding={1} paddingTop={4}>
+        <Typography align="center">クラスに1つも参加していません</Typography>
+      </Box>
+    );
+  }
+  return (
+    <Box className={classes.container}>
+      {props.joinedClassList.map((classAndRole) => (
+        <ClassStudentOrGuestCard
+          key={classAndRole.first.id}
+          appState={props.appState}
+          classStudentOrGuest={classAndRole.first}
+          role={classAndRole.second}
+        />
+      ))}
+    </Box>
+  );
+};
+
+const useClassStudentOrGuestCardStyles = makeStyles({
+  card: {
+    display: "grid",
+    alignItems: "center",
+    gridAutoFlow: "column",
+    padding: 16,
+  },
+});
+
+const ClassStudentOrGuestCard = (props: {
+  readonly classStudentOrGuest: d.QClassStudentOrGuest;
+  readonly role: d.QRole;
+  readonly appState: AppState;
+}): React.ReactElement => {
+  const classes = useClassStudentOrGuestCardStyles();
+  return (
+    <Link
+      appState={props.appState}
+      location={d.QLocation.Class(props.classStudentOrGuest.id)}
+    >
+      <Paper className={classes.card}>
+        <Typography>
+          {props.classStudentOrGuest.name}
+          {props.role === "Guest" ? "(ゲスト)" : "(生徒)"}
+        </Typography>
+      </Paper>
+    </Link>
   );
 };

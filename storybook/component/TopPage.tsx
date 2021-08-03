@@ -16,6 +16,10 @@ export const Default: Story<Props> = () => (
 export const Empty: Story<Props> = () => (
   <TopPage
     appState={mockAppState}
-    loggedInState={{ ...mockLoggedInState, createdProgramList: new Map() }}
+    loggedInState={{
+      ...mockLoggedInState,
+      createdProgramList: new Map(),
+      joinedClassList: [],
+    }}
   />
 );

@@ -52,7 +52,7 @@ export const ProgramNewPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Breadcrumbs>
             <Link appState={props.appState} location={d.QLocation.Top}>
-              作成したプログラム
+              トップページ
             </Link>
             <div></div>
           </Breadcrumbs>

@@ -267,6 +267,13 @@ const programA: ProgramWithClassList = {
   id: mockProgramIdA,
   classList: [mockClassWithParticipantListLoadingParticipant],
 };
+
+export const mockQClassStudentOrGuest: d.QClassStudentOrGuest = {
+  id: mockClassId,
+  name: "サンプルクラス名",
+  createAccountId: mockAccountId,
+};
+
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,
   accountToken: mockAccountToken,
@@ -274,11 +281,5 @@ export const mockLoggedInState: LoggedInState = {
     [mockProgramIdA, programA],
   ]),
   questionDict: new Map(),
-  joinedClassList: [],
-};
-
-export const mockQClassStudentOrGuest: d.QClassStudentOrGuest = {
-  id: mockClassId,
-  name: "サンプルクラス名",
-  createAccountId: mockAccountId,
+  joinedClassList: [{ first: mockQClassStudentOrGuest, second: d.QRole.Guest }],
 };

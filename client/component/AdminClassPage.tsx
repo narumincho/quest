@@ -45,7 +45,7 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Breadcrumbs>
             <Link appState={props.a} location={d.QLocation.Top}>
-              作成したプログラム
+              トップページ
             </Link>
             <Link
               appState={props.a}

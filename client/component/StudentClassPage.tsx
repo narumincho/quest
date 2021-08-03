@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AppState } from "../state";
+import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 
 /**
@@ -14,6 +15,15 @@ export const StudentClassPage = (props: {
 }): React.ReactElement => {
   return (
     <PageContainer appState={props.appState}>
+      <Box padding={1}>
+        <Breadcrumbs>
+          <Link appState={props.appState} location={d.QLocation.Top}>
+            トップページ
+          </Link>
+
+          <div></div>
+        </Breadcrumbs>
+      </Box>
       <Box padding={1}>
         <Typography variant="h5">{props.qClassForParticipant.name}</Typography>
       </Box>
