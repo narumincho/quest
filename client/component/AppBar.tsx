@@ -30,6 +30,9 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * 画面上部に 大抵いつも表示される AppBar. 戻るボタンと, ログインしているアカウントを確認できる
+ */
 export const AppBar: React.VFC<Props> = (props) => {
   const classes = useStyles();
   return (

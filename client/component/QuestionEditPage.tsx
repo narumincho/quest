@@ -36,7 +36,7 @@ export const QuestionEditPage: React.VFC<{
           <Box padding={1}>
             <Breadcrumbs>
               <Link appState={props.appState} location={d.QLocation.Top}>
-                作成したプログラム
+                トップページ
               </Link>
               <div></div>
             </Breadcrumbs>
@@ -94,7 +94,7 @@ const EditQuestionLoaded: React.VFC<{
         <Box padding={1}>
           <Breadcrumbs>
             <Link appState={props.appState} location={d.QLocation.Top}>
-              作成したプログラム
+              トップページ
             </Link>
             <Link
               appState={props.appState}

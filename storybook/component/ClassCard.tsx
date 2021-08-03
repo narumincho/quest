@@ -10,5 +10,5 @@ const meta: Meta = {
 export default meta;
 
 export const Default: Story<never> = () => (
-  <ClassCard class={mockClass} a={mockAppState} />
+  <ClassCard class={mockClass} appState={mockAppState} />
 );

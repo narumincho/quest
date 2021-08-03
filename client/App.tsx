@@ -3,7 +3,6 @@ import * as d from "../data";
 import { AppState, LoggedInState, useAppState } from "./state";
 import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AdminClassPage } from "./component/AdminClassPage";
-import { AdminTopPage } from "./component/AdminTopPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
 import { Link } from "./component/Link";
@@ -17,6 +16,7 @@ import { QuestionEditPage } from "./component/QuestionEditPage";
 import { QuestionNewPage } from "./component/QuestionNewPage";
 import { QuestionPage } from "./component/QuestionPage";
 import { SettingPage } from "./component/SettingPage";
+import { TopPage } from "./component/TopPage";
 
 export const App: React.VFC<Record<never, never>> = React.memo(() => {
   const appState = useAppState();
@@ -47,7 +47,7 @@ const LoggedIn: React.VFC<{
   switch (location._) {
     case "Top":
       return (
-        <AdminTopPage
+        <TopPage
           appState={props.appState}
           loggedInState={props.loggedInState}
         />
@@ -128,7 +128,7 @@ export const ClassPage: React.VFC<{ appState: AppState; classId: d.QClassId }> =
               <Box padding={1}>
                 <Breadcrumbs>
                   <Link appState={props.appState} location={d.QLocation.Top}>
-                    作成したプログラム
+                    トップページ
                   </Link>
                   <div></div>
                 </Breadcrumbs>

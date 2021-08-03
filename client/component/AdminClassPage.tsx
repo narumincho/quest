@@ -1,10 +1,18 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
+import {
+  Avatar,
+  Box,
+  Breadcrumbs,
+  Button,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
 import { AppState } from "../state";
 import { ClassWithParticipantList } from "../state/loggedInState";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
+import { imageUrl } from "../../common/url";
 
 export type Props = {
   readonly a: AppState;
@@ -37,7 +45,7 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Breadcrumbs>
             <Link appState={props.a} location={d.QLocation.Top}>
-              作成したプログラム
+              トップページ
             </Link>
             <Link
               appState={props.a}
@@ -86,11 +94,21 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
   );
 };
 
+const useParticipantListStyles = makeStyles({
+  item: {
+    display: "flex",
+    alignItems: "center",
+    padding: 8,
+    gap: 8,
+  },
+});
+
 export const ParticipantList: React.VFC<{
   readonly participantList:
     | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
     | undefined;
 }> = (props) => {
+  const classes = useParticipantListStyles();
   if (props.participantList === undefined) {
     return <Typography>取得中</Typography>;
   }
@@ -100,7 +118,11 @@ export const ParticipantList: React.VFC<{
   return (
     <Box>
       {props.participantList.map((participant) => (
-        <Box padding={1} key={participant.first.id}>
+        <Box key={participant.first.id} className={classes.item}>
+          <Avatar
+            alt={participant.first.name}
+            src={imageUrl(participant.first.iconHash).toString()}
+          />
           {participant.first.name}
 
           {participant.second === d.QRole.Student ? "(生徒)" : "(ゲスト)"}

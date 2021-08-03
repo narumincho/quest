@@ -35,7 +35,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
           <Box padding={1}>
             <Breadcrumbs>
               <Link appState={props.appState} location={d.QLocation.Top}>
-                作成したプログラム
+                トップページ
               </Link>
               <div></div>
             </Breadcrumbs>
@@ -58,7 +58,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Breadcrumbs>
             <Link appState={props.appState} location={d.QLocation.Top}>
-              作成したプログラム
+              トップページ
             </Link>
             <div></div>
           </Breadcrumbs>
@@ -189,7 +189,7 @@ const ClassList: React.VFC<{
   return (
     <Box className={classes.list}>
       {props.classList.map((qClass) => (
-        <ClassCard a={props.a} class={qClass} key={qClass.id} />
+        <ClassCard appState={props.a} class={qClass} key={qClass.id} />
       ))}
     </Box>
   );
