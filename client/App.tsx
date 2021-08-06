@@ -150,8 +150,7 @@ export const ClassPage: React.VFC<{ appState: AppState; classId: d.QClassId }> =
         return (
           <ParticipantClassPage
             appState={props.appState}
-            role={classAndRole.role}
-            qClassForParticipant={classAndRole.qClassForParticipant}
+            joinedClass={classAndRole.joinedClass}
           />
         );
     }

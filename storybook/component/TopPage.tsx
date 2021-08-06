@@ -18,8 +18,8 @@ export const Empty: Story<Props> = () => (
     appState={mockAppState}
     loggedInState={{
       ...mockLoggedInState,
-      createdProgramList: new Map(),
-      joinedClassList: [],
+      createdProgramMap: new Map(),
+      joinedClassMap: new Map(),
     }}
   />
 );

@@ -13,15 +13,21 @@ export default meta;
 export const Guest: Story<never> = () => (
   <ParticipantClassPage
     appState={mockAppState}
-    role={d.QRole.Guest}
-    qClassForParticipant={mockQClassStudentOrGuest}
+    joinedClass={{
+      role: d.QRole.Guest,
+      class: mockQClassStudentOrGuest,
+      participantList: undefined,
+    }}
   />
 );
 
 export const Student: Story<never> = () => (
   <ParticipantClassPage
     appState={mockAppState}
-    role={d.QRole.Student}
-    qClassForParticipant={mockQClassStudentOrGuest}
+    joinedClass={{
+      role: d.QRole.Student,
+      class: mockQClassStudentOrGuest,
+      participantList: undefined,
+    }}
   />
 );
