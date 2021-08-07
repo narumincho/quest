@@ -376,6 +376,7 @@ export const getJoinClassDataListByAccountId = async (
               id: data.classId,
               name: classData.name,
               createAccountId: classData.createAccountId,
+              programId: classData.programId,
             },
             second: data.role,
           };

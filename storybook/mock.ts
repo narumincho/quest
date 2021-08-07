@@ -272,14 +272,24 @@ export const mockQClassStudentOrGuest: d.QClassStudentOrGuest = {
   id: mockClassId,
   name: "サンプルクラス名",
   createAccountId: mockAccountId,
+  programId: mockProgramIdA,
 };
 
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,
   accountToken: mockAccountToken,
-  createdProgramList: new Map<d.QProgramId, ProgramWithClassList>([
+  createdProgramMap: new Map<d.QProgramId, ProgramWithClassList>([
     [mockProgramIdA, programA],
   ]),
-  questionDict: new Map(),
-  joinedClassList: [{ first: mockQClassStudentOrGuest, second: d.QRole.Guest }],
+  questionMap: new Map(),
+  joinedClassMap: new Map([
+    [
+      mockClassId,
+      {
+        class: mockQClassStudentOrGuest,
+        role: d.QRole.Guest,
+        participantList: undefined,
+      },
+    ],
+  ]),
 };

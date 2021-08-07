@@ -259,7 +259,7 @@ export const useAppState = (): AppState => {
       if (logInState.tag !== "LoggedIn") {
         return;
       }
-      for (const program of logInState.loggedInState.createdProgramList.values()) {
+      for (const program of logInState.loggedInState.createdProgramMap.values()) {
         for (const classWithParticipantList of program.classList) {
           if (classWithParticipantList.qClass.id === qClassId) {
             return classWithParticipantList.qClass;
@@ -401,7 +401,7 @@ export const useAppState = (): AppState => {
         if (logInState.tag !== "LoggedIn") {
           return;
         }
-        return logInState.loggedInState.createdProgramList.get(programId);
+        return logInState.loggedInState.createdProgramMap.get(programId);
       },
       account: useAccountMapResult.getById,
       requestGetQuestionListInProgram: (programId) => {

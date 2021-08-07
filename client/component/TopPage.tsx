@@ -3,6 +3,7 @@ import * as d from "../../data";
 import { AppState, LoggedInState, ProgramWithClassList } from "../state";
 import { Box, Button, Paper, Typography, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import { JoinedClass } from "../state/loggedInState";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
@@ -20,19 +21,21 @@ export const TopPage: React.VFC<Props> = (props) => {
       </Box>
       <CreatedProgramList
         appState={props.appState}
-        createdProgramList={props.loggedInState.createdProgramList}
+        createdProgramList={props.loggedInState.createdProgramMap}
       />
       <Box padding={1}>
-        <Button variant="contained" startIcon={<Add />} fullWidth>
-          プログラム作成
-        </Button>
+        <Link location={d.QLocation.NewProgram} appState={props.appState}>
+          <Button variant="contained" startIcon={<Add />} fullWidth>
+            プログラム作成
+          </Button>
+        </Link>
       </Box>
       <Box padding={1}>
         <Typography variant="h5">参加したクラス</Typography>
       </Box>
       <JoinedClassList
         appState={props.appState}
-        joinedClassList={props.loggedInState.joinedClassList}
+        joinedClassList={[...props.loggedInState.joinedClassMap.values()]}
       />
     </PageContainer>
   );
@@ -81,9 +84,7 @@ const useJoinedClassListStyles = makeStyles({
 
 const JoinedClassList = (props: {
   readonly appState: AppState;
-  readonly joinedClassList: ReadonlyArray<
-    d.Tuple2<d.QClassStudentOrGuest, d.QRole>
-  >;
+  readonly joinedClassList: ReadonlyArray<JoinedClass>;
 }): React.ReactElement => {
   const classes = useJoinedClassListStyles();
   if (props.joinedClassList.length === 0) {
@@ -97,10 +98,10 @@ const JoinedClassList = (props: {
     <Box className={classes.container}>
       {props.joinedClassList.map((classAndRole) => (
         <ClassStudentOrGuestCard
-          key={classAndRole.first.id}
+          key={classAndRole.class.id}
           appState={props.appState}
-          classStudentOrGuest={classAndRole.first}
-          role={classAndRole.second}
+          classStudentOrGuest={classAndRole.class}
+          role={classAndRole.role}
         />
       ))}
     </Box>
