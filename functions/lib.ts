@@ -226,12 +226,21 @@ export const apiFunc: {
     if (qClass === undefined) {
       throw new Error("クラスが存在しません");
     }
-    if (qClass.createAccountId !== account.id) {
+    const participantList = await firebaseInterface.getJoinClassDataFromClassId(
+      parameter.classId
+    );
+
+    if (
+      !(
+        participantList.some(({ first }) => first.id === account.id) ||
+        qClass.createAccountId === account.id
+      )
+    ) {
       throw new Error(
-        "クラスの作成者以外がクラスの参加者を取得することはできません"
+        "クラスの作成者, 参加者以外がクラスの参加者を取得することはできません"
       );
     }
-    return firebaseInterface.getJoinClassDataFromClassId(parameter.classId);
+    return participantList;
   },
 };
 

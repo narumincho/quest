@@ -382,5 +382,19 @@ export const setClassParticipantList = (
         ];
       })
     ),
+    joinedClassMap: new Map(
+      [...loggedInState.joinedClassMap.values()].map((joinedClass) => {
+        return [
+          joinedClass.class.id,
+          {
+            ...joinedClass,
+            participantList:
+              joinedClass.class.id === classId
+                ? participantList
+                : joinedClass.participantList,
+          },
+        ];
+      })
+    ),
   };
 };

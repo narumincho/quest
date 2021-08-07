@@ -24,9 +24,11 @@ export const TopPage: React.VFC<Props> = (props) => {
         createdProgramList={props.loggedInState.createdProgramMap}
       />
       <Box padding={1}>
-        <Button variant="contained" startIcon={<Add />} fullWidth>
-          プログラム作成
-        </Button>
+        <Link location={d.QLocation.NewProgram} appState={props.appState}>
+          <Button variant="contained" startIcon={<Add />} fullWidth>
+            プログラム作成
+          </Button>
+        </Link>
       </Box>
       <Box padding={1}>
         <Typography variant="h5">参加したクラス</Typography>
