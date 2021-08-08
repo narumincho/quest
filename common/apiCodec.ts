@@ -122,11 +122,22 @@ export const getQuestionInProgramByQuestionId: ApiCodec<
   response: d.List.codec(d.QQuestion.codec),
 };
 
-/** 管理者がクラスに参加している生徒とゲストを取得する */
+/** クラス作成者か参加者がクラスに参加している参加者を取得する */
 export const getClassParticipant: ApiCodec<
   d.GetClassParticipantParameter,
   ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
 > = {
   request: d.GetClassParticipantParameter.codec,
   response: d.List.codec(d.Tuple2.codec(d.QAccount.codec, d.QRole.codec)),
+};
+
+/**
+ * 生徒が, クラスの木構造の質問と自分の回答と回答状況を取得する
+ */
+export const getStudentQuestionTreeInClass: ApiCodec<
+  d.Tuple2<d.AccountToken, d.QClassId>,
+  d.List<d.StudentQuestionTree>
+> = {
+  request: d.Tuple2.codec(d.AccountToken.codec, d.QClassId.codec),
+  response: d.List.codec(d.StudentQuestionTree.codec),
 };

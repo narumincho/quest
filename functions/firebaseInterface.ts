@@ -71,10 +71,11 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     value: {
       text: string;
       questionId: d.QQuestionId;
-      programId: d.QProgramId;
+      classId: d.QClassId;
       accountId: d.AccountId;
       createTime: admin.firestore.Timestamp;
       updateTime: admin.firestore.Timestamp;
+      isConfirm: boolean;
     };
     subCollections: Record<never, never>;
   };
@@ -471,22 +472,71 @@ export const joinClassAsStudent = async (
 export const setAnswer = async (option: {
   readonly text: string;
   readonly questionId: d.QQuestionId;
-  readonly programId: d.QProgramId;
+  readonly classId: d.QClassId;
   readonly accountId: d.AccountId;
   readonly createTime: Date;
   readonly updateTime: Date;
 }): Promise<void> => {
   await firestore
     .collection("answer")
-    .doc(`${option.questionId}_${option.programId}_${option.accountId}`)
+    .doc(`${option.questionId}_${option.classId}_${option.accountId}`)
     .create({
       text: option.text,
       questionId: option.questionId,
-      programId: option.programId,
+      classId: option.classId,
       accountId: option.accountId,
       createTime: admin.firestore.Timestamp.fromDate(option.createTime),
       updateTime: admin.firestore.Timestamp.fromDate(option.updateTime),
+      isConfirm: false,
     });
+};
+
+/**
+ * クラスの生徒かどうか
+ */
+export const isStudent = async (
+  accountId: d.AccountId,
+  classId: d.QClassId
+): Promise<boolean> => {
+  const document = (
+    await firestore
+      .collection("classJoinData")
+      .where("accountId", "==", accountId)
+      .where("classId", "==", classId)
+      .get()
+  ).docs[0];
+  return document !== undefined && document.data().role === d.QRole.Student;
+};
+
+export const getAnswerListByAccountIdAndClassId = async (
+  accountId: d.AccountId,
+  classId: d.QClassId
+): Promise<
+  ReadonlyArray<{
+    readonly questionId: d.QQuestionId;
+    readonly text: string;
+    readonly isConfirm: boolean;
+  }>
+> => {
+  const queryDocumentSnapshot = (
+    await firestore
+      .collection("answer")
+      .where("accountId", "==", accountId)
+      .where("classId", "==", classId)
+      .get()
+  ).docs;
+  return queryDocumentSnapshot.map<{
+    readonly questionId: d.QQuestionId;
+    readonly text: string;
+    readonly isConfirm: boolean;
+  }>((document) => {
+    const answer = document.data();
+    return {
+      questionId: answer.questionId,
+      text: answer.text,
+      isConfirm: answer.isConfirm,
+    };
+  });
 };
 
 /**

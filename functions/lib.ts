@@ -242,6 +242,18 @@ export const apiFunc: {
     }
     return participantList;
   },
+  getStudentQuestionTreeInClass: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.first);
+    const isStudent = firebaseInterface.isStudent(account.id, parameter.second);
+    if (!isStudent) {
+      throw new Error(
+        "生徒以外はクラスの質問と回答状況を取得することはできません"
+      );
+    }
+
+    // TODO
+    return [];
+  },
 };
 
 const lineLoginClientId = "1655691758";

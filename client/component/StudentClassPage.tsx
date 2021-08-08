@@ -19,9 +19,6 @@ export const StudentClassPage = (props: {
 }): React.ReactElement => {
   React.useEffect(
     () => {
-      props.appState.requestGetQuestionListInProgram(
-        props.qClassForParticipant.programId
-      );
       props.appState.requestParticipantListInClass(
         props.qClassForParticipant.id
       );
