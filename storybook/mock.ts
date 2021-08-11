@@ -110,6 +110,7 @@ export const mockAppState: AppState = {
   joinClass: action("joinClass"),
   getQuestionInProgramByQuestionId: action("getQuestionInProgramByQuestionId"),
   requestParticipantListInClass: action("requestParticipantListInClass"),
+  getStudentQuestionTreeInClass: action("getStudentQuestionTreeInClass"),
 };
 
 export const mockAccount: d.QAccount = {
@@ -289,6 +290,7 @@ export const mockLoggedInState: LoggedInState = {
         class: mockQClassStudentOrGuest,
         role: d.QRole.Guest,
         participantList: undefined,
+        questionTreeList: undefined,
       },
     ],
   ]),
