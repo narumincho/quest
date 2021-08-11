@@ -136,8 +136,8 @@ export const getClassParticipant: ApiCodec<
  */
 export const getStudentQuestionTreeInClass: ApiCodec<
   d.Tuple2<d.AccountToken, d.QClassId>,
-  d.List<d.StudentQuestionTree>
+  d.List<d.StudentSelfQuestionTree>
 > = {
   request: d.Tuple2.codec(d.AccountToken.codec, d.QClassId.codec),
-  response: d.List.codec(d.StudentQuestionTree.codec),
+  response: d.List.codec(d.StudentSelfQuestionTree.codec),
 };
