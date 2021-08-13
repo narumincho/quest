@@ -18,6 +18,7 @@ import {
   setClassParticipantList as loggedInStateSetClassParticipantList,
   setProgram as loggedInStateSetProgram,
   setQuestionListState as loggedInStateSetQuestionListState,
+  setQuestionTree as loggedInStateSetQuestionTree,
 } from "./loggedInState";
 import { useCallback, useMemo, useState } from "react";
 
@@ -116,6 +117,11 @@ export type logInStateResult = {
   readonly setClassParticipantList: (
     classId: d.QClassId,
     participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+  ) => void;
+  /** 生徒として参加したクラスの質問と回答状況をキャッシュに保存する */
+  readonly setStudentQuestionTree: (
+    classId: d.QClassId,
+    tree: ReadonlyArray<d.StudentSelfQuestionTree>
   ) => void;
 };
 
@@ -338,6 +344,28 @@ export const useLogInState = (): logInStateResult => {
     []
   );
 
+  const setStudentQuestionTree = useCallback(
+    (
+      classId: d.QClassId,
+      tree: ReadonlyArray<d.StudentSelfQuestionTree>
+    ): void => {
+      setLogInState((beforeLogInState) => {
+        if (beforeLogInState.tag !== "LoggedIn") {
+          return beforeLogInState;
+        }
+        return {
+          ...beforeLogInState,
+          loggedInState: loggedInStateSetQuestionTree(
+            beforeLogInState.loggedInState,
+            classId,
+            tree
+          ),
+        };
+      });
+    },
+    []
+  );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -358,6 +386,7 @@ export const useLogInState = (): logInStateResult => {
       getQuestionThatCanBeParentList,
       getClassAndRole,
       setClassParticipantList,
+      setStudentQuestionTree,
     }),
     [
       logInState,
@@ -378,6 +407,7 @@ export const useLogInState = (): logInStateResult => {
       getQuestionThatCanBeParentList,
       getClassAndRole,
       setClassParticipantList,
+      setStudentQuestionTree,
     ]
   );
 };

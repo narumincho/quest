@@ -51,6 +51,13 @@ export type JoinedClass = {
   readonly participantList:
     | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
     | undefined;
+
+  /**
+   * 質問と自身の回答状況
+   */
+  readonly questionTreeList:
+    | ReadonlyArray<d.StudentSelfQuestionTree>
+    | undefined;
 };
 
 /** 質問の取得状態 */
@@ -128,6 +135,7 @@ export const initLoggedInState = (option: {
           class: tuple.first,
           role: tuple.second,
           participantList: undefined,
+          questionTreeList: undefined,
         },
       ])
     ),
@@ -201,6 +209,7 @@ export const addJoinedClass = (
           class: option.classStudentOrGuest,
           role: option.role,
           participantList: undefined,
+          questionTreeList: undefined,
         },
       ],
     ]),
@@ -392,6 +401,30 @@ export const setClassParticipantList = (
               joinedClass.class.id === classId
                 ? participantList
                 : joinedClass.participantList,
+          },
+        ];
+      })
+    ),
+  };
+};
+
+export const setQuestionTree = (
+  loggedInState: LoggedInState,
+  classId: d.QClassId,
+  questionTreeList: ReadonlyArray<d.StudentSelfQuestionTree> | undefined
+): LoggedInState => {
+  return {
+    ...loggedInState,
+    joinedClassMap: new Map(
+      [...loggedInState.joinedClassMap.values()].map((joinedClass) => {
+        return [
+          joinedClass.class.id,
+          {
+            ...joinedClass,
+            questionTreeList:
+              joinedClass.class.id === classId
+                ? questionTreeList
+                : joinedClass.questionTreeList,
           },
         ];
       })

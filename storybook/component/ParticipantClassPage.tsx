@@ -17,6 +17,7 @@ export const Guest: Story<never> = () => (
       role: d.QRole.Guest,
       class: mockQClassStudentOrGuest,
       participantList: undefined,
+      questionTreeList: undefined,
     }}
   />
 );
@@ -28,6 +29,7 @@ export const Student: Story<never> = () => (
       role: d.QRole.Student,
       class: mockQClassStudentOrGuest,
       participantList: undefined,
+      questionTreeList: undefined,
     }}
   />
 );

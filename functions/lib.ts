@@ -5,6 +5,7 @@ import * as firebaseInterface from "./firebaseInterface";
 import * as jimp from "jimp";
 import * as jsonWebToken from "jsonwebtoken";
 import * as validation from "../common/validation";
+import { QuestionTree, getQuestionTree } from "../client/state/question";
 import axios from "axios";
 import { imagePng } from "./mimeType";
 import { lineLoginCallbackUrl } from "../common/url";
@@ -242,6 +243,58 @@ export const apiFunc: {
     }
     return participantList;
   },
+  getStudentQuestionTreeInClass: async ({
+    first: accountToken,
+    second: classId,
+  }) => {
+    const account = await validateAndGetAccount(accountToken);
+    const isStudent = firebaseInterface.isStudent(account.id, classId);
+    if (!isStudent) {
+      throw new Error(
+        "生徒以外はクラスの質問と回答状況を取得することはできません"
+      );
+    }
+    const qClass = await firebaseInterface.getClassByClassId(classId);
+    if (qClass === undefined) {
+      throw new Error("クラスが存在しません");
+    }
+
+    const [questionList, answerList] = await Promise.all([
+      firebaseInterface.getQuestionListByProgramId(qClass.programId),
+      firebaseInterface.getAnswerListByAccountIdAndClassId(account.id, classId),
+    ]);
+
+    return getQuestionTree(qClass.programId, questionList).map((tree) =>
+      questionTreeToStudentSelfQuestionTree(tree, answerList)
+    );
+  },
+};
+
+const questionTreeToStudentSelfQuestionTree = (
+  questionTree: QuestionTree,
+  answerList: ReadonlyArray<{
+    readonly questionId: d.QQuestionId;
+    readonly text: string;
+    readonly isConfirm: boolean;
+  }>
+): d.StudentSelfQuestionTree => {
+  const sameQuestionIdAnswer = answerList.find(
+    (answer) => answer.questionId === questionTree.id
+  );
+  return {
+    questionId: questionTree.id,
+    answer:
+      sameQuestionIdAnswer === undefined
+        ? d.Maybe.Nothing()
+        : d.Maybe.Just({
+            isConfirm: sameQuestionIdAnswer.isConfirm,
+            text: sameQuestionIdAnswer.text,
+          }),
+    questionText: questionTree.text,
+    children: questionTree.children.map((child) =>
+      questionTreeToStudentSelfQuestionTree(child, answerList)
+    ),
+  };
 };
 
 const lineLoginClientId = "1655691758";

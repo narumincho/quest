@@ -103,6 +103,8 @@ export type AppState = {
   ) => void;
   /** クラスの参加者を取得する */
   readonly requestParticipantListInClass: (classId: d.QClassId) => void;
+  /** クラスの質問と自分の答えた回答を取得する */
+  readonly getStudentQuestionTreeInClass: (classId: d.QClassId) => void;
 };
 
 export const useAppState = (): AppState => {
@@ -126,6 +128,7 @@ export const useAppState = (): AppState => {
     getQuestionThatCanBeParentList,
     getClassAndRole,
     setClassParticipantList,
+    setStudentQuestionTree,
   } = useLogInState();
   const [location, setLocation] = useState<d.QLocation>(d.QLocation.Top);
   const useAccountMapResult = useAccountMap();
@@ -302,6 +305,39 @@ export const useAppState = (): AppState => {
         });
     },
     [enqueueSnackbar, getAccountToken, setClassParticipantList]
+  );
+
+  const getStudentQuestionTreeInClass = useCallback(
+    (classId: d.QClassId): void => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        enqueueSnackbar(`クラスの質問と回答状況の取得にはログインが必要です`, {
+          variant: "warning",
+        });
+        return;
+      }
+      api
+        .getStudentQuestionTreeInClass({
+          first: accountToken,
+          second: classId,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(
+              `クラスの質問と回答状況の取得にエラーが発生しました ${response.error}`,
+              {
+                variant: "warning",
+              }
+            );
+            return;
+          }
+          enqueueSnackbar("クラスの質問と回答状況の取得に成功しました", {
+            variant: "success",
+          });
+          setStudentQuestionTree(classId, response.ok);
+        });
+    },
+    [enqueueSnackbar, getAccountToken, setStudentQuestionTree]
   );
 
   return useMemo<AppState>(
@@ -586,6 +622,7 @@ export const useAppState = (): AppState => {
           });
       },
       requestParticipantListInClass,
+      getStudentQuestionTreeInClass,
     }),
     [
       logInState,
@@ -612,6 +649,7 @@ export const useAppState = (): AppState => {
       getClassAndRole,
       getCreatedClass,
       addJoinedClass,
+      getStudentQuestionTreeInClass,
     ]
   );
 };

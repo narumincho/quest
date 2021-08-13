@@ -26,6 +26,7 @@ export const ParticipantClassPage: React.VFC<Props> = (props) => {
       appState={props.appState}
       qClassForParticipant={props.joinedClass.class}
       participantList={props.joinedClass.participantList}
+      questionTreeList={props.joinedClass.questionTreeList}
     />
   );
 };

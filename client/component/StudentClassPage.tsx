@@ -5,6 +5,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { ParticipantList } from "./ParticipantList";
+import { StudentSelfQuestionTreeList } from "./StudentSelfQuestionTreeList";
 
 /**
  * 生徒から見たクラスの詳細ページ. ゲストとは違う
@@ -16,13 +17,16 @@ export const StudentClassPage = (props: {
   readonly participantList:
     | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
     | undefined;
+  readonly questionTreeList:
+    | ReadonlyArray<d.StudentSelfQuestionTree>
+    | undefined;
 }): React.ReactElement => {
   React.useEffect(
     () => {
-      props.appState.requestGetQuestionListInProgram(
-        props.qClassForParticipant.programId
-      );
       props.appState.requestParticipantListInClass(
+        props.qClassForParticipant.id
+      );
+      props.appState.getStudentQuestionTreeInClass(
         props.qClassForParticipant.id
       );
     },
@@ -46,6 +50,9 @@ export const StudentClassPage = (props: {
       <Box padding={1}>
         <Typography variant="h6">クラスの参加者</Typography>
         <ParticipantList participantList={props.participantList} />
+      </Box>
+      <Box padding={1}>
+        <StudentSelfQuestionTreeList treeList={props.questionTreeList} />
       </Box>
       <Box padding={1}>クラスID: {props.qClassForParticipant.id}</Box>
     </PageContainer>

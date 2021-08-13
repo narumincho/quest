@@ -7,6 +7,7 @@ import {
   mockAccount3,
   mockAppState,
   mockQClassStudentOrGuest,
+  mockStudentSelfQuestionTreeList,
 } from "../mock";
 import { StudentClassPage } from "../../client/component/StudentClassPage";
 
@@ -16,15 +17,16 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<never> = () => (
+export const Loading: Story<never> = () => (
   <StudentClassPage
     appState={mockAppState}
     participantList={undefined}
     qClassForParticipant={mockQClassStudentOrGuest}
+    questionTreeList={undefined}
   />
 );
 
-export const WithParticipantList: Story<never> = () => (
+export const Loaded: Story<never> = () => (
   <StudentClassPage
     appState={mockAppState}
     participantList={[
@@ -33,5 +35,6 @@ export const WithParticipantList: Story<never> = () => (
       { first: mockAccount3, second: d.QRole.Guest },
     ]}
     qClassForParticipant={mockQClassStudentOrGuest}
+    questionTreeList={mockStudentSelfQuestionTreeList}
   />
 );

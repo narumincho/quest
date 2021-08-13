@@ -2,7 +2,7 @@ import * as React from "react";
 import * as d from "../../data";
 import * as state from "../state";
 import { Box, Typography, makeStyles } from "@material-ui/core";
-import { ChevronRight, ExpandMore } from "@material-ui/icons";
+import { ChevronRight } from "@material-ui/icons";
 import { Link } from "./Link";
 
 export const QuestionTreeList: React.VFC<{
