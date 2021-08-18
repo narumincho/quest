@@ -136,17 +136,3 @@ export const QuestionNewPage: React.VFC<{
     </PageContainer>
   );
 };
-
-const getParentQuestion = (
-  appState: AppState,
-  parentId: d.QuestionId | undefined
-): ReadonlyArray<d.Question> => {
-  if (parentId === undefined) {
-    return [];
-  }
-  const parent = appState.question(parentId);
-  if (parent === undefined) {
-    return [];
-  }
-  return [parent];
-};

@@ -1,11 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import {
-  Link as MuiLink,
-  StyleRules,
-  Theme,
-  makeStyles,
-} from "@material-ui/core";
+import { Link as MuiLink, StyleRules, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 import { locationToUrl } from "../../common/url";
 
