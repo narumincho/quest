@@ -16,6 +16,7 @@ import { QuestionEditPage } from "./component/QuestionEditPage";
 import { QuestionNewPage } from "./component/QuestionNewPage";
 import { QuestionPage } from "./component/QuestionPage";
 import { SettingPage } from "./component/SettingPage";
+import { StudentEditQuestionPage } from "./component/StudentEditQuestionPage";
 import { TopPage } from "./component/TopPage";
 
 export const App: React.VFC<Record<never, never>> = React.memo(() => {
@@ -103,6 +104,14 @@ const LoggedIn: React.VFC<{
           appState={props.appState}
           questionId={location.programIdAndQuestionId.questionId}
           programId={location.programIdAndQuestionId.programId}
+        />
+      );
+    case "StudentEditQuestion":
+      return (
+        <StudentEditQuestionPage
+          appState={props.appState}
+          questionId={location.classIdAndQuestionId.questionId}
+          classId={location.classIdAndQuestionId.classId}
         />
       );
   }

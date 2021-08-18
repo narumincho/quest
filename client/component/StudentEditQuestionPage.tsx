@@ -8,9 +8,10 @@ import { stringToValidAnswerText } from "../../common/validation";
 export type Props = {
   readonly appState: AppState;
   readonly questionId: d.QuestionId;
+  readonly classId: d.ClassId;
 };
 
-export const StudentQuestionPage: React.VFC<Props> = (props) => {
+export const StudentEditQuestionPage: React.VFC<Props> = (props) => {
   const question = props.appState.question(props.questionId);
   const [answerText, setAnswerText] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);

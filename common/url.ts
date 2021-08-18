@@ -85,6 +85,15 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
         ]),
         hash: new Map(),
       };
+    case "StudentEditQuestion":
+      return {
+        resourceName: studentEditQuestionPath,
+        resourceId: location.classIdAndQuestionId.questionId,
+        searchParams: new Map([
+          [studentEditQuestionClassId, location.classIdAndQuestionId.classId],
+        ]),
+        hash: new Map(),
+      };
   }
 };
 
@@ -195,6 +204,24 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
           })
         );
       }
+      return d.UrlData.Normal(defaultLocation);
+    }
+    case studentEditQuestionPath: {
+      const classId = structuredUrl.searchParams.get(
+        studentEditQuestionClassId
+      );
+      if (
+        typeof structuredUrl.resourceId === "string" &&
+        typeof classId === "string"
+      ) {
+        return d.UrlData.Normal(
+          d.Location.StudentEditQuestion({
+            classId: d.ClassId.fromString(classId),
+            questionId: d.QuestionId.fromString(structuredUrl.resourceId),
+          })
+        );
+      }
+      return d.UrlData.Normal(defaultLocation);
     }
   }
   return d.UrlData.Normal(defaultLocation);
@@ -221,6 +248,8 @@ const newClassProgramId = "programId";
 const classInvitationPath = "class-invitation";
 const editQuestionPath = "edit-question";
 const editQuestionProgramId = "programId";
+const studentEditQuestionPath = "student-edit-question";
+const studentEditQuestionClassId = "classId";
 
 const lineLoginCallbackPath = "lineLoginCallback";
 

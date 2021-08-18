@@ -46,7 +46,11 @@ export const StudentClassPage = (props: {
         <ParticipantList participantList={props.participantList} />
       </Box>
       <Box padding={1}>
-        <StudentSelfQuestionTreeList treeList={props.questionTreeList} />
+        <StudentSelfQuestionTreeList
+          treeList={props.questionTreeList}
+          classId={props.participantClass.id}
+          appState={props.appState}
+        />
       </Box>
       <Box padding={1}>クラスID: {props.participantClass.id}</Box>
     </PageContainer>
