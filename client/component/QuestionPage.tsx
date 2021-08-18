@@ -30,11 +30,16 @@ const useStyle = makeStyles({
 
 export const QuestionPage: React.VFC<{
   appState: AppState;
-  questionId: d.QQuestionId;
+  questionId: d.QuestionId;
+  programId: d.ProgramId;
 }> = (props) => {
   React.useEffect(() => {
-    props.appState.getQuestionInProgramByQuestionId(props.questionId);
-  }, [props.appState, props.questionId]);
+    const question = props.appState.question(props.questionId);
+    if (question === undefined) {
+      props.appState.requestGetQuestionListInProgram(props.programId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.questionId]);
 
   const question = props.appState.question(props.questionId);
   const children = props.appState.questionChildren(props.questionId);
@@ -46,7 +51,7 @@ export const QuestionPage: React.VFC<{
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
-              <Link appState={props.appState} location={d.QLocation.Top}>
+              <Link appState={props.appState} location={d.Location.Top}>
                 トップページ
               </Link>
               <div></div>
@@ -68,19 +73,22 @@ export const QuestionPage: React.VFC<{
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.appState} location={d.QLocation.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <Link
               appState={props.appState}
-              location={d.QLocation.Program(question.programId)}
+              location={d.Location.Program(question.programId)}
             >
               {program === undefined ? "プログラム" : program.name}
             </Link>
             {[...parentList].reverse().map((parent) => (
               <Link
                 appState={props.appState}
-                location={d.QLocation.Question(parent.id)}
+                location={d.Location.AdminQuestion({
+                  questionId: parent.id,
+                  programId: props.programId,
+                })}
                 key={parent.id}
               >
                 {parent.name}
@@ -99,16 +107,16 @@ export const QuestionPage: React.VFC<{
               key={child}
               appState={props.appState}
               questionId={child}
+              programId={props.programId}
             />
           ))}
         </Box>
         <Box padding={1}>
           <Link
             appState={props.appState}
-            location={d.QLocation.NewQuestion({
-              parent: d.Maybe.Just(question.id),
+            location={d.Location.NewQuestion({
+              parent: d.Option.Some(question.id),
               programId: question.programId,
-              text: "",
             })}
           >
             <Button fullWidth startIcon={<Add />} variant="contained">
@@ -129,7 +137,10 @@ export const QuestionPage: React.VFC<{
         </Box>
       </Box>
       <Link
-        location={d.QLocation.EditQuestion(props.questionId)}
+        location={d.Location.EditQuestion({
+          questionId: props.questionId,
+          programId: props.programId,
+        })}
         appState={props.appState}
       >
         <Fab

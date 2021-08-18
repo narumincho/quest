@@ -44,9 +44,9 @@ export const StudentSelfQuestionTree = (props: {
 };
 
 const Icon = (props: {
-  readonly answer: d.Maybe<d.StudentAnswerAndIsConfirm>;
+  readonly answer: d.Option<d.StudentAnswerAndIsConfirm>;
 }): React.ReactElement => {
-  if (props.answer._ === "Just") {
+  if (props.answer._ === "Some") {
     if (props.answer.value.isConfirm) {
       return <Done />;
     }

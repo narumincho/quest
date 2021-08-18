@@ -14,8 +14,10 @@ export const Guest: Story<never> = () => (
   <ParticipantClassPage
     appState={mockAppState}
     joinedClass={{
-      role: d.QRole.Guest,
-      class: mockQClassStudentOrGuest,
+      class: {
+        ...mockQClassStudentOrGuest,
+        role: d.ClassParticipantRole.Guest,
+      },
       participantList: undefined,
       questionTreeList: undefined,
     }}
@@ -26,8 +28,10 @@ export const Student: Story<never> = () => (
   <ParticipantClassPage
     appState={mockAppState}
     joinedClass={{
-      role: d.QRole.Student,
-      class: mockQClassStudentOrGuest,
+      class: {
+        ...mockQClassStudentOrGuest,
+        role: d.ClassParticipantRole.Student,
+      },
       participantList: undefined,
       questionTreeList: undefined,
     }}

@@ -7,7 +7,7 @@ import { api } from "../api";
 
 export const ClassInvitationPage: React.VFC<{
   appState: AppState;
-  classInvitationToken: d.QClassInvitationToken;
+  studentClassInvitationToken: d.StudentClassInvitationToken;
 }> = (props) => {
   const [className, setClassName] = React.useState<string | undefined>(
     undefined
@@ -17,18 +17,18 @@ export const ClassInvitationPage: React.VFC<{
 
   React.useEffect(() => {
     api
-      .getClassByClassInvitationToken(props.classInvitationToken)
+      .getClassByClassInvitationToken(props.studentClassInvitationToken)
       .then((response) => {
         if (response._ === "Ok") {
-          setClassName(response.ok.name);
+          setClassName(response.okValue.name);
           return;
         }
-        setClassName(response.error);
+        setClassName(response.errorValue);
       });
-  }, [props.classInvitationToken]);
+  }, [props.studentClassInvitationToken]);
 
   const requestJoin = (): void => {
-    props.appState.joinClass(props.classInvitationToken);
+    props.appState.joinClass(props.studentClassInvitationToken);
     setIsRequestingJoin(true);
   };
 

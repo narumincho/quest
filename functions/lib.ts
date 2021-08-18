@@ -17,9 +17,9 @@ export const apiFunc: {
     request: apiCodec.GetCodecType<ApiCodecType[apiName]["request"]>
   ) => Promise<apiCodec.GetCodecType<ApiCodecType[apiName]["response"]>>;
 } = {
-  requestLineLoginUrl: async (qLocation) => {
+  requestLineLoginUrl: async (location) => {
     const state = createRandomId();
-    await firebaseInterface.createLogInState(state, qLocation);
+    await firebaseInterface.createLogInState(state, location);
     return generateLineLogInUrl(state).toString();
   },
   getAccountTokenAndLocationByCodeAndState: (codeAndState) => {
@@ -50,17 +50,17 @@ export const apiFunc: {
       parameter.programName
     );
     if (programNameResult._ === "Error") {
-      throw new Error(programNameResult.error);
+      throw new Error(programNameResult.errorValue);
     }
-    const programId = createRandomId() as d.QProgramId;
+    const programId = createRandomId() as d.ProgramId;
     await firebaseInterface.createProgram({
       id: programId,
-      name: programNameResult.ok,
+      name: programNameResult.okValue,
       createAccountId: account.id,
     });
     return {
       id: programId,
-      name: programNameResult.ok,
+      name: programNameResult.okValue,
       createAccountId: account.id,
     };
   },
@@ -78,9 +78,9 @@ export const apiFunc: {
       parameter.questionText
     );
     if (questionTextResult._ === "Error") {
-      throw new Error(questionTextResult.error);
+      throw new Error(questionTextResult.errorValue);
     }
-    if (parameter.parent._ === "Just") {
+    if (parameter.parent._ === "Some") {
       const parent = await firebaseInterface.getQuestion(
         parameter.parent.value
       );
@@ -88,10 +88,10 @@ export const apiFunc: {
         throw new Error("親の質問が存在しないか, 違うプログラムの質問");
       }
     }
-    const questionId = createRandomId() as d.QQuestionId;
+    const questionId = createRandomId() as d.QuestionId;
     const question = {
       id: questionId,
-      name: questionTextResult.ok,
+      name: questionTextResult.okValue,
       parent: parameter.parent,
       programId: parameter.programId,
     };
@@ -110,14 +110,14 @@ export const apiFunc: {
       parameter.className
     );
     if (classNameResult._ === "Error") {
-      throw new Error(classNameResult.error);
+      throw new Error(classNameResult.errorValue);
     }
-    const qClass: d.QClass = {
-      id: createRandomId() as d.QClassId,
-      name: classNameResult.ok,
+    const qClass: d.AdminClass = {
+      id: createRandomId() as d.ClassId,
+      name: classNameResult.okValue,
       programId: parameter.programId,
-      createAccountId: account.id,
-      invitationToken: createRandomToken() as d.QClassInvitationToken,
+      studentInvitationToken:
+        createRandomToken() as d.StudentClassInvitationToken,
     };
     await firebaseInterface.createClass(qClass, account.id);
     return qClass;
@@ -141,17 +141,17 @@ export const apiFunc: {
       parameter.name
     );
     if (questionTextResult._ === "Error") {
-      throw new Error(questionTextResult.error);
+      throw new Error(questionTextResult.errorValue);
     }
-    if (parameter.parentId._ === "Nothing") {
+    if (parameter.parentId._ === "None") {
       firebaseInterface.setQuestion(
         parameter.questionId,
-        questionTextResult.ok,
+        questionTextResult.okValue,
         null
       );
       return {
         ...question,
-        name: questionTextResult.ok,
+        name: questionTextResult.okValue,
       };
     }
     const parentValidationResult = validation.questionParentIsValid(
@@ -169,12 +169,12 @@ export const apiFunc: {
     }
     firebaseInterface.setQuestion(
       parameter.questionId,
-      questionTextResult.ok,
+      questionTextResult.okValue,
       parameter.parentId.value
     );
     return {
       ...question,
-      name: questionTextResult.ok,
+      name: questionTextResult.okValue,
     };
   },
   getClassByClassInvitationToken: async (classInvitationToken) => {
@@ -202,7 +202,10 @@ export const apiFunc: {
       invitationTokenResult.id,
       account.id
     );
-    if (joinData !== undefined && joinData.role === d.QRole.Student) {
+    if (
+      joinData !== undefined &&
+      joinData.role === d.ClassParticipantRole.Student
+    ) {
       throw new Error("すでに参加しています");
     }
     await firebaseInterface.joinClassAsStudent(
@@ -210,16 +213,13 @@ export const apiFunc: {
       account.id,
       new Date()
     );
-    return invitationTokenResult;
-  },
-  getQuestionInProgramByQuestionId: async (parameter) => {
-    const account = await validateAndGetAccount(parameter.accountToken);
-    const question = await firebaseInterface.getQuestion(parameter.questionId);
-    if (question === undefined) {
-      throw new Error("指定した質問がが存在しないか, 作った本人でない");
-    }
-    await validateAndGetProgram(account.id, question.programId);
-    return firebaseInterface.getQuestionListByProgramId(question.programId);
+    return {
+      id: invitationTokenResult.id,
+      name: invitationTokenResult.name,
+      createAccountId: invitationTokenResult.createAccountId,
+      programId: invitationTokenResult.programId,
+      role: d.ClassParticipantRole.Student,
+    };
   },
   getClassParticipant: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
@@ -233,8 +233,9 @@ export const apiFunc: {
 
     if (
       !(
-        participantList.some(({ first }) => first.id === account.id) ||
-        qClass.createAccountId === account.id
+        participantList.some(
+          (participant) => participant.account.id === account.id
+        ) || qClass.createAccountId === account.id
       )
     ) {
       throw new Error(
@@ -243,10 +244,7 @@ export const apiFunc: {
     }
     return participantList;
   },
-  getStudentQuestionTreeInClass: async ({
-    first: accountToken,
-    second: classId,
-  }) => {
+  getStudentQuestionTreeInClass: async ({ accountToken, classId }) => {
     const account = await validateAndGetAccount(accountToken);
     const isStudent = firebaseInterface.isStudent(account.id, classId);
     if (!isStudent) {
@@ -273,7 +271,7 @@ export const apiFunc: {
 const questionTreeToStudentSelfQuestionTree = (
   questionTree: QuestionTree,
   answerList: ReadonlyArray<{
-    readonly questionId: d.QQuestionId;
+    readonly questionId: d.QuestionId;
     readonly text: string;
     readonly isConfirm: boolean;
   }>
@@ -285,8 +283,8 @@ const questionTreeToStudentSelfQuestionTree = (
     questionId: questionTree.id,
     answer:
       sameQuestionIdAnswer === undefined
-        ? d.Maybe.Nothing()
-        : d.Maybe.Just({
+        ? d.Option.None()
+        : d.Option.Some({
             isConfirm: sameQuestionIdAnswer.isConfirm,
             text: sameQuestionIdAnswer.text,
           }),
@@ -312,10 +310,10 @@ const generateLineLogInUrl = (state: string): URL => {
 const lineLoginCallback = async (
   code: string,
   state: string
-): Promise<d.Maybe<d.AccountTokenAndQLocation>> => {
+): Promise<d.Option<d.AccountTokenAndLocation>> => {
   const locationMaybe = await firebaseInterface.existsLoginState(state);
   if (locationMaybe === undefined) {
-    return d.Maybe.Nothing();
+    return d.Option.None();
   }
   await firebaseInterface.deleteLoginState(state);
   const profile = await getLineProfile(code);
@@ -336,8 +334,8 @@ const lineLoginCallback = async (
       accountTokenAndHash.accountTokenHash
     );
   }
-  return d.Maybe.Just({
-    qLocation: locationMaybe,
+  return d.Option.Some({
+    location: locationMaybe,
     accountToken: accountTokenAndHash.accountToken,
   });
 };
@@ -411,7 +409,7 @@ const getLineProfile = async (
  */
 const issueAccessToken = (): {
   accountToken: d.AccountToken;
-  accountTokenHash: d.AccountTokenHash;
+  accountTokenHash: d.AccountTokenHashValue;
 } => {
   const accountToken = createRandomToken() as d.AccountToken;
   return {
@@ -424,13 +422,17 @@ const createRandomToken = (): string => {
   return crypto.randomBytes(32).toString("hex");
 };
 
-const hashAccountToken = (accountToken: d.AccountToken): d.AccountTokenHash =>
+const hashAccountToken = (
+  accountToken: d.AccountToken
+): d.AccountTokenHashValue =>
   crypto
     .createHash("sha256")
     .update(new Uint8Array(d.AccountToken.codec.encode(accountToken)))
-    .digest("hex") as d.AccountTokenHash;
+    .digest("hex") as d.AccountTokenHashValue;
 
-const getAndSaveUserImage = async (imageUrl: URL): Promise<d.ImageHash> => {
+const getAndSaveUserImage = async (
+  imageUrl: URL
+): Promise<d.ImageHashValue> => {
   const response = await axios.get<Buffer>(imageUrl.toString(), {
     responseType: "arraybuffer",
   });
@@ -444,7 +446,7 @@ const getAndSaveUserImage = async (imageUrl: URL): Promise<d.ImageHash> => {
 /**
  * Cloud Storage for Firebase にPNGファイルを保存する
  */
-const savePngFile = async (binary: Uint8Array): Promise<d.ImageHash> => {
+const savePngFile = async (binary: Uint8Array): Promise<d.ImageHashValue> => {
   const imageHash = createImageHashFromUint8ArrayAndMimeType(binary, imagePng);
   await firebaseInterface.savePngFile(imageHash, binary);
   return imageHash;
@@ -453,12 +455,12 @@ const savePngFile = async (binary: Uint8Array): Promise<d.ImageHash> => {
 const createImageHashFromUint8ArrayAndMimeType = (
   binary: Uint8Array,
   mimeType: string
-): d.ImageHash =>
+): d.ImageHashValue =>
   crypto
     .createHash("sha256")
     .update(binary)
     .update(mimeType, "utf8")
-    .digest("hex") as d.ImageHash;
+    .digest("hex") as d.ImageHashValue;
 
 /**
  * アカウントトークンが正しいかと, アカウントの情報を得る
@@ -466,7 +468,7 @@ const createImageHashFromUint8ArrayAndMimeType = (
  */
 const validateAndGetAccount = async (
   accountToken: d.AccountToken
-): Promise<d.QAccount> => {
+): Promise<d.Account> => {
   const accountResult = await firebaseInterface.getAccountByAccountTokenHash(
     hashAccountToken(accountToken)
   );
@@ -482,8 +484,8 @@ const validateAndGetAccount = async (
  */
 const validateAndGetProgram = async (
   accountId: d.AccountId,
-  programId: d.QProgramId
-): Promise<d.QProgram> => {
+  programId: d.ProgramId
+): Promise<d.Program> => {
   const program = await firebaseInterface.getProgram(programId);
   if (program === undefined || program.createAccountId !== accountId) {
     throw new Error("指定したプログラムが存在しないか, 作った本人でない");

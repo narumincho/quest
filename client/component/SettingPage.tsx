@@ -13,7 +13,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 
-export type Props = { account: d.QAccount; appState: AppState };
+export type Props = { account: d.Account; appState: AppState };
 
 export const SettingPage: React.VFC<Props> = (props) => {
   return (
@@ -21,7 +21,7 @@ export const SettingPage: React.VFC<Props> = (props) => {
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.appState} location={d.QLocation.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <div></div>

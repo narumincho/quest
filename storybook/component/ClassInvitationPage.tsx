@@ -12,6 +12,6 @@ export default meta;
 export const Default: Story<never> = () => (
   <ClassInvitationPage
     appState={mockAppState}
-    classInvitationToken={mockClassInvitationToken}
+    studentClassInvitationToken={mockClassInvitationToken}
   />
 );

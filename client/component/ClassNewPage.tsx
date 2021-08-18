@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 
 export const ClassNewPage: React.VFC<{
   a: AppState;
-  programId: d.QProgramId;
+  programId: d.ProgramId;
 }> = (props) => {
   const classes = useStyles();
   const [className, setClassName] = React.useState<string>("");
@@ -52,12 +52,12 @@ export const ClassNewPage: React.VFC<{
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.a} location={d.QLocation.Top}>
+            <Link appState={props.a} location={d.Location.Top}>
               トップページ
             </Link>
             <Link
               appState={props.a}
-              location={d.QLocation.Program(props.programId)}
+              location={d.Location.Program(props.programId)}
             >
               {program === undefined ? "プログラム" : program.name}
             </Link>
@@ -79,7 +79,7 @@ export const ClassNewPage: React.VFC<{
             error={!isFirst && projectNameResult._ === "Error"}
             helperText={
               !isFirst && projectNameResult._ === "Error"
-                ? projectNameResult.error
+                ? projectNameResult.errorValue
                 : undefined
             }
             variant="outlined"
@@ -102,7 +102,7 @@ export const ClassNewPage: React.VFC<{
             data-cy="create"
           >
             {projectNameResult._ === "Ok"
-              ? `「${projectNameResult.ok}」`
+              ? `「${projectNameResult.okValue}」`
               : "クラス"}
             を作成
           </Button>
@@ -110,7 +110,7 @@ export const ClassNewPage: React.VFC<{
       </Box>
       <Dialog open={isCreating}>
         <DialogTitle>
-          「{projectNameResult._ === "Ok" ? projectNameResult.ok : "?????"}
+          「{projectNameResult._ === "Ok" ? projectNameResult.okValue : "?????"}
           」を作成中
         </DialogTitle>
         <Box padding={2} display="grid" justifyContent="center">

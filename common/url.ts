@@ -7,11 +7,11 @@ const origin =
     ? "http://localhost:5000"
     : "https://north-quest.web.app";
 
-export const locationToUrl = (location: d.QLocation): URL => {
+export const locationToUrl = (location: d.Location): URL => {
   return structuredUrlToUrl(locationToStructuredUrl(location));
 };
 
-const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
+const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
   switch (location._) {
     case "Top":
       return { resourceName: "", searchParams: new Map(), hash: new Map() };
@@ -30,7 +30,7 @@ const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
     case "Program":
       return {
         resourceName: programPath,
-        resourceId: location.qProgramId,
+        resourceId: location.programId,
         searchParams: new Map(),
         hash: new Map(),
       };
@@ -38,51 +38,51 @@ const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
       return {
         resourceName: newQuestionPath,
         searchParams: new Map<string, string>([
-          [newQuestionProgramId, location.qNewQuestionParameter.programId],
-          ...(location.qNewQuestionParameter.parent._ === "Just"
+          [newQuestionProgramId, location.newQuestionParameter.programId],
+          ...(location.newQuestionParameter.parent._ === "Some"
             ? ([
-                [
-                  newQuestionParent,
-                  location.qNewQuestionParameter.parent.value,
-                ],
+                [newQuestionParent, location.newQuestionParameter.parent.value],
               ] as const)
             : []),
-          [newQuestionText, location.qNewQuestionParameter.text],
         ]),
         hash: new Map(),
       };
-    case "Question":
+    case "AdminQuestion":
       return {
-        resourceName: questionPath,
-        resourceId: location.qQuestionId,
-        searchParams: new Map(),
+        resourceName: adminQuestionPath,
+        resourceId: location.programIdAndQuestionId.questionId,
+        searchParams: new Map([
+          [adminQuestionProgramId, location.programIdAndQuestionId.programId],
+        ]),
         hash: new Map(),
       };
     case "NewClass":
       return {
         resourceName: newClassPath,
-        searchParams: new Map([[newClassProgramId, location.qProgramId]]),
+        searchParams: new Map([[newClassProgramId, location.programId]]),
         hash: new Map(),
       };
     case "Class":
       return {
         resourceName: classPath,
-        resourceId: location.qClassId,
+        resourceId: location.classId,
         searchParams: new Map(),
         hash: new Map(),
       };
     case "ClassInvitation":
       return {
         resourceName: classInvitationPath,
-        resourceId: location.qClassInvitationToken,
+        resourceId: location.studentClassInvitationToken,
         searchParams: new Map(),
         hash: new Map(),
       };
     case "EditQuestion":
       return {
         resourceName: editQuestionPath,
-        resourceId: location.qQuestionId,
-        searchParams: new Map(),
+        resourceId: location.programIdAndQuestionId.questionId,
+        searchParams: new Map([
+          [editQuestionProgramId, location.programIdAndQuestionId.programId],
+        ]),
         hash: new Map(),
       };
   }
@@ -92,116 +92,135 @@ const locationToStructuredUrl = (location: d.QLocation): StructuredUrl => {
  * URLから quest 内の場所と, アカウントトークンを得る
  * オリジンは無視される
  */
-export const urlToUrlData = (url: URL): d.QUrlData => {
+export const urlToUrlData = (url: URL): d.UrlData => {
   const structuredUrl = urlToStructuredUrl(url);
   return structuredUrlToLocation(structuredUrl);
 };
 
-const defaultLocation: d.QLocation = d.QLocation.Top;
+const defaultLocation: d.Location = d.Location.Top;
 /**
  * URL から quest 内の場所を得る.
  * アカウントトークンとオリジンは無視する
  */
-const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.QUrlData => {
+// eslint-disable-next-line complexity
+const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
   switch (structuredUrl.resourceName) {
     case settingPath:
-      return d.QUrlData.Normal(d.QLocation.Setting);
+      return d.UrlData.Normal(d.Location.Setting);
     case newProgramPath:
-      return d.QUrlData.Normal(d.QLocation.NewProgram);
+      return d.UrlData.Normal(d.Location.NewProgram);
     case programPath:
       if (typeof structuredUrl.resourceId === "string") {
-        return d.QUrlData.Normal(
-          d.QLocation.Program(structuredUrl.resourceId as d.QProgramId)
+        return d.UrlData.Normal(
+          d.Location.Program(d.ProgramId.fromString(structuredUrl.resourceId))
         );
       }
-      return d.QUrlData.Normal(defaultLocation);
+      return d.UrlData.Normal(defaultLocation);
     case newQuestionPath: {
       const programId = structuredUrl.searchParams.get(newQuestionProgramId);
       const parent = structuredUrl.searchParams.get(newQuestionParent);
-      const text = structuredUrl.searchParams.get(newQuestionText);
-      if (typeof programId === "string" && typeof text === "string") {
-        return d.QUrlData.Normal(
-          d.QLocation.NewQuestion({
-            programId: programId as d.QProgramId,
+      if (typeof programId === "string") {
+        return d.UrlData.Normal(
+          d.Location.NewQuestion({
+            programId: d.ProgramId.fromString(programId),
             parent:
               typeof parent === "string"
-                ? d.Maybe.Just(parent as d.QQuestionId)
-                : d.Maybe.Nothing(),
-            text,
+                ? d.Option.Some(d.QuestionId.fromString(parent))
+                : d.Option.None(),
           })
         );
       }
-      return d.QUrlData.Normal(defaultLocation);
+      return d.UrlData.Normal(defaultLocation);
     }
-    case questionPath:
-      if (typeof structuredUrl.resourceId === "string") {
-        return d.QUrlData.Normal(
-          d.QLocation.Question(structuredUrl.resourceId as d.QQuestionId)
+    case adminQuestionPath: {
+      const programId = structuredUrl.searchParams.get(adminQuestionProgramId);
+      if (
+        typeof structuredUrl.resourceId === "string" &&
+        typeof programId === "string"
+      ) {
+        return d.UrlData.Normal(
+          d.Location.AdminQuestion({
+            questionId: d.QuestionId.fromString(structuredUrl.resourceId),
+            programId: d.ProgramId.fromString(programId),
+          })
         );
       }
-      return d.QUrlData.Normal(defaultLocation);
+      return d.UrlData.Normal(defaultLocation);
+    }
     case classPath:
       if (typeof structuredUrl.resourceId === "string") {
-        return d.QUrlData.Normal(
-          d.QLocation.Class(structuredUrl.resourceId as d.QClassId)
+        return d.UrlData.Normal(
+          d.Location.Class(d.ClassId.fromString(structuredUrl.resourceId))
         );
       }
-      return d.QUrlData.Normal(defaultLocation);
+      return d.UrlData.Normal(defaultLocation);
     case newClassPath: {
       const programId = structuredUrl.searchParams.get(newClassProgramId);
       if (typeof programId === "string") {
-        return d.QUrlData.Normal(
-          d.QLocation.NewClass(programId as d.QProgramId)
+        return d.UrlData.Normal(
+          d.Location.NewClass(d.ProgramId.fromString(programId))
         );
       }
-      return d.QUrlData.Normal(defaultLocation);
+      return d.UrlData.Normal(defaultLocation);
     }
     case classInvitationPath: {
       const classInvitationToken = structuredUrl.resourceId;
       if (typeof classInvitationToken === "string") {
-        return d.QUrlData.Normal(
-          d.QLocation.ClassInvitation(
-            classInvitationToken as d.QClassInvitationToken
+        return d.UrlData.Normal(
+          d.Location.ClassInvitation(
+            d.StudentClassInvitationToken.fromString(classInvitationToken)
           )
         );
       }
-      return d.QUrlData.Normal(defaultLocation);
+      return d.UrlData.Normal(defaultLocation);
     }
     case lineLoginCallbackPath: {
       const code = structuredUrl.searchParams.get("code");
       const state = structuredUrl.searchParams.get("state");
       if (typeof code === "string" && typeof state === "string") {
-        return d.QUrlData.LogInCallback({ code, state });
+        return d.UrlData.LogInCallback({ code, state });
       }
-      return d.QUrlData.Normal(defaultLocation);
+      return d.UrlData.Normal(defaultLocation);
+    }
+    case editQuestionPath: {
+      const programId = structuredUrl.searchParams.get(editQuestionProgramId);
+      if (
+        typeof structuredUrl.resourceId === "string" &&
+        typeof programId === "string"
+      ) {
+        return d.UrlData.Normal(
+          d.Location.EditQuestion({
+            programId: d.ProgramId.fromString(programId),
+            questionId: d.QuestionId.fromString(structuredUrl.resourceId),
+          })
+        );
+      }
     }
   }
-  return d.QUrlData.Normal(defaultLocation);
+  return d.UrlData.Normal(defaultLocation);
 };
 
 /** LINEログインで指定する. コールバックURL */
 export const lineLoginCallbackUrl = `${origin}/lineLoginCallback`;
 
 /** アカウントの画像などのURLを生成する */
-export const imageUrl = (imageHash: d.ImageHash): URL =>
+export const imageUrl = (imageHash: d.ImageHashValue): URL =>
   new URL(`${origin}/file/${imageHash}`);
-
-const addNewPrefix = (path: string): string => "new-" + path;
-const addEditPrefix = (path: string): string => "edit-" + path;
 
 const settingPath = "setting";
 const programPath = "program";
-const newProgramPath = addNewPrefix(programPath);
-const questionPath = "question";
-const newQuestionPath = addNewPrefix(questionPath);
+const newProgramPath = "new-program";
+const adminQuestionPath = "admin-question";
+const adminQuestionProgramId = "programId";
+const newQuestionPath = "new-question";
 const newQuestionProgramId = "programId";
 const newQuestionParent = "parent";
-const newQuestionText = "text";
 const classPath = "class";
-const newClassPath = addNewPrefix(classPath);
+const newClassPath = "new-class";
 const newClassProgramId = "programId";
 const classInvitationPath = "class-invitation";
-const editQuestionPath = addEditPrefix(questionPath);
+const editQuestionPath = "edit-question";
+const editQuestionProgramId = "programId";
 
 const lineLoginCallbackPath = "lineLoginCallback";
 

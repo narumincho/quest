@@ -18,7 +18,7 @@ export const ToClassInvitationPage: Story<never> = () => (
   <LogInPage
     appState={{
       ...mockAppState,
-      location: d.QLocation.ClassInvitation(mockClassInvitationToken),
+      location: d.Location.ClassInvitation(mockClassInvitationToken),
     }}
   />
 );

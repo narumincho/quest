@@ -12,6 +12,6 @@ export default meta;
 export const Default: Story<never> = () => (
   <GuestClassPage
     appState={mockAppState}
-    qClassForParticipant={mockQClassStudentOrGuest}
+    participantClass={mockQClassStudentOrGuest}
   />
 );

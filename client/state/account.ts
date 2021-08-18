@@ -3,18 +3,18 @@ import { useCallback, useMemo, useState } from "react";
 
 export type UseAccountMapResult = {
   /** リロードするまで, アカウントを保存する */
-  set: (account: d.QAccount) => void;
+  set: (account: d.Account) => void;
   /** 1度に複数のアカウントをリロードするまで保存する */
-  setList: (accountList: ReadonlyArray<d.QAccount>) => void;
+  setList: (accountList: ReadonlyArray<d.Account>) => void;
   /** アカウントをキャッシュから取得する */
-  getById: (id: d.AccountId) => d.QAccount | undefined;
+  getById: (id: d.AccountId) => d.Account | undefined;
   /** ログアウトしたとき, キャッシュを削除する */
   deleteAll: () => void;
 };
 
 export const useAccountMap = (): UseAccountMapResult => {
   const [accountMap, setAccountMap] = useState<
-    ReadonlyMap<d.AccountId, d.QAccount>
+    ReadonlyMap<d.AccountId, d.Account>
   >(new Map());
   const set = useCallback<UseAccountMapResult["set"]>((account) => {
     setAccountMap((before) => {

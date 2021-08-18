@@ -7,7 +7,7 @@ import { stringToValidAnswerText } from "../../common/validation";
 
 export type Props = {
   readonly appState: AppState;
-  readonly questionId: d.QQuestionId;
+  readonly questionId: d.QuestionId;
 };
 
 export const StudentQuestionPage: React.VFC<Props> = (props) => {
@@ -46,7 +46,7 @@ export const StudentQuestionPage: React.VFC<Props> = (props) => {
           error={!isFirst && validationResult._ === "Error"}
           helperText={
             !isFirst && validationResult._ === "Error"
-              ? validationResult.error
+              ? validationResult.errorValue
               : undefined
           }
           variant="outlined"

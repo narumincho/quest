@@ -37,12 +37,12 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.a} location={d.QLocation.Top}>
+            <Link appState={props.a} location={d.Location.Top}>
               トップページ
             </Link>
             <Link
               appState={props.a}
-              location={d.QLocation.Program(
+              location={d.Location.Program(
                 props.classWithParticipantList.qClass.programId
               )}
             >

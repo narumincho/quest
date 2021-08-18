@@ -25,7 +25,8 @@ import { stringToValidQuestionText } from "../../common/validation";
 
 export const QuestionEditPage: React.VFC<{
   appState: AppState;
-  questionId: d.QQuestionId;
+  questionId: d.QuestionId;
+  programId: d.ProgramId;
 }> = (props) => {
   const question = props.appState.question(props.questionId);
 
@@ -35,7 +36,7 @@ export const QuestionEditPage: React.VFC<{
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
-              <Link appState={props.appState} location={d.QLocation.Top}>
+              <Link appState={props.appState} location={d.Location.Top}>
                 トップページ
               </Link>
               <div></div>
@@ -50,7 +51,13 @@ export const QuestionEditPage: React.VFC<{
     );
   }
 
-  return <EditQuestionLoaded appState={props.appState} question={question} />;
+  return (
+    <EditQuestionLoaded
+      appState={props.appState}
+      question={question}
+      programId={props.programId}
+    />
+  );
 };
 
 type EditState = "none" | "selectParent" | "requesting";
@@ -64,13 +71,14 @@ const useStyles = makeStyles({
 });
 
 const EditQuestionLoaded: React.VFC<{
-  appState: AppState;
-  question: d.QQuestion;
+  readonly appState: AppState;
+  readonly question: d.Question;
+  readonly programId: d.ProgramId;
 }> = (props) => {
   const classes = useStyles();
   const [text, setText] = React.useState<string>(props.question.name);
   const [parentQuestionId, setParentQuestionId] = React.useState<
-    d.Maybe<d.QQuestionId>
+    d.Option<d.QuestionId>
   >(props.question.parent);
   const [editState, setEditState] = React.useState<EditState>("none");
   const textResult = stringToValidQuestionText(text);
@@ -83,7 +91,7 @@ const EditQuestionLoaded: React.VFC<{
     }
     props.appState.editQuestion(
       props.question.id,
-      textResult.ok,
+      textResult.okValue,
       parentQuestionId
     );
     setEditState("requesting");
@@ -93,19 +101,22 @@ const EditQuestionLoaded: React.VFC<{
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.appState} location={d.QLocation.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <Link
               appState={props.appState}
-              location={d.QLocation.Program(props.question.programId)}
+              location={d.Location.Program(props.question.programId)}
             >
               {program === undefined ? "プログラム" : program.name}
             </Link>
             {[...parentList].reverse().map((parent) => (
               <Link
                 appState={props.appState}
-                location={d.QLocation.Question(parent.id)}
+                location={d.Location.AdminQuestion({
+                  questionId: parent.id,
+                  programId: props.programId,
+                })}
                 key={parent.id}
               >
                 {parent.name}
@@ -128,7 +139,9 @@ const EditQuestionLoaded: React.VFC<{
               setText(e.target.value);
             }}
             error={textResult._ === "Error"}
-            helperText={textResult._ === "Error" ? textResult.error : undefined}
+            helperText={
+              textResult._ === "Error" ? textResult.errorValue : undefined
+            }
             variant="outlined"
             InputProps={{
               readOnly: editState !== "none",
@@ -138,10 +151,11 @@ const EditQuestionLoaded: React.VFC<{
 
         <Box padding={1}>
           <Box>親の質問</Box>
-          {parentQuestionId._ === "Just" ? (
+          {parentQuestionId._ === "Some" ? (
             <QuestionButton
               appState={props.appState}
               questionId={parentQuestionId.value}
+              programId={props.programId}
               onClick={() => {
                 setEditState("selectParent");
               }}
@@ -204,9 +218,9 @@ const EditQuestionLoaded: React.VFC<{
               button
               onClick={() => {
                 setEditState("none");
-                setParentQuestionId(d.Maybe.Nothing());
+                setParentQuestionId(d.Option.None());
               }}
-              selected={parentQuestionId._ === "Nothing"}
+              selected={parentQuestionId._ === "None"}
             >
               <ListItemText primary="--指定なし--" />
             </ListItem>
@@ -222,10 +236,10 @@ const EditQuestionLoaded: React.VFC<{
                     button
                     onClick={() => {
                       setEditState("none");
-                      setParentQuestionId(d.Maybe.Just(q.id));
+                      setParentQuestionId(d.Option.Some(q.id));
                     }}
                     selected={
-                      parentQuestionId._ === "Just" &&
+                      parentQuestionId._ === "Some" &&
                       parentQuestionId.value === q.id
                     }
                   >

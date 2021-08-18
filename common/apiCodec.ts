@@ -10,8 +10,8 @@ export type ApiCodec<Request, Response> = {
 /**
  * LINE ログインの URL を生成して取得する
  */
-export const requestLineLoginUrl: ApiCodec<d.QLocation, d.String> = {
-  request: d.QLocation.codec,
+export const requestLineLoginUrl: ApiCodec<d.Location, d.String> = {
+  request: d.Location.codec,
   response: d.String.codec,
 };
 
@@ -20,124 +20,114 @@ export const requestLineLoginUrl: ApiCodec<d.QLocation, d.String> = {
  */
 export const getAccountTokenAndLocationByCodeAndState: ApiCodec<
   d.CodeAndState,
-  d.Maybe<d.AccountTokenAndQLocation>
+  d.Option<d.AccountTokenAndLocation>
 > = {
   request: d.CodeAndState.codec,
-  response: d.Maybe.codec(d.AccountTokenAndQLocation.codec),
+  response: d.Option.codec(d.AccountTokenAndLocation.codec),
 };
 
 /**
  * アカウントトークンから, アカウントに関連するデータ (アカウント情報, 作成したプログラム, 参加/作成したクラス等) を取得する
  */
-export const getAccountData: ApiCodec<d.AccountToken, d.QAccountData> = {
+export const getAccountData: ApiCodec<d.AccountToken, d.AccountData> = {
   request: d.AccountToken.codec,
-  response: d.QAccountData.codec,
+  response: d.AccountData.codec,
 };
 
 /**
  * プログラムを作成する
  */
-export const createProgram: ApiCodec<d.QCreateProgramParameter, d.QProgram> = {
-  request: d.QCreateProgramParameter.codec,
-  response: d.QProgram.codec,
+export const createProgram: ApiCodec<d.CreateProgramParameter, d.Program> = {
+  request: d.CreateProgramParameter.codec,
+  response: d.Program.codec,
 };
 
 /**
  * 指定したアカウントトークンのアカウントの作成したプログラムを取得する
  */
-export const getCreatedProgram: ApiCodec<d.AccountToken, d.List<d.QProgram>> = {
+export const getCreatedProgram: ApiCodec<d.AccountToken, d.List<d.Program>> = {
   request: d.AccountToken.codec,
-  response: d.List.codec(d.QProgram.codec),
+  response: d.List.codec(d.Program.codec),
 };
 
 /** 質問を作成する */
-export const createQuestion: ApiCodec<d.QCreateQuestionParamter, d.QQuestion> =
-  {
-    request: d.QCreateQuestionParamter.codec,
-    response: d.QQuestion.codec,
-  };
+export const createQuestion: ApiCodec<d.CreateQuestionParamter, d.Question> = {
+  request: d.CreateQuestionParamter.codec,
+  response: d.Question.codec,
+};
 
 /**
  * 自身が作成したプログラムの質問を取得する
  */
 export const getQuestionInCreatedProgram: ApiCodec<
-  d.QAccountTokenAndProgramId,
-  d.List<d.QQuestion>
+  d.AccountTokenAndProgramId,
+  d.List<d.Question>
 > = {
-  request: d.QAccountTokenAndProgramId.codec,
-  response: d.List.codec(d.QQuestion.codec),
+  request: d.AccountTokenAndProgramId.codec,
+  response: d.List.codec(d.Question.codec),
 };
 
 /**
  * クラスを作成する
  */
-export const createClass: ApiCodec<d.QCreateClassParameter, d.QClass> = {
-  request: d.QCreateClassParameter.codec,
-  response: d.QClass.codec,
+export const createClass: ApiCodec<d.CreateClassParameter, d.AdminClass> = {
+  request: d.CreateClassParameter.codec,
+  response: d.AdminClass.codec,
 };
 
 /**
  * プログラムに存在するクラスを取得する
  */
 export const getClassListInProgram: ApiCodec<
-  d.QAccountTokenAndProgramId,
-  d.List<d.QClass>
+  d.AccountTokenAndProgramId,
+  d.List<d.AdminClass>
 > = {
-  request: d.QAccountTokenAndProgramId.codec,
-  response: d.List.codec(d.QClass.codec),
+  request: d.AccountTokenAndProgramId.codec,
+  response: d.List.codec(d.AdminClass.codec),
 };
 
 /**
  * 質問を編集する
  */
-export const editQuestion: ApiCodec<d.QEditQuestion, d.QQuestion> = {
-  request: d.QEditQuestion.codec,
-  response: d.QQuestion.codec,
+export const editQuestion: ApiCodec<d.EditQuestionParameter, d.Question> = {
+  request: d.EditQuestionParameter.codec,
+  response: d.Question.codec,
 };
 
 /** クラスの招待URLからクラスの情報を得る. ログインしていないときに招待URLを開いたときに使う */
 export const getClassByClassInvitationToken: ApiCodec<
-  d.QClassInvitationToken,
-  d.QClass
+  d.StudentClassInvitationToken,
+  d.AdminClass
 > = {
-  request: d.QClassInvitationToken.codec,
-  response: d.QClass.codec,
+  request: d.StudentClassInvitationToken.codec,
+  response: d.AdminClass.codec,
 };
 
 /** 生徒として, クラスに参加する */
 export const joinClassAsStudent: ApiCodec<
   d.JoinClassAsStudentParameter,
-  d.QClass
+  d.ParticipantClass
 > = {
   request: d.JoinClassAsStudentParameter.codec,
-  response: d.QClass.codec,
-};
-
-/** プログラムに属する質問をすべてをある, 質問IDから得る */
-export const getQuestionInProgramByQuestionId: ApiCodec<
-  d.GetQuestionListInProgramByQuestionIdParameter,
-  d.List<d.QQuestion>
-> = {
-  request: d.GetQuestionListInProgramByQuestionIdParameter.codec,
-  response: d.List.codec(d.QQuestion.codec),
+  response: d.ParticipantClass.codec,
 };
 
 /** クラス作成者か参加者がクラスに参加している参加者を取得する */
 export const getClassParticipant: ApiCodec<
-  d.GetClassParticipantParameter,
-  ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+  d.AccountTokenAndClassId,
+  ReadonlyArray<d.Participant>
 > = {
-  request: d.GetClassParticipantParameter.codec,
-  response: d.List.codec(d.Tuple2.codec(d.QAccount.codec, d.QRole.codec)),
+  request: d.AccountTokenAndClassId.codec,
+  response: d.List.codec(d.Participant.codec),
 };
 
 /**
  * 生徒が, クラスの木構造の質問と自分の回答と回答状況を取得する
  */
 export const getStudentQuestionTreeInClass: ApiCodec<
-  d.Tuple2<d.AccountToken, d.QClassId>,
+  d.AccountTokenAndClassId,
   d.List<d.StudentSelfQuestionTree>
 > = {
-  request: d.Tuple2.codec(d.AccountToken.codec, d.QClassId.codec),
+  request: d.AccountTokenAndClassId.codec,
   response: d.List.codec(d.StudentSelfQuestionTree.codec),
 };

@@ -13,15 +13,15 @@ export type { QuestionTree };
 /** ログインしたときに保存する管理する状態 */
 export type LoggedInState = {
   readonly accountToken: d.AccountToken;
-  readonly account: d.QAccount;
-  readonly createdProgramMap: ReadonlyMap<d.QProgramId, ProgramWithClassList>;
-  readonly joinedClassMap: ReadonlyMap<d.QClassId, JoinedClass>;
-  readonly questionMap: ReadonlyMap<d.QProgramId, QuestionListState>;
+  readonly account: d.Account;
+  readonly createdProgramMap: ReadonlyMap<d.ProgramId, ProgramWithClassList>;
+  readonly joinedClassMap: ReadonlyMap<d.ClassId, JoinedClass>;
+  readonly questionMap: ReadonlyMap<d.ProgramId, QuestionListState>;
 };
 
 /** 作成したプログラムと作成したクラス */
 export type ProgramWithClassList = {
-  readonly id: d.QProgramId;
+  readonly id: d.ProgramId;
   readonly name: string;
   readonly createAccountId: d.AccountId;
   readonly classList: ReadonlyArray<ClassWithParticipantList>;
@@ -31,26 +31,21 @@ export type ProgramWithClassList = {
  * クラスと参加者の一覧
  */
 export type ClassWithParticipantList = {
-  readonly qClass: d.QClass;
+  readonly qClass: d.AdminClass;
   /**
    * 参加者一覧. `undefined` は取得中か失敗
    */
-  readonly participantList:
-    | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
-    | undefined;
+  readonly participantList: ReadonlyArray<d.Participant> | undefined;
 };
 
 /** 参加したクラス */
 export type JoinedClass = {
-  readonly class: d.QClassStudentOrGuest;
+  readonly class: d.ParticipantClass;
 
-  readonly role: d.QRole;
   /**
    * 参加者一覧. `undefined` は取得中か失敗
    */
-  readonly participantList:
-    | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
-    | undefined;
+  readonly participantList: ReadonlyArray<d.Participant> | undefined;
 
   /**
    * 質問と自身の回答状況
@@ -70,7 +65,7 @@ export type QuestionListState =
     }
   | {
       readonly tag: "Loaded";
-      readonly questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>;
+      readonly questionMap: ReadonlyMap<d.QuestionId, d.Question>;
     };
 
 export type QuestionTreeListWithLoadingState =
@@ -103,14 +98,14 @@ export type ClassAndRole =
 
 export const initLoggedInState = (option: {
   readonly accountToken: d.AccountToken;
-  readonly accountData: d.QAccountData;
+  readonly accountData: d.AccountData;
 }): LoggedInState => {
   return {
     accountToken: option.accountToken,
     account: option.accountData.account,
-    createdProgramMap: new Map<d.QProgramId, ProgramWithClassList>(
+    createdProgramMap: new Map<d.ProgramId, ProgramWithClassList>(
       option.accountData.createdProgramList.map(
-        (program): [d.QProgramId, ProgramWithClassList] => [
+        (program): [d.ProgramId, ProgramWithClassList] => [
           program.id,
           {
             id: program.id,
@@ -128,12 +123,11 @@ export const initLoggedInState = (option: {
         ]
       )
     ),
-    joinedClassMap: new Map<d.QClassId, JoinedClass>(
-      option.accountData.joinedClassList.map((tuple) => [
-        tuple.first.id,
+    joinedClassMap: new Map<d.ClassId, JoinedClass>(
+      option.accountData.joinedClassList.map((participantClass) => [
+        participantClass.id,
         {
-          class: tuple.first,
-          role: tuple.second,
+          class: participantClass,
           participantList: undefined,
           questionTreeList: undefined,
         },
@@ -144,7 +138,7 @@ export const initLoggedInState = (option: {
 };
 
 export const setProgram = (
-  program: d.QProgram,
+  program: d.Program,
   beforeLoggedInState: LoggedInState
 ): LoggedInState => {
   return {
@@ -164,7 +158,7 @@ export const setProgram = (
 
 export const setQuestionListState = (
   beforeLoggedInState: LoggedInState,
-  option: { programId: d.QProgramId; questionListState: QuestionListState }
+  option: { programId: d.ProgramId; questionListState: QuestionListState }
 ): LoggedInState => {
   return {
     ...beforeLoggedInState,
@@ -177,7 +171,7 @@ export const setQuestionListState = (
 
 export const addCreatedClass = (
   beforeLoggedInState: LoggedInState,
-  qClass: d.QClass
+  qClass: d.AdminClass
 ): LoggedInState => {
   return {
     ...beforeLoggedInState,
@@ -197,17 +191,16 @@ export const addCreatedClass = (
 
 export const addJoinedClass = (
   beforeLoggedInState: LoggedInState,
-  option: { classStudentOrGuest: d.QClassStudentOrGuest; role: d.QRole }
+  participantClass: d.ParticipantClass
 ): LoggedInState => {
   return {
     ...beforeLoggedInState,
     joinedClassMap: new Map([
       ...beforeLoggedInState.joinedClassMap,
       [
-        option.classStudentOrGuest.id,
+        participantClass.id,
         {
-          class: option.classStudentOrGuest,
-          role: option.role,
+          class: participantClass,
           participantList: undefined,
           questionTreeList: undefined,
         },
@@ -218,7 +211,7 @@ export const addJoinedClass = (
 
 export const addCreatedOrEditedQuestion = (
   beforeLoggedInState: LoggedInState,
-  question: d.QQuestion
+  question: d.Question
 ): LoggedInState => {
   return {
     ...beforeLoggedInState,
@@ -244,8 +237,8 @@ export const addCreatedOrEditedQuestion = (
 
 export const getQuestionById = (
   loggedInState: LoggedInState,
-  questionId: d.QQuestionId
-): d.QQuestion | undefined => {
+  questionId: d.QuestionId
+): d.Question | undefined => {
   for (const questionListState of loggedInState.questionMap.values()) {
     const question = getQuestionByIdInQuestionListState(
       questionListState,
@@ -259,8 +252,8 @@ export const getQuestionById = (
 
 const getQuestionByIdInQuestionListState = (
   questionListState: QuestionListState,
-  questionId: d.QQuestionId
-): d.QQuestion | undefined => {
+  questionId: d.QuestionId
+): d.Question | undefined => {
   if (questionListState.tag !== "Loaded") {
     return;
   }
@@ -270,8 +263,8 @@ const getQuestionByIdInQuestionListState = (
 /** 質問の直接的な子を取得する */
 export const getQuestionDirectChildren = (
   loggedInState: LoggedInState,
-  questionId: d.QQuestionId
-): ReadonlyArray<d.QQuestionId> => {
+  questionId: d.QuestionId
+): ReadonlyArray<d.QuestionId> => {
   const question = getQuestionById(loggedInState, questionId);
   if (question === undefined) {
     return [];
@@ -285,8 +278,8 @@ export const getQuestionDirectChildren = (
 
 export const getParentQuestionList = (
   loggedInState: LoggedInState,
-  questionId: d.QQuestionId
-): ReadonlyArray<d.QQuestion> => {
+  questionId: d.QuestionId
+): ReadonlyArray<d.Question> => {
   const question = getQuestionById(loggedInState, questionId);
   if (question === undefined) {
     return [];
@@ -303,7 +296,7 @@ export const getParentQuestionList = (
 
 export const getQuestionTreeListWithLoadingStateInProgram = (
   loggedInState: LoggedInState,
-  programId: d.QProgramId
+  programId: d.ProgramId
 ): QuestionTreeListWithLoadingState => {
   const questionListState = loggedInState.questionMap.get(programId);
   if (questionListState === undefined) {
@@ -326,9 +319,9 @@ export const getQuestionTreeListWithLoadingStateInProgram = (
 /** 親の質問になることができる質問を, キャッシュから取得する */
 export const getQuestionThatCanBeParentList = (
   loggedInState: LoggedInState,
-  programId: d.QProgramId,
-  questionId: d.QQuestionId
-): ReadonlyArray<d.QQuestion> => {
+  programId: d.ProgramId,
+  questionId: d.QuestionId
+): ReadonlyArray<d.Question> => {
   const questionListState = loggedInState.questionMap.get(programId);
   if (questionListState === undefined || questionListState.tag !== "Loaded") {
     return [];
@@ -342,7 +335,7 @@ export const getQuestionThatCanBeParentList = (
 
 export const getClassAndRole = (
   loggedInState: LoggedInState,
-  classId: d.QClassId
+  classId: d.ClassId
 ): ClassAndRole => {
   for (const createdProgram of loggedInState.createdProgramMap.values()) {
     for (const classWithParticipantList of createdProgram.classList) {
@@ -368,12 +361,12 @@ export const getClassAndRole = (
 
 export const setClassParticipantList = (
   loggedInState: LoggedInState,
-  classId: d.QClassId,
-  participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+  classId: d.ClassId,
+  participantList: ReadonlyArray<d.Participant>
 ): LoggedInState => {
   return {
     ...loggedInState,
-    createdProgramMap: new Map<d.QProgramId, ProgramWithClassList>(
+    createdProgramMap: new Map<d.ProgramId, ProgramWithClassList>(
       [...loggedInState.createdProgramMap.values()].map((program) => {
         return [
           program.id,
@@ -410,7 +403,7 @@ export const setClassParticipantList = (
 
 export const setQuestionTree = (
   loggedInState: LoggedInState,
-  classId: d.QClassId,
+  classId: d.ClassId,
   questionTreeList: ReadonlyArray<d.StudentSelfQuestionTree> | undefined
 ): LoggedInState => {
   return {

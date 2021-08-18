@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme): StyleRules<"link"> => {
   };
 });
 
-export const Link: React.FC<{ appState: AppState; location: d.QLocation }> = (
+export const Link: React.FC<{ appState: AppState; location: d.Location }> = (
   props
 ) => {
   const classes = useStyles();

@@ -13,31 +13,25 @@ import { StudentSelfQuestionTreeList } from "./StudentSelfQuestionTreeList";
  */
 export const StudentClassPage = (props: {
   readonly appState: AppState;
-  readonly qClassForParticipant: d.QClassStudentOrGuest;
-  readonly participantList:
-    | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
-    | undefined;
+  readonly participantClass: d.ParticipantClass;
+  readonly participantList: ReadonlyArray<d.Participant> | undefined;
   readonly questionTreeList:
     | ReadonlyArray<d.StudentSelfQuestionTree>
     | undefined;
 }): React.ReactElement => {
   React.useEffect(
     () => {
-      props.appState.requestParticipantListInClass(
-        props.qClassForParticipant.id
-      );
-      props.appState.getStudentQuestionTreeInClass(
-        props.qClassForParticipant.id
-      );
+      props.appState.requestParticipantListInClass(props.participantClass.id);
+      props.appState.getStudentQuestionTreeInClass(props.participantClass.id);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.qClassForParticipant.id]
+    [props.participantClass.id]
   );
   return (
     <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Breadcrumbs>
-          <Link appState={props.appState} location={d.QLocation.Top}>
+          <Link appState={props.appState} location={d.Location.Top}>
             トップページ
           </Link>
 
@@ -45,7 +39,7 @@ export const StudentClassPage = (props: {
         </Breadcrumbs>
       </Box>
       <Box padding={1}>
-        <Typography variant="h5">{props.qClassForParticipant.name}</Typography>
+        <Typography variant="h5">{props.participantClass.name}</Typography>
       </Box>
       <Box padding={1}>
         <Typography variant="h6">クラスの参加者</Typography>
@@ -54,7 +48,7 @@ export const StudentClassPage = (props: {
       <Box padding={1}>
         <StudentSelfQuestionTreeList treeList={props.questionTreeList} />
       </Box>
-      <Box padding={1}>クラスID: {props.qClassForParticipant.id}</Box>
+      <Box padding={1}>クラスID: {props.participantClass.id}</Box>
     </PageContainer>
   );
 };

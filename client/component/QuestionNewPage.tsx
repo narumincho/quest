@@ -19,8 +19,8 @@ import { stringToValidQuestionText } from "../../common/validation";
 
 export const QuestionNewPage: React.VFC<{
   appState: AppState;
-  programId: d.QProgramId;
-  parent: d.QQuestionId | undefined;
+  programId: d.ProgramId;
+  parent: d.QuestionId | undefined;
 }> = (props) => {
   const [text, setText] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
@@ -34,25 +34,29 @@ export const QuestionNewPage: React.VFC<{
     if (textResult._ === "Error") {
       return;
     }
-    props.appState.createQuestion(props.programId, props.parent, textResult.ok);
+    props.appState.createQuestion(
+      props.programId,
+      props.parent,
+      textResult.okValue
+    );
     setIsCreating(true);
   };
 
-  const parentList: ReadonlyArray<d.QQuestion> =
+  const parentList: ReadonlyArray<d.Question> =
     props.parent === undefined
       ? []
-      : props.appState.questionParentList(d.Maybe.Just(props.parent));
+      : props.appState.questionParentList(d.Option.Some(props.parent));
   return (
     <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.appState} location={d.QLocation.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <Link
               appState={props.appState}
-              location={d.QLocation.Program(props.programId)}
+              location={d.Location.Program(props.programId)}
             >
               {program === undefined ? "プログラム" : program.name}
             </Link>
@@ -60,7 +64,10 @@ export const QuestionNewPage: React.VFC<{
               <Link
                 key={parent.id}
                 appState={props.appState}
-                location={d.QLocation.Question(parent.id)}
+                location={d.Location.AdminQuestion({
+                  questionId: parent.id,
+                  programId: props.programId,
+                })}
               >
                 {parent.name}
               </Link>
@@ -84,7 +91,7 @@ export const QuestionNewPage: React.VFC<{
             error={!isFirst && textResult._ === "Error"}
             helperText={
               !isFirst && textResult._ === "Error"
-                ? textResult.error
+                ? textResult.errorValue
                 : undefined
             }
             variant="outlined"
@@ -102,7 +109,11 @@ export const QuestionNewPage: React.VFC<{
           {props.parent === undefined ? (
             "指定なし"
           ) : (
-            <QuestionCard appState={props.appState} questionId={props.parent} />
+            <QuestionCard
+              appState={props.appState}
+              questionId={props.parent}
+              programId={props.programId}
+            />
           )}
         </Box>
         <Box padding={1}>
@@ -128,8 +139,8 @@ export const QuestionNewPage: React.VFC<{
 
 const getParentQuestion = (
   appState: AppState,
-  parentId: d.QQuestionId | undefined
-): ReadonlyArray<d.QQuestion> => {
+  parentId: d.QuestionId | undefined
+): ReadonlyArray<d.Question> => {
   if (parentId === undefined) {
     return [];
   }
