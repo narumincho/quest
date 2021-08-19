@@ -5,7 +5,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 
 export type Props = {
-  readonly class: d.QClass;
+  readonly class: d.AdminClass;
   readonly appState: AppState;
 };
 
@@ -21,10 +21,7 @@ const useStyles = makeStyles({
 export const ClassCard: React.VFC<Props> = (props) => {
   const classes = useStyles();
   return (
-    <Link
-      appState={props.appState}
-      location={d.QLocation.Class(props.class.id)}
-    >
+    <Link appState={props.appState} location={d.Location.Class(props.class.id)}>
       <Paper className={classes.card}>
         <Typography>{props.class.name}</Typography>
       </Paper>

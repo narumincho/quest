@@ -5,7 +5,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 
 export type Props = {
-  readonly programId: d.QProgramId;
+  readonly programId: d.ProgramId;
   readonly appState: AppState;
 };
 
@@ -25,7 +25,7 @@ export const ProgramCard: React.VFC<Props> = (props) => {
     return (
       <Link
         appState={props.appState}
-        location={d.QLocation.Program(props.programId)}
+        location={d.Location.Program(props.programId)}
       >
         プログラムの情報を読込中
       </Link>
@@ -34,7 +34,7 @@ export const ProgramCard: React.VFC<Props> = (props) => {
   return (
     <Link
       appState={props.appState}
-      location={d.QLocation.Program(props.programId)}
+      location={d.Location.Program(props.programId)}
     >
       <Paper className={classes.card}>
         <Typography>{program.name}</Typography>

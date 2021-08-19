@@ -24,7 +24,7 @@ export const TopPage: React.VFC<Props> = (props) => {
         createdProgramList={props.loggedInState.createdProgramMap}
       />
       <Box padding={1}>
-        <Link location={d.QLocation.NewProgram} appState={props.appState}>
+        <Link location={d.Location.NewProgram} appState={props.appState}>
           <Button variant="contained" startIcon={<Add />} fullWidth>
             プログラム作成
           </Button>
@@ -51,7 +51,7 @@ const useCreatedProgramListStyles = makeStyles({
 
 export const CreatedProgramList: React.VFC<{
   readonly appState: AppState;
-  readonly createdProgramList: ReadonlyMap<d.QProgramId, ProgramWithClassList>;
+  readonly createdProgramList: ReadonlyMap<d.ProgramId, ProgramWithClassList>;
 }> = (props) => {
   const classes = useCreatedProgramListStyles();
   if (props.createdProgramList.size === 0) {
@@ -100,8 +100,7 @@ const JoinedClassList = (props: {
         <ClassStudentOrGuestCard
           key={classAndRole.class.id}
           appState={props.appState}
-          classStudentOrGuest={classAndRole.class}
-          role={classAndRole.role}
+          participantClass={classAndRole.class}
         />
       ))}
     </Box>
@@ -118,20 +117,19 @@ const useClassStudentOrGuestCardStyles = makeStyles({
 });
 
 const ClassStudentOrGuestCard = (props: {
-  readonly classStudentOrGuest: d.QClassStudentOrGuest;
-  readonly role: d.QRole;
+  readonly participantClass: d.ParticipantClass;
   readonly appState: AppState;
 }): React.ReactElement => {
   const classes = useClassStudentOrGuestCardStyles();
   return (
     <Link
       appState={props.appState}
-      location={d.QLocation.Class(props.classStudentOrGuest.id)}
+      location={d.Location.Class(props.participantClass.id)}
     >
       <Paper className={classes.card}>
         <Typography>
-          {props.classStudentOrGuest.name}
-          {props.role === "Guest" ? "(ゲスト)" : "(生徒)"}
+          {props.participantClass.name}
+          {props.participantClass.role === "Guest" ? "(ゲスト)" : "(生徒)"}
         </Typography>
       </Paper>
     </Link>

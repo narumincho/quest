@@ -16,6 +16,7 @@ import { QuestionEditPage } from "./component/QuestionEditPage";
 import { QuestionNewPage } from "./component/QuestionNewPage";
 import { QuestionPage } from "./component/QuestionPage";
 import { SettingPage } from "./component/SettingPage";
+import { StudentEditQuestionPage } from "./component/StudentEditQuestionPage";
 import { TopPage } from "./component/TopPage";
 
 export const App: React.VFC<Record<never, never>> = React.memo(() => {
@@ -63,95 +64,98 @@ const LoggedIn: React.VFC<{
       return <ProgramNewPage appState={props.appState} />;
     case "Program":
       return (
-        <ProgramPage
-          programId={location.qProgramId}
-          appState={props.appState}
-        />
+        <ProgramPage programId={location.programId} appState={props.appState} />
       );
     case "NewQuestion":
       return (
         <QuestionNewPage
           appState={props.appState}
-          programId={location.qNewQuestionParameter.programId}
+          programId={location.newQuestionParameter.programId}
           parent={
-            location.qNewQuestionParameter.parent._ === "Just"
-              ? location.qNewQuestionParameter.parent.value
+            location.newQuestionParameter.parent._ === "Some"
+              ? location.newQuestionParameter.parent.value
               : undefined
           }
         />
       );
-    case "Question":
+    case "AdminQuestion":
       return (
         <QuestionPage
-          questionId={location.qQuestionId}
+          questionId={location.programIdAndQuestionId.questionId}
+          programId={location.programIdAndQuestionId.programId}
           appState={props.appState}
         />
       );
     case "NewClass":
-      return (
-        <ClassNewPage a={props.appState} programId={location.qProgramId} />
-      );
+      return <ClassNewPage a={props.appState} programId={location.programId} />;
     case "Class": {
-      return (
-        <ClassPage appState={props.appState} classId={location.qClassId} />
-      );
+      return <ClassPage appState={props.appState} classId={location.classId} />;
     }
     case "ClassInvitation":
       return (
         <ClassInvitationPage
           appState={props.appState}
-          classInvitationToken={location.qClassInvitationToken}
+          studentClassInvitationToken={location.studentClassInvitationToken}
         />
       );
     case "EditQuestion":
       return (
         <QuestionEditPage
           appState={props.appState}
-          questionId={location.qQuestionId}
+          questionId={location.programIdAndQuestionId.questionId}
+          programId={location.programIdAndQuestionId.programId}
+        />
+      );
+    case "StudentEditQuestion":
+      return (
+        <StudentEditQuestionPage
+          appState={props.appState}
+          questionId={location.classIdAndQuestionId.questionId}
+          classId={location.classIdAndQuestionId.classId}
         />
       );
   }
 });
 LoggedIn.displayName = "LoggedIn";
 
-export const ClassPage: React.VFC<{ appState: AppState; classId: d.QClassId }> =
-  (props) => {
-    const classAndRole = props.appState.getClassAndRole(props.classId);
-    switch (classAndRole.tag) {
-      case "none":
-        return (
-          <PageContainer appState={props.appState}>
-            <Box>
-              このクラスは, 存在していないか, 参加または作成していません
-            </Box>
+export const ClassPage: React.VFC<{
+  appState: AppState;
+  classId: d.ClassId;
+}> = (props) => {
+  const classAndRole = props.appState.getClassAndRole(props.classId);
+  switch (classAndRole.tag) {
+    case "none":
+      return (
+        <PageContainer appState={props.appState}>
+          <Box>このクラスは, 存在していないか, 参加または作成していません</Box>
+          <Box padding={1}>
             <Box padding={1}>
-              <Box padding={1}>
-                <Breadcrumbs>
-                  <Link appState={props.appState} location={d.QLocation.Top}>
-                    トップページ
-                  </Link>
-                  <div></div>
-                </Breadcrumbs>
-              </Box>
+              <Breadcrumbs>
+                <Link appState={props.appState} location={d.Location.Top}>
+                  トップページ
+                </Link>
+                <div></div>
+              </Breadcrumbs>
             </Box>
-            <Box padding={1}>
-              <Typography>クラスID: {props.classId}</Typography>
-            </Box>
-          </PageContainer>
-        );
-      case "admin":
-        return (
-          <AdminClassPage
-            a={props.appState}
-            classWithParticipantList={classAndRole.classWithParticipantList}
-          />
-        );
-      case "participant":
-        return (
-          <ParticipantClassPage
-            appState={props.appState}
-            joinedClass={classAndRole.joinedClass}
-          />
-        );
-    }
-  };
+          </Box>
+          <Box padding={1}>
+            <Typography>クラスID: {props.classId}</Typography>
+          </Box>
+        </PageContainer>
+      );
+    case "admin":
+      return (
+        <AdminClassPage
+          a={props.appState}
+          classWithParticipantList={classAndRole.classWithParticipantList}
+        />
+      );
+    case "participant":
+      return (
+        <ParticipantClassPage
+          appState={props.appState}
+          joinedClass={classAndRole.joinedClass}
+        />
+      );
+  }
+};

@@ -16,7 +16,7 @@ import { PageContainer } from "./PageContainer";
 import { QuestionTreeList } from "./QuestionTree";
 
 export type Props = {
-  readonly programId: d.QProgramId;
+  readonly programId: d.ProgramId;
   readonly appState: AppState;
 };
 
@@ -34,7 +34,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
-              <Link appState={props.appState} location={d.QLocation.Top}>
+              <Link appState={props.appState} location={d.Location.Top}>
                 トップページ
               </Link>
               <div></div>
@@ -57,7 +57,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.appState} location={d.QLocation.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <div></div>
@@ -85,10 +85,9 @@ export const ProgramPage: React.VFC<Props> = (props) => {
           <Box padding={1}>
             <Link
               appState={props.appState}
-              location={d.QLocation.NewQuestion({
-                parent: d.Maybe.Nothing(),
+              location={d.Location.NewQuestion({
+                parent: d.Option.None(),
                 programId: props.programId,
-                text: "",
               })}
             >
               <Button fullWidth startIcon={<Add />} variant="contained">
@@ -109,7 +108,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
           <Box padding={1}>
             <Link
               appState={props.appState}
-              location={d.QLocation.NewClass(props.programId)}
+              location={d.Location.NewClass(props.programId)}
             >
               <Button fullWidth startIcon={<Add />} variant="contained">
                 クラスを作成する
@@ -128,7 +127,7 @@ export const ProgramPage: React.VFC<Props> = (props) => {
 export const QuestionList: React.VFC<{
   questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
   appState: AppState;
-  programId: d.QProgramId;
+  programId: d.ProgramId;
 }> = (props) => {
   if (props.questionTreeListWithLoadingState.tag === "Empty") {
     return (
@@ -161,7 +160,11 @@ export const QuestionList: React.VFC<{
   }
 
   return (
-    <QuestionTreeList questionTreeList={treeList} appState={props.appState} />
+    <QuestionTreeList
+      questionTreeList={treeList}
+      appState={props.appState}
+      programId={props.programId}
+    />
   );
 };
 
@@ -174,9 +177,9 @@ const useStyle = makeStyles({
 });
 
 const ClassList: React.VFC<{
-  classList: ReadonlyArray<d.QClass>;
+  classList: ReadonlyArray<d.AdminClass>;
   a: AppState;
-  programId: d.QProgramId;
+  programId: d.ProgramId;
 }> = (props) => {
   const classes = useStyle();
   if (props.classList.length === 0) {

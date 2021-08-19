@@ -1,11 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import {
-  Link as MuiLink,
-  StyleRules,
-  Theme,
-  makeStyles,
-} from "@material-ui/core";
+import { Link as MuiLink, StyleRules, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 import { locationToUrl } from "../../common/url";
 
@@ -23,7 +18,7 @@ const useStyles = makeStyles((theme): StyleRules<"link"> => {
   };
 });
 
-export const Link: React.FC<{ appState: AppState; location: d.QLocation }> = (
+export const Link: React.FC<{ appState: AppState; location: d.Location }> = (
   props
 ) => {
   const classes = useStyles();

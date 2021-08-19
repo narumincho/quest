@@ -5,8 +5,9 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 
 export type Props = {
-  readonly questionId: d.QQuestionId;
+  readonly questionId: d.QuestionId;
   readonly appState: AppState;
+  readonly programId: d.ProgramId;
 };
 
 const useStyles = makeStyles({
@@ -30,7 +31,10 @@ export const QuestionCard: React.VFC<Props> = (props) => {
   return (
     <Link
       appState={props.appState}
-      location={d.QLocation.Question(props.questionId)}
+      location={d.Location.AdminQuestion({
+        questionId: props.questionId,
+        programId: props.programId,
+      })}
     >
       <Paper className={classes.card}>
         <Typography>{question.name}</Typography>

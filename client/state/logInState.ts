@@ -71,58 +71,62 @@ export type logInStateResult = {
   readonly setJumpingPage: () => void;
   /** ログイン処理に成功しログインした */
   readonly setLoggedIn: (
-    accountData: d.QAccountData,
+    accountData: d.AccountData,
     accountToken: d.AccountToken
   ) => void;
   /** 自分のプログラムを編集した分を変数キャッシュに保存する */
-  readonly setProgram: (program: d.QProgram) => void;
+  readonly setProgram: (program: d.Program) => void;
   /** プロジェクトに対する質問の取得データと取得状態を保存する */
   readonly setQuestionListState: (
-    programId: d.QProgramId,
+    programId: d.ProgramId,
     questionListState: QuestionListState
   ) => void;
   /** 作成したクラスを保存する */
-  readonly addCreatedClass: (qClass: d.QClass) => void;
+  readonly addCreatedClass: (qClass: d.AdminClass) => void;
   /** 参加したクラスをキャッシュに追加する */
   readonly addJoinedClass: (
-    classStudentOrGuest: d.QClassStudentOrGuest,
-    role: d.QRole
+    participantClass: d.ParticipantClass,
+    role: d.ClassParticipantRole
   ) => void;
   /** 作成した質問か編集した質問をキャッシュに保存する */
-  readonly addCreatedOrEditedQuestion: (question: d.QQuestion) => void;
+  readonly addCreatedOrEditedQuestion: (question: d.Question) => void;
   /** 質問をIDから取得する */
   readonly getQuestionById: (
-    questionId: d.QQuestionId
-  ) => d.QQuestion | undefined;
+    questionId: d.QuestionId
+  ) => d.Question | undefined;
   /** 質問の直接的な子を取得する */
   readonly getQuestionDirectChildren: (
-    questionId: d.QQuestionId
-  ) => ReadonlyArray<d.QQuestionId>;
+    questionId: d.QuestionId
+  ) => ReadonlyArray<d.QuestionId>;
   /** 質問の親を取得する */
   readonly getParentQuestionList: (
-    questionId: d.QQuestionId
-  ) => ReadonlyArray<d.QQuestion>;
+    questionId: d.QuestionId
+  ) => ReadonlyArray<d.Question>;
   /** プログラムの質問の木構造を取得する */
   readonly getQuestionTreeListWithLoadingStateInProgram: (
-    programId: d.QProgramId
+    programId: d.ProgramId
   ) => QuestionTreeListWithLoadingState;
   /** 親の質問になることができる質問を, キャッシュから取得する */
   readonly getQuestionThatCanBeParentList: (
-    programId: d.QProgramId,
-    questionId: d.QQuestionId
-  ) => ReadonlyArray<d.QQuestion>;
+    programId: d.ProgramId,
+    questionId: d.QuestionId
+  ) => ReadonlyArray<d.Question>;
   /** クラスとクラスへの所属の種類を取得する */
-  readonly getClassAndRole: (classId: d.QClassId) => ClassAndRole;
+  readonly getClassAndRole: (classId: d.ClassId) => ClassAndRole;
   /** クラスの参加者をキャッシュに保存する */
   readonly setClassParticipantList: (
-    classId: d.QClassId,
-    participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+    classId: d.ClassId,
+    participantList: ReadonlyArray<d.Participant>
   ) => void;
   /** 生徒として参加したクラスの質問と回答状況をキャッシュに保存する */
   readonly setStudentQuestionTree: (
-    classId: d.QClassId,
+    classId: d.ClassId,
     tree: ReadonlyArray<d.StudentSelfQuestionTree>
   ) => void;
+  /** 生徒として参加したクラスの質問と回答状況をキャッシュから取得する */
+  readonly getStudentQuestionTree: (
+    classId: d.ClassId
+  ) => ReadonlyArray<d.StudentSelfQuestionTree> | undefined;
 };
 
 export const useLogInState = (): logInStateResult => {
@@ -140,7 +144,7 @@ export const useLogInState = (): logInStateResult => {
   );
 
   const setLoggedIn = useCallback(
-    (accountData: d.QAccountData, accountToken: d.AccountToken): void => {
+    (accountData: d.AccountData, accountToken: d.AccountToken): void => {
       setLogInState({
         tag: "LoggedIn",
         loggedInState: initLoggedInState({ accountToken, accountData }),
@@ -161,7 +165,7 @@ export const useLogInState = (): logInStateResult => {
     });
   }, []);
 
-  const setProgram = useCallback((program: d.QProgram): void => {
+  const setProgram = useCallback((program: d.Program): void => {
     setLogInState((beforeLogInState) => {
       if (beforeLogInState.tag !== "LoggedIn") {
         return beforeLogInState;
@@ -178,7 +182,7 @@ export const useLogInState = (): logInStateResult => {
   }, []);
 
   const setQuestionListState = useCallback(
-    (programId: d.QProgramId, questionListState: QuestionListState): void => {
+    (programId: d.ProgramId, questionListState: QuestionListState): void => {
       setLogInState((beforeLogInState) => {
         if (beforeLogInState.tag !== "LoggedIn") {
           return beforeLogInState;
@@ -198,7 +202,7 @@ export const useLogInState = (): logInStateResult => {
     []
   );
 
-  const addCreatedClass = useCallback((qClass: d.QClass): void => {
+  const addCreatedClass = useCallback((qClass: d.AdminClass): void => {
     setLogInState((beforeLogInState) => {
       if (beforeLogInState.tag !== "LoggedIn") {
         return beforeLogInState;
@@ -214,7 +218,7 @@ export const useLogInState = (): logInStateResult => {
   }, []);
 
   const addJoinedClass = useCallback(
-    (classStudentOrGuest: d.QClassStudentOrGuest, role: d.QRole): void => {
+    (participantClass: d.ParticipantClass): void => {
       setLogInState((beforeLogInState) => {
         if (beforeLogInState.tag !== "LoggedIn") {
           return beforeLogInState;
@@ -223,7 +227,7 @@ export const useLogInState = (): logInStateResult => {
           ...beforeLogInState,
           loggedInState: loggedInStateAddJoinedClass(
             beforeLogInState.loggedInState,
-            { classStudentOrGuest, role }
+            participantClass
           ),
         };
       });
@@ -231,7 +235,7 @@ export const useLogInState = (): logInStateResult => {
     []
   );
 
-  const addCreatedOrEditedQuestion = useCallback((question: d.QQuestion) => {
+  const addCreatedOrEditedQuestion = useCallback((question: d.Question) => {
     setLogInState((beforeLogInState) => {
       if (beforeLogInState.tag !== "LoggedIn") {
         return beforeLogInState;
@@ -247,7 +251,7 @@ export const useLogInState = (): logInStateResult => {
   }, []);
 
   const getQuestionById = useCallback(
-    (questionId: d.QQuestionId): d.QQuestion | undefined => {
+    (questionId: d.QuestionId): d.Question | undefined => {
       if (logInState.tag !== "LoggedIn") {
         return undefined;
       }
@@ -257,7 +261,7 @@ export const useLogInState = (): logInStateResult => {
   );
 
   const getQuestionDirectChildren = useCallback(
-    (questionId: d.QQuestionId): ReadonlyArray<d.QQuestionId> => {
+    (questionId: d.QuestionId): ReadonlyArray<d.QuestionId> => {
       if (logInState.tag !== "LoggedIn") {
         return [];
       }
@@ -270,7 +274,7 @@ export const useLogInState = (): logInStateResult => {
   );
 
   const getParentQuestionList = useCallback(
-    (questionId: d.QQuestionId): ReadonlyArray<d.QQuestion> => {
+    (questionId: d.QuestionId): ReadonlyArray<d.Question> => {
       if (logInState.tag !== "LoggedIn") {
         return [];
       }
@@ -283,7 +287,7 @@ export const useLogInState = (): logInStateResult => {
   );
 
   const getQuestionTreeListWithLoadingStateInProgram = useCallback(
-    (programId: d.QProgramId): QuestionTreeListWithLoadingState => {
+    (programId: d.ProgramId): QuestionTreeListWithLoadingState => {
       if (logInState.tag !== "LoggedIn") {
         return { tag: "Empty" };
       }
@@ -297,9 +301,9 @@ export const useLogInState = (): logInStateResult => {
 
   const getQuestionThatCanBeParentList = useCallback(
     (
-      programId: d.QProgramId,
-      questionId: d.QQuestionId
-    ): ReadonlyArray<d.QQuestion> => {
+      programId: d.ProgramId,
+      questionId: d.QuestionId
+    ): ReadonlyArray<d.Question> => {
       if (logInState.tag !== "LoggedIn") {
         return [];
       }
@@ -313,7 +317,7 @@ export const useLogInState = (): logInStateResult => {
   );
 
   const getClassAndRole = useCallback(
-    (classId: d.QClassId): ClassAndRole => {
+    (classId: d.ClassId): ClassAndRole => {
       if (logInState.tag !== "LoggedIn") {
         return { tag: "none" };
       }
@@ -324,8 +328,8 @@ export const useLogInState = (): logInStateResult => {
 
   const setClassParticipantList = useCallback(
     (
-      classId: d.QClassId,
-      participantList: ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
+      classId: d.ClassId,
+      participantList: ReadonlyArray<d.Participant>
     ): void => {
       setLogInState((beforeLogInState) => {
         if (beforeLogInState.tag !== "LoggedIn") {
@@ -346,7 +350,7 @@ export const useLogInState = (): logInStateResult => {
 
   const setStudentQuestionTree = useCallback(
     (
-      classId: d.QClassId,
+      classId: d.ClassId,
       tree: ReadonlyArray<d.StudentSelfQuestionTree>
     ): void => {
       setLogInState((beforeLogInState) => {
@@ -365,6 +369,22 @@ export const useLogInState = (): logInStateResult => {
     },
     []
   );
+
+  const getStudentQuestionTree: logInStateResult["getStudentQuestionTree"] =
+    useCallback(
+      (classId) => {
+        if (logInState.tag !== "LoggedIn") {
+          return undefined;
+        }
+        const joinedClass =
+          logInState.loggedInState.joinedClassMap.get(classId);
+        if (joinedClass === undefined) {
+          return undefined;
+        }
+        return joinedClass.questionTreeList;
+      },
+      [logInState]
+    );
 
   return useMemo<logInStateResult>(
     () => ({
@@ -387,6 +407,7 @@ export const useLogInState = (): logInStateResult => {
       getClassAndRole,
       setClassParticipantList,
       setStudentQuestionTree,
+      getStudentQuestionTree,
     }),
     [
       logInState,
@@ -408,6 +429,7 @@ export const useLogInState = (): logInStateResult => {
       getClassAndRole,
       setClassParticipantList,
       setStudentQuestionTree,
+      getStudentQuestionTree,
     ]
   );
 };

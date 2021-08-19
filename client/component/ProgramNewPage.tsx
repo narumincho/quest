@@ -51,7 +51,7 @@ export const ProgramNewPage: React.VFC<Props> = (props) => {
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.appState} location={d.QLocation.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <div></div>
@@ -72,7 +72,7 @@ export const ProgramNewPage: React.VFC<Props> = (props) => {
             error={!isFirst && projectNameResult._ === "Error"}
             helperText={
               !isFirst && projectNameResult._ === "Error"
-                ? projectNameResult.error
+                ? projectNameResult.errorValue
                 : undefined
             }
             variant="outlined"
@@ -95,7 +95,7 @@ export const ProgramNewPage: React.VFC<Props> = (props) => {
             data-cy="create"
           >
             {projectNameResult._ === "Ok"
-              ? `「${projectNameResult.ok}」`
+              ? `「${projectNameResult.okValue}」`
               : "プログラム"}
             を作成
           </Button>
@@ -103,7 +103,7 @@ export const ProgramNewPage: React.VFC<Props> = (props) => {
       </Box>
       <Dialog open={isCreating}>
         <DialogTitle>
-          「{projectNameResult._ === "Ok" ? projectNameResult.ok : "?????"}
+          「{projectNameResult._ === "Ok" ? projectNameResult.okValue : "?????"}
           」を作成中
         </DialogTitle>
         <Box padding={2} display="grid" justifyContent="center">

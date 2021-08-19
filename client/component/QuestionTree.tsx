@@ -8,6 +8,7 @@ import { Link } from "./Link";
 export const QuestionTreeList: React.VFC<{
   questionTreeList: ReadonlyArray<state.QuestionTree>;
   appState: state.AppState;
+  programId: d.ProgramId;
 }> = (props) => {
   return (
     <Box>
@@ -16,6 +17,7 @@ export const QuestionTreeList: React.VFC<{
           key={index}
           questionTree={questionTree}
           appState={props.appState}
+          programId={props.programId}
         />
       ))}
     </Box>
@@ -34,13 +36,17 @@ const useStyles = makeStyles((theme) => ({
 export const QuestionTree: React.VFC<{
   questionTree: state.QuestionTree;
   appState: state.AppState;
+  programId: d.ProgramId;
 }> = (props) => {
   const classes = useStyles();
   return (
     <Box className={classes.item}>
       <Link
         appState={props.appState}
-        location={d.QLocation.Question(props.questionTree.id)}
+        location={d.Location.AdminQuestion({
+          questionId: props.questionTree.id,
+          programId: props.programId,
+        })}
       >
         <Box className={classes.label}>
           <ChevronRight />
@@ -54,6 +60,7 @@ export const QuestionTree: React.VFC<{
             questionTree={child}
             appState={props.appState}
             key={child.id}
+            programId={props.programId}
           />
         ))}
       </Box>

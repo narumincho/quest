@@ -16,9 +16,7 @@ const useParticipantListStyles = makeStyles({
  * クラスの参加者一覧表示
  */
 export const ParticipantList: React.VFC<{
-  readonly participantList:
-    | ReadonlyArray<d.Tuple2<d.QAccount, d.QRole>>
-    | undefined;
+  readonly participantList: ReadonlyArray<d.Participant> | undefined;
 }> = (props) => {
   const classes = useParticipantListStyles();
   if (props.participantList === undefined) {
@@ -30,14 +28,16 @@ export const ParticipantList: React.VFC<{
   return (
     <Box>
       {props.participantList.map((participant) => (
-        <Box key={participant.first.id} className={classes.item}>
+        <Box key={participant.account.id} className={classes.item}>
           <Avatar
-            alt={participant.first.name}
-            src={imageUrl(participant.first.iconHash).toString()}
+            alt={participant.account.name}
+            src={imageUrl(participant.account.iconHash).toString()}
           />
-          {participant.first.name}
+          {participant.account.name}
 
-          {participant.second === d.QRole.Student ? "(生徒)" : "(ゲスト)"}
+          {participant.role === d.ClassParticipantRole.Student
+            ? "(生徒)"
+            : "(ゲスト)"}
         </Box>
       ))}
     </Box>

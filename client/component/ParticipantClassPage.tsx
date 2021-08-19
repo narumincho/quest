@@ -13,18 +13,18 @@ export type Props = {
  * クラス参加者の詳細ページ
  */
 export const ParticipantClassPage: React.VFC<Props> = (props) => {
-  if (props.joinedClass.role === "Guest") {
+  if (props.joinedClass.class.role === "Guest") {
     return (
       <GuestClassPage
         appState={props.appState}
-        qClassForParticipant={props.joinedClass.class}
+        participantClass={props.joinedClass.class}
       />
     );
   }
   return (
     <StudentClassPage
       appState={props.appState}
-      qClassForParticipant={props.joinedClass.class}
+      participantClass={props.joinedClass.class}
       participantList={props.joinedClass.participantList}
       questionTreeList={props.joinedClass.questionTreeList}
     />

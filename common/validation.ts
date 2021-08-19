@@ -131,10 +131,10 @@ export type QuestionParentIsValidResult =
  * @param questionMap すべての質問が含まれたMap (プロジェクトに含まれている質問で充分)
  */
 export const questionParentIsValid = (
-  parentQuestionId: d.QQuestionId,
-  questionId: d.QQuestionId,
-  programId: d.QProgramId,
-  questionMap: ReadonlyMap<d.QQuestionId, d.QQuestion>
+  parentQuestionId: d.QuestionId,
+  questionId: d.QuestionId,
+  programId: d.ProgramId,
+  questionMap: ReadonlyMap<d.QuestionId, d.Question>
 ): QuestionParentIsValidResult => {
   if (parentQuestionId === questionId) {
     return {
@@ -156,7 +156,7 @@ export const questionParentIsValid = (
       reason: "違うプロジェクトの親を指定することはできない",
     };
   }
-  if (childQuestion.parent._ === "Nothing") {
+  if (childQuestion.parent._ === "None") {
     return {
       isValid: true,
     };
@@ -170,7 +170,7 @@ export const questionParentIsValid = (
         reason: "親の質問を取得できなかった",
       };
     }
-    if (question.parent._ === "Nothing") {
+    if (question.parent._ === "None") {
       return {
         isValid: true,
       };

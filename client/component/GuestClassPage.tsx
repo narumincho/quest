@@ -10,15 +10,15 @@ import { PageContainer } from "./PageContainer";
  */
 export const GuestClassPage = (props: {
   readonly appState: AppState;
-  readonly qClassForParticipant: d.QClassStudentOrGuest;
+  readonly participantClass: d.ParticipantClass;
 }): React.ReactElement => {
   return (
     <PageContainer appState={props.appState}>
       <Box padding={1}>
-        <Typography variant="h5">{props.qClassForParticipant.name}</Typography>
+        <Typography variant="h5">{props.participantClass.name}</Typography>
       </Box>
       <Box padding={1}>ゲストから見たクラスの詳細ページ</Box>
-      <Box padding={1}>クラスID: {props.qClassForParticipant.id}</Box>
+      <Box padding={1}>クラスID: {props.participantClass.id}</Box>
     </PageContainer>
   );
 };
