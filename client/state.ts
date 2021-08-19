@@ -100,7 +100,11 @@ export type AppState = {
   /** クラスの参加者を取得する */
   readonly requestParticipantListInClass: (classId: d.ClassId) => void;
   /** クラスの質問と自分の答えた回答を取得する */
-  readonly getStudentQuestionTreeInClass: (classId: d.ClassId) => void;
+  readonly requestStudentQuestionTreeInClass: (classId: d.ClassId) => void;
+  /** 生徒として参加したクラスの質問と回答状況をキャッシュから取得する */
+  readonly getStudentQuestionTree: (
+    classId: d.ClassId
+  ) => ReadonlyArray<d.StudentSelfQuestionTree> | undefined;
 };
 
 export const useAppState = (): AppState => {
@@ -125,6 +129,7 @@ export const useAppState = (): AppState => {
     getClassAndRole,
     setClassParticipantList,
     setStudentQuestionTree,
+    getStudentQuestionTree,
   } = useLogInState();
   const [location, setLocation] = useState<d.Location>(d.Location.Top);
   const useAccountMapResult = useAccountMap();
@@ -609,7 +614,8 @@ export const useAppState = (): AppState => {
           });
       },
       requestParticipantListInClass,
-      getStudentQuestionTreeInClass,
+      requestStudentQuestionTreeInClass: getStudentQuestionTreeInClass,
+      getStudentQuestionTree,
     }),
     [
       logInState,
@@ -637,6 +643,7 @@ export const useAppState = (): AppState => {
       getCreatedClass,
       addJoinedClass,
       getStudentQuestionTreeInClass,
+      getStudentQuestionTree,
     ]
   );
 };

@@ -22,7 +22,9 @@ export const StudentClassPage = (props: {
   React.useEffect(
     () => {
       props.appState.requestParticipantListInClass(props.participantClass.id);
-      props.appState.getStudentQuestionTreeInClass(props.participantClass.id);
+      props.appState.requestStudentQuestionTreeInClass(
+        props.participantClass.id
+      );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.participantClass.id]

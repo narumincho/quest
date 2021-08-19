@@ -123,6 +123,10 @@ export type logInStateResult = {
     classId: d.ClassId,
     tree: ReadonlyArray<d.StudentSelfQuestionTree>
   ) => void;
+  /** 生徒として参加したクラスの質問と回答状況をキャッシュから取得する */
+  readonly getStudentQuestionTree: (
+    classId: d.ClassId
+  ) => ReadonlyArray<d.StudentSelfQuestionTree> | undefined;
 };
 
 export const useLogInState = (): logInStateResult => {
@@ -366,6 +370,22 @@ export const useLogInState = (): logInStateResult => {
     []
   );
 
+  const getStudentQuestionTree: logInStateResult["getStudentQuestionTree"] =
+    useCallback(
+      (classId) => {
+        if (logInState.tag !== "LoggedIn") {
+          return undefined;
+        }
+        const joinedClass =
+          logInState.loggedInState.joinedClassMap.get(classId);
+        if (joinedClass === undefined) {
+          return undefined;
+        }
+        return joinedClass.questionTreeList;
+      },
+      [logInState]
+    );
+
   return useMemo<logInStateResult>(
     () => ({
       logInState,
@@ -387,6 +407,7 @@ export const useLogInState = (): logInStateResult => {
       getClassAndRole,
       setClassParticipantList,
       setStudentQuestionTree,
+      getStudentQuestionTree,
     }),
     [
       logInState,
@@ -408,6 +429,7 @@ export const useLogInState = (): logInStateResult => {
       getClassAndRole,
       setClassParticipantList,
       setStudentQuestionTree,
+      getStudentQuestionTree,
     ]
   );
 };

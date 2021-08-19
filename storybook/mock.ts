@@ -109,7 +109,8 @@ export const mockAppState: AppState = {
   },
   joinClass: action("joinClass"),
   requestParticipantListInClass: action("requestParticipantListInClass"),
-  getStudentQuestionTreeInClass: action("getStudentQuestionTreeInClass"),
+  requestStudentQuestionTreeInClass: action("getStudentQuestionTreeInClass"),
+  getStudentQuestionTree: () => undefined,
 };
 
 export const mockAccount: d.Account = {
