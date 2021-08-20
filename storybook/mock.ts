@@ -110,7 +110,8 @@ export const mockAppState: AppState = {
   joinClass: action("joinClass"),
   requestParticipantListInClass: action("requestParticipantListInClass"),
   requestStudentQuestionTreeInClass: action("getStudentQuestionTreeInClass"),
-  getStudentQuestionTree: () => undefined,
+  getStudentQuestionTree: () => mockStudentSelfQuestionTreeList,
+  answerQuestion: action("answerQuestion"),
 };
 
 export const mockAccount: d.Account = {
@@ -296,6 +297,9 @@ export const mockLoggedInState: LoggedInState = {
   ]),
 };
 
+export const mockKadaiQuestionId = d.QuestionId.fromString("kadai");
+export const mockManabiQuestionId = d.QuestionId.fromString("manabi");
+
 export const mockStudentSelfQuestionTreeList: ReadonlyArray<d.StudentSelfQuestionTree> =
   [
     {
@@ -307,7 +311,7 @@ export const mockStudentSelfQuestionTreeList: ReadonlyArray<d.StudentSelfQuestio
           answer: d.Option.None(),
           questionText: "どんな課題に取り組んだか",
           children: [],
-          questionId: d.QuestionId.fromString("sampleAA"),
+          questionId: mockKadaiQuestionId,
         },
         {
           answer: d.Option.None(),
@@ -337,7 +341,7 @@ export const mockStudentSelfQuestionTreeList: ReadonlyArray<d.StudentSelfQuestio
           }),
           questionText: "学びは得られたか?",
           children: [],
-          questionId: d.QuestionId.fromString("sampleAE"),
+          questionId: mockManabiQuestionId,
         },
       ],
     },

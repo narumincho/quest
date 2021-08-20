@@ -1,6 +1,15 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, TextField, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import { Publish, Save } from "@material-ui/icons";
 import { AppState } from "../state";
 import { PageContainer } from "./PageContainer";
 import { stringToValidAnswerText } from "../../common/validation";
@@ -14,8 +23,11 @@ export type Props = {
 
 export const StudentEditQuestionPage: React.VFC<Props> = (props) => {
   const questionTreeList = props.appState.getStudentQuestionTree(props.classId);
-  const [answerText, setAnswerText] = React.useState<string>("");
+  const [answerText, setAnswerText] = React.useState<string | undefined>(
+    undefined
+  );
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
+  const [isSaving, setIsSaving] = React.useState<boolean>(false);
   const changeAnswerText = React.useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
       setIsFirst(false);
@@ -23,7 +35,22 @@ export const StudentEditQuestionPage: React.VFC<Props> = (props) => {
     },
     []
   );
-  const validationResult = stringToValidAnswerText(answerText);
+
+  React.useEffect(() => {
+    if (answerText === undefined) {
+      return;
+    }
+    if (questionTreeList === undefined) {
+      return;
+    }
+    const question = studentSelfQuestionTreeListFind(
+      questionTreeList,
+      props.questionId
+    );
+    if (question !== undefined && question.answer._ === "Some") {
+      setAnswerText(question.answer.value.text);
+    }
+  }, [answerText, props.questionId, questionTreeList]);
 
   if (questionTreeList === undefined) {
     return (
@@ -36,6 +63,8 @@ export const StudentEditQuestionPage: React.VFC<Props> = (props) => {
     questionTreeList,
     props.questionId
   );
+  const validationResult = stringToValidAnswerText(answerText ?? "");
+
   if (question === undefined) {
     return (
       <PageContainer appState={props.appState}>
@@ -43,6 +72,24 @@ export const StudentEditQuestionPage: React.VFC<Props> = (props) => {
       </PageContainer>
     );
   }
+
+  const answerQuestion = (isConfirm: boolean): void => {
+    setIsFirst(false);
+    if (
+      isSaving ||
+      validationResult._ === "Error" ||
+      answerText === undefined
+    ) {
+      return;
+    }
+    setIsSaving(true);
+    props.appState.answerQuestion({
+      answerText,
+      classId: props.classId,
+      isConfirm,
+      questionId: props.questionId,
+    });
+  };
   return (
     <PageContainer appState={props.appState}>
       <Box padding={1}>
@@ -68,6 +115,42 @@ export const StudentEditQuestionPage: React.VFC<Props> = (props) => {
           }}
         />
       </Box>
+      <Box padding={1}>
+        <Button
+          fullWidth
+          onClick={() => {
+            answerQuestion(false);
+          }}
+          size="large"
+          disabled={!isFirst && validationResult._ === "Error"}
+          variant="contained"
+          color="primary"
+          startIcon={<Save />}
+        >
+          回答を一時保存する
+        </Button>
+      </Box>
+      <Box padding={1}>
+        <Button
+          fullWidth
+          onClick={() => {
+            answerQuestion(true);
+          }}
+          size="large"
+          disabled={!isFirst && validationResult._ === "Error"}
+          variant="contained"
+          color="secondary"
+          startIcon={<Publish />}
+        >
+          回答を確定して保存する
+        </Button>
+      </Box>
+      <Dialog open={isSaving}>
+        <DialogTitle>質問を保存中</DialogTitle>
+        <Box padding={2} display="grid" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      </Dialog>
     </PageContainer>
   );
 };

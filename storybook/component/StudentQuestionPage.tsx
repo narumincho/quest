@@ -1,6 +1,11 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { mockAppState, mockClassId, muzintou } from "../mock";
+import {
+  mockAppState,
+  mockClassId,
+  mockKadaiQuestionId,
+  mockManabiQuestionId,
+} from "../mock";
 import { StudentEditQuestionPage } from "../../client/component/StudentEditQuestionPage";
 
 const meta: Meta = {
@@ -12,7 +17,15 @@ export default meta;
 export const Default: Story<never> = () => (
   <StudentEditQuestionPage
     appState={mockAppState}
-    questionId={muzintou}
+    questionId={mockKadaiQuestionId}
+    classId={mockClassId}
+  />
+);
+
+export const WithAnswer: Story<never> = () => (
+  <StudentEditQuestionPage
+    appState={mockAppState}
+    questionId={mockManabiQuestionId}
     classId={mockClassId}
   />
 );
