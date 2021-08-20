@@ -105,6 +105,13 @@ export type AppState = {
   readonly getStudentQuestionTree: (
     classId: d.ClassId
   ) => ReadonlyArray<d.StudentSelfQuestionTree> | undefined;
+  /** 生徒が質問に回答する */
+  readonly answerQuestion: (option: {
+    readonly answerText: string;
+    readonly classId: d.ClassId;
+    readonly questionId: d.QuestionId;
+    readonly isConfirm: boolean;
+  }) => void;
 };
 
 export const useAppState = (): AppState => {
@@ -337,6 +344,43 @@ export const useAppState = (): AppState => {
             variant: "success",
           });
           setStudentQuestionTree(classId, response.okValue);
+        });
+    },
+    [enqueueSnackbar, getAccountToken, setStudentQuestionTree]
+  );
+
+  const answerQuestion: AppState["answerQuestion"] = useCallback(
+    (parameter) => {
+      const accountToken = getAccountToken();
+      if (accountToken === undefined) {
+        enqueueSnackbar(`質問への回答にはログインが必要です`, {
+          variant: "warning",
+        });
+        return;
+      }
+      api
+        .answerQuestion({
+          accountToken,
+          answerText: parameter.answerText,
+          classId: parameter.classId,
+          isConfirm: parameter.isConfirm,
+          questionId: parameter.questionId,
+        })
+        .then((response) => {
+          if (response._ === "Error") {
+            enqueueSnackbar(
+              `質問への回答にエラーが発生しました ${response.errorValue}`,
+              {
+                variant: "warning",
+              }
+            );
+            return;
+          }
+          enqueueSnackbar("質問への回答に成功しました", {
+            variant: "success",
+          });
+          setStudentQuestionTree(parameter.classId, response.okValue);
+          setLocation(d.Location.Class(parameter.classId));
         });
     },
     [enqueueSnackbar, getAccountToken, setStudentQuestionTree]
@@ -616,6 +660,7 @@ export const useAppState = (): AppState => {
       requestParticipantListInClass,
       requestStudentQuestionTreeInClass: getStudentQuestionTreeInClass,
       getStudentQuestionTree,
+      answerQuestion,
     }),
     [
       logInState,
@@ -644,6 +689,7 @@ export const useAppState = (): AppState => {
       addJoinedClass,
       getStudentQuestionTreeInClass,
       getStudentQuestionTree,
+      answerQuestion,
     ]
   );
 };
