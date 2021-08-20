@@ -266,6 +266,39 @@ export const apiFunc: {
       questionTreeToStudentSelfQuestionTree(tree, answerList)
     );
   },
+  answerQuestion: async ({
+    accountToken,
+    classId,
+    isConfirm,
+    questionId,
+    answerText,
+  }) => {
+    const account = await validateAndGetAccount(accountToken);
+    const isStudent = firebaseInterface.isStudent(account.id, classId);
+    if (!isStudent) {
+      throw new Error("生徒以外は質問に答えることはできません");
+    }
+    const qClass = await firebaseInterface.getClassByClassId(classId);
+    if (qClass === undefined) {
+      throw new Error("クラスが存在しません");
+    }
+    await firebaseInterface.setAnswer({
+      accountId: account.id,
+      classId,
+      isConfirm,
+      questionId,
+      text: answerText,
+    });
+
+    const [questionList, answerList] = await Promise.all([
+      firebaseInterface.getQuestionListByProgramId(qClass.programId),
+      firebaseInterface.getAnswerListByAccountIdAndClassId(account.id, classId),
+    ]);
+
+    return getQuestionTree(qClass.programId, questionList).map((tree) =>
+      questionTreeToStudentSelfQuestionTree(tree, answerList)
+    );
+  },
 };
 
 const questionTreeToStudentSelfQuestionTree = (

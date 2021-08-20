@@ -38,6 +38,22 @@ export type Codec<T extends unknown> = { readonly encode: (a: T) => ReadonlyArra
 
 
 /**
+ * 生徒が質問を答えるAPI. 上書き保存のみ.
+ * isConfirm を true に指定すると, 確定できる (クラス作成者に通知)
+ * @typePartId 0a0b773d897753c99d8f83dd165b1156
+ */
+export type AnswerQuestionParameter = { readonly accountToken: AccountToken; readonly questionId: QuestionId; readonly classId: ClassId; 
+/**
+ * 回答文
+ */
+readonly answerText: String; 
+/**
+ * 確定するかどうか
+ */
+readonly isConfirm: Bool };
+
+
+/**
  * @typePartId 1340453d1a567d2946e13d1269de28c2
  */
 export type Int32 = number;
@@ -262,6 +278,12 @@ readonly createAccountId: AccountId };
 
 
 /**
+ * @typePartId 8794bbcffd8e385491eb6457620b8722
+ */
+export type Unit = "UnitValue";
+
+
+/**
  * アカウントトークンとQUESTの場所
  * @typePartId 89826638cf102c52e00444347fbc484d
  */
@@ -448,6 +470,33 @@ export type ClassId = string & { readonly _classId: never };
  * @typePartId fcb5274a1228c7dc890710bed16a3051
  */
 export type ProgramId = string & { readonly _programId: never };
+
+
+/**
+ * 生徒が質問を答えるAPI. 上書き保存のみ.
+ * isConfirm を true に指定すると, 確定できる (クラス作成者に通知)
+ * @typePartId 0a0b773d897753c99d8f83dd165b1156
+ */
+export const AnswerQuestionParameter: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<AnswerQuestionParameter>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: AnswerQuestionParameter) => AnswerQuestionParameter } = { typePartId: "0a0b773d897753c99d8f83dd165b1156" as TypePartId, helper: (answerQuestionParameter: AnswerQuestionParameter): AnswerQuestionParameter => answerQuestionParameter, codec: { encode: (value: AnswerQuestionParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QuestionId.codec.encode(value.questionId)).concat(ClassId.codec.encode(value.classId)).concat(String.codec.encode(value.answerText)).concat(Bool.codec.encode(value.isConfirm))), decode: (index: number, binary: Uint8Array): { readonly result: AnswerQuestionParameter; readonly nextIndex: number } => {
+  const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+  const questionIdAndNextIndex: { readonly result: QuestionId; readonly nextIndex: number } = QuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+  const classIdAndNextIndex: { readonly result: ClassId; readonly nextIndex: number } = ClassId.codec.decode(questionIdAndNextIndex.nextIndex, binary);
+  const answerTextAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(classIdAndNextIndex.nextIndex, binary);
+  const isConfirmAndNextIndex: { readonly result: Bool; readonly nextIndex: number } = Bool.codec.decode(answerTextAndNextIndex.nextIndex, binary);
+  return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, classId: classIdAndNextIndex.result, answerText: answerTextAndNextIndex.result, isConfirm: isConfirmAndNextIndex.result }, nextIndex: isConfirmAndNextIndex.nextIndex };
+} } };
 
 
 /**
@@ -818,6 +867,32 @@ readonly helper: (a: Program) => Program } = { typePartId: "830072ccaa2d061ee3c4
   const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(idAndNextIndex.nextIndex, binary);
   const createAccountIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(nameAndNextIndex.nextIndex, binary);
   return { result: { id: idAndNextIndex.result, name: nameAndNextIndex.result, createAccountId: createAccountIdAndNextIndex.result }, nextIndex: createAccountIdAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * @typePartId 8794bbcffd8e385491eb6457620b8722
+ */
+export const Unit: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<Unit>; readonly UnitValue: Unit } = { UnitValue: "UnitValue", typePartId: "8794bbcffd8e385491eb6457620b8722" as TypePartId, codec: { encode: (value: Unit): ReadonlyArray<number> => {
+  switch (value) {
+    case "UnitValue": {
+      return [0];
+    }
+  }
+}, decode: (index: number, binary: Uint8Array): { readonly result: Unit; readonly nextIndex: number } => {
+  const patternIndex: { readonly result: number; readonly nextIndex: number } = Int32.codec.decode(index, binary);
+  if (patternIndex.result === 0) {
+    return { result: Unit.UnitValue, nextIndex: patternIndex.nextIndex };
+  }
+  throw new Error("存在しないパターンを指定された 型を更新してください");
 } } };
 
 

@@ -131,3 +131,14 @@ export const getStudentQuestionTreeInClass: ApiCodec<
   request: d.AccountTokenAndClassId.codec,
   response: d.List.codec(d.StudentSelfQuestionTree.codec),
 };
+
+/**
+ * 質問に回答する
+ */
+export const answerQuestion: ApiCodec<
+  d.AnswerQuestionParameter,
+  d.List<d.StudentSelfQuestionTree>
+> = {
+  request: d.AnswerQuestionParameter.codec,
+  response: d.List.codec(d.StudentSelfQuestionTree.codec),
+};

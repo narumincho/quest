@@ -67,7 +67,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     subCollections: Record<never, never>;
   };
   answer: {
-    key: `${d.QuestionId}_${d.ProgramId}_${d.AccountId}`;
+    key: `${d.QuestionId}_${d.ClassId}_${d.AccountId}`;
     value: {
       text: string;
       questionId: d.QuestionId;
@@ -470,26 +470,39 @@ export const joinClassAsStudent = async (
     });
 };
 
-export const setAnswer = async (option: {
+export const setAnswer = async (parameter: {
   readonly text: string;
   readonly questionId: d.QuestionId;
   readonly classId: d.ClassId;
   readonly accountId: d.AccountId;
-  readonly createTime: Date;
-  readonly updateTime: Date;
+  readonly isConfirm: boolean;
 }): Promise<void> => {
-  await firestore
+  const doc = firestore
     .collection("answer")
-    .doc(`${option.questionId}_${option.classId}_${option.accountId}`)
-    .create({
-      text: option.text,
-      questionId: option.questionId,
-      classId: option.classId,
-      accountId: option.accountId,
-      createTime: admin.firestore.Timestamp.fromDate(option.createTime),
-      updateTime: admin.firestore.Timestamp.fromDate(option.updateTime),
-      isConfirm: false,
+    .doc(`${parameter.questionId}_${parameter.classId}_${parameter.accountId}`);
+  const documentSnapshot = await doc.get();
+  if (documentSnapshot.exists) {
+    console.log("質問が更新された", parameter);
+    doc.update({
+      text: parameter.text,
+      questionId: parameter.questionId,
+      classId: parameter.classId,
+      accountId: parameter.accountId,
+      updateTime: admin.firestore.FieldValue.serverTimestamp(),
+      isConfirm: parameter.isConfirm,
     });
+    return;
+  }
+  console.log("質問が作成された", parameter);
+  doc.create({
+    text: parameter.text,
+    questionId: parameter.questionId,
+    classId: parameter.classId,
+    accountId: parameter.accountId,
+    createTime: admin.firestore.FieldValue.serverTimestamp(),
+    updateTime: admin.firestore.FieldValue.serverTimestamp(),
+    isConfirm: parameter.isConfirm,
+  });
 };
 
 /**
