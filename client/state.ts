@@ -3,12 +3,28 @@ import * as d from "../data";
 import * as indexedDb from "./indexedDb";
 import {
   ClassAndRole,
-  LogInState,
   LoggedInState,
   ProgramWithClassList,
   QuestionListState,
   QuestionTreeListWithLoadingState,
-  useLogInState,
+} from "./state/loggedInState";
+import {
+  LogInState,
+  addCreatedClass,
+  addCreatedOrEditedQuestion,
+  addJoinedClass,
+  getClassAndRole,
+  getParentQuestionList,
+  getQuestionById,
+  getQuestionDirectChildren,
+  getQuestionThatCanBeParentList,
+  getQuestionTreeListWithLoadingStateInProgram,
+  getStudentQuestionTree,
+  loggedIn,
+  setClassParticipantList,
+  setProgram,
+  setQuestionListState,
+  setStudentQuestionTree,
 } from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -116,28 +132,7 @@ export type AppState = {
 
 export const useAppState = (): AppState => {
   const { enqueueSnackbar } = useSnackbar();
-  const {
-    logInState,
-    setNoLogIn,
-    setVerifyingAccountToken,
-    setLoggedIn,
-    setRequestingLogInUrl,
-    setJumpingPage,
-    setProgram,
-    setQuestionListState,
-    addCreatedClass,
-    addJoinedClass,
-    addCreatedOrEditedQuestion,
-    getQuestionById,
-    getQuestionDirectChildren,
-    getParentQuestionList,
-    getQuestionTreeListWithLoadingStateInProgram,
-    getQuestionThatCanBeParentList,
-    getClassAndRole,
-    setClassParticipantList,
-    setStudentQuestionTree,
-    getStudentQuestionTree,
-  } = useLogInState();
+  const [logInState, setLogInState] = useState<LogInState>({ tag: "Loading" });
   const [location, setLocation] = useState<d.Location>(d.Location.Top);
   const useAccountMapResult = useAccountMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
@@ -156,7 +151,7 @@ export const useAppState = (): AppState => {
       setLocation(urlData.location);
       indexedDb.getAccountToken().then((accountToken) => {
         if (accountToken === undefined) {
-          setNoLogIn();
+          setLogInState({ tag: "NoLogin" });
           return;
         }
         setLogInData({ accountToken, location: urlData.location });
@@ -192,7 +187,10 @@ export const useAppState = (): AppState => {
       accountTokenAndLocation: d.AccountTokenAndLocation
     ): Promise<void> => {
       indexedDb.setAccountToken(accountTokenAndLocation.accountToken);
-      setVerifyingAccountToken(accountTokenAndLocation.accountToken);
+      setLogInState({
+        tag: "VerifyingAccountToken",
+        accountToken: accountTokenAndLocation.accountToken,
+      });
       history.replaceState(
         undefined,
         "",
@@ -206,21 +204,17 @@ export const useAppState = (): AppState => {
         enqueueSnackbar(`ログインに失敗しました ${response.errorValue}`, {
           variant: "error",
         });
-        setNoLogIn();
+        setLogInState({ tag: "NoLogin" });
         indexedDb.deleteAccountToken();
         return;
       }
-      setLoggedIn(response.okValue, accountTokenAndLocation.accountToken);
+      setLogInState(
+        loggedIn(response.okValue, accountTokenAndLocation.accountToken)
+      );
       setLocation(accountTokenAndLocation.location);
       useAccountMapResult.set(response.okValue.account);
     },
-    [
-      enqueueSnackbar,
-      setLoggedIn,
-      setNoLogIn,
-      setVerifyingAccountToken,
-      useAccountMapResult,
-    ]
+    [enqueueSnackbar, useAccountMapResult]
   );
 
   const getAccountToken = useCallback((): d.AccountToken | undefined => {
@@ -241,7 +235,7 @@ export const useAppState = (): AppState => {
   }, []);
 
   const requestLogin = useCallback(() => {
-    setRequestingLogInUrl();
+    setLogInState({ tag: "RequestingLogInUrl" });
     api.requestLineLoginUrl(location).then((response) => {
       if (response._ === "Error") {
         enqueueSnackbar(
@@ -250,12 +244,12 @@ export const useAppState = (): AppState => {
         );
         return;
       }
-      setJumpingPage();
+      setLogInState({ tag: "JumpingPage" });
       requestAnimationFrame(() => {
         window.location.href = response.okValue;
       });
     });
-  }, [enqueueSnackbar, location, setJumpingPage, setRequestingLogInUrl]);
+  }, [enqueueSnackbar, location]);
 
   const changeLocation = useCallback((newLocation: d.Location): void => {
     window.history.replaceState(
@@ -310,10 +304,12 @@ export const useAppState = (): AppState => {
             variant: "success",
           });
           console.log("取得した", response.okValue);
-          setClassParticipantList(classId, response.okValue);
+          setLogInState((beforeLogInState) =>
+            setClassParticipantList(beforeLogInState, classId, response.okValue)
+          );
         });
     },
-    [enqueueSnackbar, getAccountToken, setClassParticipantList]
+    [enqueueSnackbar, getAccountToken]
   );
 
   const getStudentQuestionTreeInClass = useCallback(
@@ -343,10 +339,12 @@ export const useAppState = (): AppState => {
           enqueueSnackbar("クラスの質問と回答状況の取得に成功しました", {
             variant: "success",
           });
-          setStudentQuestionTree(classId, response.okValue);
+          setLogInState((beforeLogInState) =>
+            setStudentQuestionTree(beforeLogInState, classId, response.okValue)
+          );
         });
     },
-    [enqueueSnackbar, getAccountToken, setStudentQuestionTree]
+    [enqueueSnackbar, getAccountToken]
   );
 
   const answerQuestion: AppState["answerQuestion"] = useCallback(
@@ -379,11 +377,17 @@ export const useAppState = (): AppState => {
           enqueueSnackbar("質問への回答に成功しました", {
             variant: "success",
           });
-          setStudentQuestionTree(parameter.classId, response.okValue);
+          setLogInState((beforeLogInState) =>
+            setStudentQuestionTree(
+              beforeLogInState,
+              parameter.classId,
+              response.okValue
+            )
+          );
           setLocation(d.Location.Class(parameter.classId));
         });
     },
-    [enqueueSnackbar, getAccountToken, setStudentQuestionTree]
+    [enqueueSnackbar, getAccountToken]
   );
 
   return useMemo<AppState>(
@@ -404,7 +408,7 @@ export const useAppState = (): AppState => {
         });
         indexedDb.deleteAccountToken();
         useAccountMapResult.deleteAll();
-        setNoLogIn();
+        setLogInState({ tag: "NoLogin" });
       },
       location,
       jump,
@@ -447,7 +451,9 @@ export const useAppState = (): AppState => {
                 variant: "success",
               }
             );
-            setProgram(response.okValue);
+            setLogInState((beforeLogInState) =>
+              setProgram(beforeLogInState, response.okValue)
+            );
             changeLocation(d.Location.Program(response.okValue.id));
           });
       },
@@ -481,7 +487,9 @@ export const useAppState = (): AppState => {
                 variant: "success",
               }
             );
-            addCreatedClass(response.okValue);
+            setLogInState((beforeLogInState) =>
+              addCreatedClass(beforeLogInState, response.okValue)
+            );
             changeLocation(d.Location.Class(response.okValue.id));
           });
       },
@@ -503,7 +511,11 @@ export const useAppState = (): AppState => {
           );
           return;
         }
-        setQuestionListState(programId, { tag: "Requesting" });
+        setLogInState((beforeLogInState) =>
+          setQuestionListState(beforeLogInState, programId, {
+            tag: "Requesting",
+          })
+        );
         api
           .getQuestionInCreatedProgram({
             accountToken,
@@ -511,7 +523,12 @@ export const useAppState = (): AppState => {
           })
           .then((response) => {
             if (response._ === "Error") {
-              setQuestionListState(programId, { tag: "Error" });
+              setLogInState((beforeLogInState) =>
+                setQuestionListState(beforeLogInState, programId, {
+                  tag: "Error",
+                })
+              );
+
               enqueueSnackbar(
                 `プログラムに属している質問の取得に失敗しました ${response.errorValue}`,
                 {
@@ -523,15 +540,17 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`プログラムに属している質問の取得に成功しました`, {
               variant: "success",
             });
-            setQuestionListState(programId, {
-              tag: "Loaded",
-              questionMap: new Map(
-                response.okValue.map((q): [d.QuestionId, d.Question] => [
-                  q.id,
-                  q,
-                ])
-              ),
-            });
+            setLogInState((beforeLogInState) =>
+              setQuestionListState(beforeLogInState, programId, {
+                tag: "Loaded",
+                questionMap: new Map(
+                  response.okValue.map((q): [d.QuestionId, d.Question] => [
+                    q.id,
+                    q,
+                  ])
+                ),
+              })
+            );
           });
       },
       createQuestion: (programId, parent, questionText) => {
@@ -559,7 +578,9 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`質問を作成しました`, {
               variant: "success",
             });
-            addCreatedOrEditedQuestion(response.okValue);
+            setLogInState((beforeLogInState) =>
+              addCreatedOrEditedQuestion(beforeLogInState, response.okValue)
+            );
             setLocation(
               d.Location.AdminQuestion({
                 questionId: response.okValue.id,
@@ -568,17 +589,20 @@ export const useAppState = (): AppState => {
             );
           });
       },
-      question: getQuestionById,
-      questionChildren: getQuestionDirectChildren,
+      question: (questionId: d.QuestionId) =>
+        getQuestionById(logInState, questionId),
+      questionChildren: (questionId: d.QuestionId) =>
+        getQuestionDirectChildren(logInState, questionId),
       questionParentList: (id) => {
         if (id._ === "None") {
           return [];
         }
-        return getParentQuestionList(id.value);
+        return getParentQuestionList(logInState, id.value);
       },
-      getQuestionTreeListWithLoadingStateInProgram,
+      getQuestionTreeListWithLoadingStateInProgram: (programId: d.ProgramId) =>
+        getQuestionTreeListWithLoadingStateInProgram(logInState, programId),
       getClassAndRole: (classId) => {
-        return getClassAndRole(classId);
+        return getClassAndRole(logInState, classId);
       },
       shareClassInviteLink: (classId) => {
         const qClass = getCreatedClass(classId);
@@ -620,7 +644,9 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`質問を編集しました`, {
               variant: "success",
             });
-            addCreatedOrEditedQuestion(response.okValue);
+            setLogInState((beforeLogInState) =>
+              addCreatedOrEditedQuestion(beforeLogInState, response.okValue)
+            );
             setLocation(
               d.Location.AdminQuestion({
                 questionId: response.okValue.id,
@@ -629,7 +655,10 @@ export const useAppState = (): AppState => {
             );
           });
       },
-      getQuestionThatCanBeParentList,
+      getQuestionThatCanBeParentList: (
+        programId: d.ProgramId,
+        questionId: d.QuestionId
+      ) => getQuestionThatCanBeParentList(logInState, programId, questionId),
       joinClass: (classInvitationToken) => {
         const accountToken = getAccountToken();
         if (accountToken === undefined) {
@@ -653,13 +682,16 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`クラスに参加しました`, {
               variant: "success",
             });
-            addJoinedClass(response.okValue, d.ClassParticipantRole.Student);
+            setLogInState((beforeLogInState) =>
+              addJoinedClass(beforeLogInState, response.okValue)
+            );
             setLocation(d.Location.Class(response.okValue.id));
           });
       },
       requestParticipantListInClass,
       requestStudentQuestionTreeInClass: getStudentQuestionTreeInClass,
-      getStudentQuestionTree,
+      getStudentQuestionTree: (classId: d.ClassId) =>
+        getStudentQuestionTree(logInState, classId),
       answerQuestion,
     }),
     [
@@ -670,25 +702,12 @@ export const useAppState = (): AppState => {
       changeLocation,
       isCreatingQuestion,
       useAccountMapResult,
-      getQuestionById,
-      getQuestionDirectChildren,
-      getQuestionTreeListWithLoadingStateInProgram,
-      getQuestionThatCanBeParentList,
       requestParticipantListInClass,
       setLogInData,
       enqueueSnackbar,
-      setNoLogIn,
       getAccountToken,
-      setProgram,
-      addCreatedClass,
-      setQuestionListState,
-      addCreatedOrEditedQuestion,
-      getParentQuestionList,
-      getClassAndRole,
       getCreatedClass,
-      addJoinedClass,
       getStudentQuestionTreeInClass,
-      getStudentQuestionTree,
       answerQuestion,
     ]
   );
