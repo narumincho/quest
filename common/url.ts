@@ -14,16 +14,23 @@ export const locationToUrl = (location: d.Location): URL => {
 const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
   switch (location._) {
     case "Top":
-      return { resourceName: "", searchParams: new Map(), hash: new Map() };
+      return {
+        resourceName: "",
+        resourceId: undefined,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
     case "Setting":
       return {
         resourceName: settingPath,
+        resourceId: undefined,
         searchParams: new Map(),
         hash: new Map(),
       };
     case "NewProgram":
       return {
         resourceName: newProgramPath,
+        resourceId: undefined,
         searchParams: new Map(),
         hash: new Map(),
       };
@@ -37,6 +44,7 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
     case "NewQuestion":
       return {
         resourceName: newQuestionPath,
+        resourceId: undefined,
         searchParams: new Map<string, string>([
           [newQuestionProgramId, location.newQuestionParameter.programId],
           ...(location.newQuestionParameter.parent._ === "Some"
@@ -59,6 +67,7 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
     case "NewClass":
       return {
         resourceName: newClassPath,
+        resourceId: undefined,
         searchParams: new Map([[newClassProgramId, location.programId]]),
         hash: new Map(),
       };
@@ -261,7 +270,7 @@ type StructuredUrl = {
   /** リソース名 `/{question}` */
   readonly resourceName: string;
   /** リソースID `/question/{id}` */
-  readonly resourceId?: string;
+  readonly resourceId: string | undefined;
   /** クエリパラメーター */
   readonly searchParams: ReadonlyMap<string, string>;
   /** ハッシュ (フラグメント) サーバーへのリクエストに含まれない */

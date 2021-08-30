@@ -1,13 +1,15 @@
 import * as React from "react";
-import { CssBaseline, ThemeProvider, createTheme } from "@material-ui/core";
+import {
+  CssBaseline,
+  PaletteType,
+  ThemeProvider,
+  createTheme,
+} from "@material-ui/core";
 import { App } from "./App";
-import { PaletteOptions } from "@material-ui/core/styles/createPalette";
 import { SnackbarProvider } from "notistack";
 
-type DarkOrLight = PaletteOptions["type"];
-
 export const ThemedApp: React.FC<Record<never, never>> = () => {
-  const [darkOrLight, setDarkOrLight] = React.useState<DarkOrLight>(
+  const [darkOrLight, setDarkOrLight] = React.useState<PaletteType>(
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
 
