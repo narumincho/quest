@@ -685,7 +685,7 @@ export const useAppState = (): AppState => {
             setLogInState((beforeLogInState) =>
               addJoinedClass(beforeLogInState, response.okValue)
             );
-            setLocation(d.Location.Class(response.okValue.id));
+            changeLocation(d.Location.Class(response.okValue.id));
           });
       },
       requestParticipantListInClass,
