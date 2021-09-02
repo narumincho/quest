@@ -60,6 +60,13 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography variant="h6">クラスの参加者</Typography>
           <ParticipantList
+            appState={props.a}
+            linkFunc={(accountId) =>
+              d.Location.AdminStudent({
+                accountId,
+                classId: props.classWithParticipantList.qClass.id,
+              })
+            }
             participantList={props.classWithParticipantList.participantList}
           />
         </Box>

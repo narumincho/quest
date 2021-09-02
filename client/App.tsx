@@ -3,6 +3,7 @@ import * as d from "../data";
 import { AppState, LoggedInState, useAppState } from "./state";
 import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AdminClassPage } from "./component/AdminClassPage";
+import { AdminStudentPage } from "./component/AdminStudentPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
 import { Link } from "./component/Link";
@@ -40,10 +41,10 @@ export const App: React.VFC<Record<never, never>> = React.memo(() => {
 });
 App.displayName = "QuestApp";
 
-const LoggedIn: React.VFC<{
+const LoggedIn = (props: {
   readonly loggedInState: LoggedInState;
   readonly appState: AppState;
-}> = React.memo((props) => {
+}): React.ReactElement => {
   const location = props.appState.location;
   switch (location._) {
     case "Top":
@@ -114,9 +115,10 @@ const LoggedIn: React.VFC<{
           classId={location.classIdAndQuestionId.classId}
         />
       );
+    case "AdminStudent":
+      return <AdminStudentPage />;
   }
-});
-LoggedIn.displayName = "LoggedIn";
+};
 
 export const ClassPage: React.VFC<{
   appState: AppState;
