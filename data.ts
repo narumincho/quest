@@ -66,6 +66,21 @@ export type String = string;
 
 
 /**
+ * クラス管理者が, 生徒の答えた回答を取得するときのパラメーター
+ * @typePartId 1c629fe7fc9cbb7dec554a2bfc96579a
+ */
+export type GetStudentAnswerTreeParameter = { 
+/**
+ * クラス管理者のアカウントトークン
+ */
+readonly accountToken: AccountToken; readonly classId: ClassId; 
+/**
+ * 生徒のアカウントID
+ */
+readonly studentAccountId: AccountId };
+
+
+/**
  * 自分自身が答えた回答と確定状態
  * @typePartId 1e3cb3f728d3edcf3d32f2cec7426f66
  */
@@ -382,6 +397,17 @@ export type ClassIdAndQuestionId = { readonly classId: ClassId; readonly questio
 
 
 /**
+ * 生徒が答えた確定済みの回答
+ * @typePartId d5e1f676bc1550e196892116141b7cb7
+ */
+export type ConfirmedAnswer = { readonly questionId: QuestionId; 
+/**
+ * 回答の文章
+ */
+readonly answer: String };
+
+
+/**
  * @typePartId daa5e4c4cd13d4fc2f087ab5532e9639
  */
 export type Bool = boolean;
@@ -568,6 +594,30 @@ readonly codec: Codec<String> } = { typePartId: "1973a012c346cb6acbb40c0dd8dcd55
   const nextIndex: number = length.nextIndex + length.result;
   const textBinary: Uint8Array = binary.slice(length.nextIndex, nextIndex);
   return { result: new TextDecoder().decode(textBinary), nextIndex };
+} } };
+
+
+/**
+ * クラス管理者が, 生徒の答えた回答を取得するときのパラメーター
+ * @typePartId 1c629fe7fc9cbb7dec554a2bfc96579a
+ */
+export const GetStudentAnswerTreeParameter: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<GetStudentAnswerTreeParameter>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: GetStudentAnswerTreeParameter) => GetStudentAnswerTreeParameter } = { typePartId: "1c629fe7fc9cbb7dec554a2bfc96579a" as TypePartId, helper: (getStudentAnswerTreeParameter: GetStudentAnswerTreeParameter): GetStudentAnswerTreeParameter => getStudentAnswerTreeParameter, codec: { encode: (value: GetStudentAnswerTreeParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(ClassId.codec.encode(value.classId)).concat(AccountId.codec.encode(value.studentAccountId))), decode: (index: number, binary: Uint8Array): { readonly result: GetStudentAnswerTreeParameter; readonly nextIndex: number } => {
+  const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+  const classIdAndNextIndex: { readonly result: ClassId; readonly nextIndex: number } = ClassId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+  const studentAccountIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(classIdAndNextIndex.nextIndex, binary);
+  return { result: { accountToken: accountTokenAndNextIndex.result, classId: classIdAndNextIndex.result, studentAccountId: studentAccountIdAndNextIndex.result }, nextIndex: studentAccountIdAndNextIndex.nextIndex };
 } } };
 
 
@@ -1390,6 +1440,29 @@ readonly helper: (a: ClassIdAndQuestionId) => ClassIdAndQuestionId } = { typePar
   const classIdAndNextIndex: { readonly result: ClassId; readonly nextIndex: number } = ClassId.codec.decode(index, binary);
   const questionIdAndNextIndex: { readonly result: QuestionId; readonly nextIndex: number } = QuestionId.codec.decode(classIdAndNextIndex.nextIndex, binary);
   return { result: { classId: classIdAndNextIndex.result, questionId: questionIdAndNextIndex.result }, nextIndex: questionIdAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * 生徒が答えた確定済みの回答
+ * @typePartId d5e1f676bc1550e196892116141b7cb7
+ */
+export const ConfirmedAnswer: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<ConfirmedAnswer>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: ConfirmedAnswer) => ConfirmedAnswer } = { typePartId: "d5e1f676bc1550e196892116141b7cb7" as TypePartId, helper: (confirmedAnswer: ConfirmedAnswer): ConfirmedAnswer => confirmedAnswer, codec: { encode: (value: ConfirmedAnswer): ReadonlyArray<number> => (QuestionId.codec.encode(value.questionId).concat(String.codec.encode(value.answer))), decode: (index: number, binary: Uint8Array): { readonly result: ConfirmedAnswer; readonly nextIndex: number } => {
+  const questionIdAndNextIndex: { readonly result: QuestionId; readonly nextIndex: number } = QuestionId.codec.decode(index, binary);
+  const answerAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(questionIdAndNextIndex.nextIndex, binary);
+  return { result: { questionId: questionIdAndNextIndex.result, answer: answerAndNextIndex.result }, nextIndex: answerAndNextIndex.nextIndex };
 } } };
 
 

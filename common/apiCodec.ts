@@ -142,3 +142,14 @@ export const answerQuestion: ApiCodec<
   request: d.AnswerQuestionParameter.codec,
   response: d.List.codec(d.StudentSelfQuestionTree.codec),
 };
+
+/**
+ * 管理者が, 生徒が確定した回答を取得する
+ */
+export const getStudentConfirmedAnswerList: ApiCodec<
+  d.GetStudentAnswerTreeParameter,
+  d.List<d.ConfirmedAnswer>
+> = {
+  request: d.GetStudentAnswerTreeParameter.codec,
+  response: d.List.codec(d.ConfirmedAnswer.codec),
+};
