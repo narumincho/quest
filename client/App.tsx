@@ -65,12 +65,17 @@ const LoggedIn = (props: {
       return <ProgramNewPage appState={props.appState} />;
     case "Program":
       return (
-        <ProgramPage programId={location.programId} appState={props.appState} />
+        <ProgramPage
+          programId={location.programId}
+          loggedInState={props.loggedInState}
+          appState={props.appState}
+        />
       );
     case "NewQuestion":
       return (
         <QuestionNewPage
           appState={props.appState}
+          loggedInState={props.loggedInState}
           programId={location.newQuestionParameter.programId}
           parent={
             location.newQuestionParameter.parent._ === "Some"
@@ -85,12 +90,25 @@ const LoggedIn = (props: {
           questionId={location.programIdAndQuestionId.questionId}
           programId={location.programIdAndQuestionId.programId}
           appState={props.appState}
+          loggedInState={props.loggedInState}
         />
       );
     case "NewClass":
-      return <ClassNewPage a={props.appState} programId={location.programId} />;
+      return (
+        <ClassNewPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+          programId={location.programId}
+        />
+      );
     case "Class": {
-      return <ClassPage appState={props.appState} classId={location.classId} />;
+      return (
+        <ClassPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+          classId={location.classId}
+        />
+      );
     }
     case "ClassInvitation":
       return (
@@ -103,6 +121,7 @@ const LoggedIn = (props: {
       return (
         <QuestionEditPage
           appState={props.appState}
+          loggedInState={props.loggedInState}
           questionId={location.programIdAndQuestionId.questionId}
           programId={location.programIdAndQuestionId.programId}
         />
@@ -120,10 +139,11 @@ const LoggedIn = (props: {
   }
 };
 
-export const ClassPage: React.VFC<{
-  appState: AppState;
-  classId: d.ClassId;
-}> = (props) => {
+export const ClassPage = (props: {
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly classId: d.ClassId;
+}): React.ReactElement => {
   const classAndRole = props.appState.getClassAndRole(props.classId);
   switch (classAndRole.tag) {
     case "none":
@@ -148,7 +168,8 @@ export const ClassPage: React.VFC<{
     case "admin":
       return (
         <AdminClassPage
-          a={props.appState}
+          appState={props.appState}
+          loggedInState={props.loggedInState}
           classWithParticipantList={classAndRole.classWithParticipantList}
         />
       );

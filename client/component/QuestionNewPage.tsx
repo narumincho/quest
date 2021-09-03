@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -10,26 +11,26 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
 
-export const QuestionNewPage: React.VFC<{
-  appState: AppState;
-  programId: d.ProgramId;
-  parent: d.QuestionId | undefined;
-}> = (props) => {
+export const QuestionNewPage = (props: {
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly programId: d.ProgramId;
+  readonly parent: d.QuestionId | undefined;
+}): React.ReactElement => {
   const [text, setText] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
 
   const textResult = stringToValidQuestionText(text);
-  const program = props.appState.program(props.programId);
+  const program = props.loggedInState.createdProgramMap.get(props.programId);
 
-  const createQuestion = () => {
+  const createQuestion = (): void => {
     setIsFirst(false);
     if (textResult._ === "Error") {
       return;
@@ -102,7 +103,11 @@ export const QuestionNewPage: React.VFC<{
         </Box>
         <Box padding={1}>
           プログラム:
-          <ProgramCard appState={props.appState} programId={props.programId} />
+          <ProgramCard
+            appState={props.appState}
+            createdProgramMap={props.loggedInState.createdProgramMap}
+            programId={props.programId}
+          />
         </Box>
         <Box padding={1}>
           親の質問:

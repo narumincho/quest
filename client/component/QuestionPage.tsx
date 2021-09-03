@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as d from "../../data";
 import { Add, Edit } from "@material-ui/icons";
+import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -9,7 +10,6 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
@@ -28,11 +28,12 @@ const useStyle = makeStyles({
   },
 });
 
-export const QuestionPage: React.VFC<{
-  appState: AppState;
-  questionId: d.QuestionId;
-  programId: d.ProgramId;
-}> = (props) => {
+export const QuestionPage = (props: {
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly questionId: d.QuestionId;
+  readonly programId: d.ProgramId;
+}): React.ReactElement => {
   React.useEffect(() => {
     const question = props.appState.question(props.questionId);
     if (question === undefined) {
@@ -65,7 +66,7 @@ export const QuestionPage: React.VFC<{
       </PageContainer>
     );
   }
-  const program = props.appState.program(question.programId);
+  const program = props.loggedInState.createdProgramMap.get(question.programId);
   const parentList = props.appState.questionParentList(question.parent);
 
   return (
@@ -129,6 +130,7 @@ export const QuestionPage: React.VFC<{
           プログラム:
           <ProgramCard
             appState={props.appState}
+            createdProgramMap={props.loggedInState.createdProgramMap}
             programId={question.programId}
           />
         </Box>

@@ -8,6 +8,7 @@ import {
   mockAppState,
   mockClass,
   mockClassWithParticipantListLoadingParticipant,
+  mockLoggedInState,
 } from "../mock";
 import { AdminClassPage } from "../../client/component/AdminClassPage";
 
@@ -19,14 +20,16 @@ export default meta;
 
 export const LoadingParticipantList: Story<never> = () => (
   <AdminClassPage
-    a={mockAppState}
+    appState={mockAppState}
+    loggedInState={mockLoggedInState}
     classWithParticipantList={mockClassWithParticipantListLoadingParticipant}
   />
 );
 
 export const ZeroParticipant: Story<never> = () => (
   <AdminClassPage
-    a={mockAppState}
+    appState={mockAppState}
+    loggedInState={mockLoggedInState}
     classWithParticipantList={{
       qClass: mockClass,
       participantList: [],
@@ -36,7 +39,8 @@ export const ZeroParticipant: Story<never> = () => (
 
 export const LoadedParticipantList: Story<never> = () => (
   <AdminClassPage
-    a={mockAppState}
+    appState={mockAppState}
+    loggedInState={mockLoggedInState}
     classWithParticipantList={{
       qClass: mockClass,
       participantList: [

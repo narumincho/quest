@@ -1,13 +1,8 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState, LoggedInState, ProgramWithClassList } from "../state";
 import { Paper, Typography, makeStyles } from "@material-ui/core";
-import { AppState } from "../state";
 import { Link } from "./Link";
-
-export type Props = {
-  readonly programId: d.ProgramId;
-  readonly appState: AppState;
-};
 
 const useStyles = makeStyles({
   card: {
@@ -18,9 +13,13 @@ const useStyles = makeStyles({
   },
 });
 
-export const ProgramCard: React.VFC<Props> = (props) => {
+export const ProgramCard = (props: {
+  readonly programId: d.ProgramId;
+  readonly appState: AppState;
+  readonly createdProgramMap: ReadonlyMap<d.ProgramId, ProgramWithClassList>;
+}): React.ReactElement => {
   const classes = useStyles();
-  const program = props.appState.program(props.programId);
+  const program = props.createdProgramMap.get(props.programId);
   if (program === undefined) {
     return (
       <Link

@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -12,7 +13,6 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { stringToValidClassName } from "../../common/validation";
@@ -23,16 +23,17 @@ const useStyles = makeStyles({
   },
 });
 
-export const ClassNewPage: React.VFC<{
-  a: AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+export const ClassNewPage = (props: {
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly programId: d.ProgramId;
+}): React.ReactElement => {
   const classes = useStyles();
   const [className, setClassName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
 
-  const program = props.a.program(props.programId);
+  const program = props.loggedInState.createdProgramMap.get(props.programId);
 
   const projectNameResult = stringToValidClassName(className);
 
@@ -45,18 +46,18 @@ export const ClassNewPage: React.VFC<{
       return;
     }
     setIsCreating(true);
-    props.a.createClass({ className, programId: props.programId });
+    props.appState.createClass({ className, programId: props.programId });
   };
   return (
-    <PageContainer appState={props.a}>
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.a} location={d.Location.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <Link
-              appState={props.a}
+              appState={props.appState}
               location={d.Location.Program(props.programId)}
             >
               {program === undefined ? "プログラム" : program.name}

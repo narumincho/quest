@@ -66,6 +66,7 @@ export const CreatedProgramList: React.VFC<{
       {[...props.createdProgramList].map(([programId]) => (
         <ProgramCard
           key={programId}
+          createdProgramMap={props.createdProgramList}
           appState={props.appState}
           programId={programId}
         />

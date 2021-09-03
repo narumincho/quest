@@ -1,6 +1,10 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, QuestionTreeListWithLoadingState } from "../state";
+import {
+  AppState,
+  LoggedInState,
+  QuestionTreeListWithLoadingState,
+} from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -15,13 +19,12 @@ import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { QuestionTreeList } from "./QuestionTree";
 
-export type Props = {
+export const ProgramPage = (props: {
   readonly programId: d.ProgramId;
+  readonly loggedInState: LoggedInState;
   readonly appState: AppState;
-};
-
-export const ProgramPage: React.VFC<Props> = (props) => {
-  const program = props.appState.program(props.programId);
+}): React.ReactElement => {
+  const program = props.loggedInState.createdProgramMap.get(props.programId);
 
   React.useEffect(() => {
     props.appState.requestGetQuestionListInProgram(props.programId);

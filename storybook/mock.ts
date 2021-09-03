@@ -29,38 +29,6 @@ export const mockAppState: AppState = {
   addNotification: action("通知を追加しようとした"),
   back: action("戻ろうとした"),
   createProgram: action("プログラムを作ろうとした"),
-  program: (id) => {
-    switch (id) {
-      case mockProgramIdA:
-        return {
-          name: "サンプルプログラム名A",
-          createAccountId: mockAccountId,
-          id: mockProgramIdA,
-          questionIdListState: {
-            tag: "Loaded",
-            questionIdList: [...questionMap.keys()],
-          },
-          classList: [mockClassWithParticipantListLoadingParticipant],
-        };
-      case mockProgramIdB:
-        return {
-          name: "サンプルプログラム名B",
-          createAccountId: mockAccountId,
-          id: mockProgramIdA,
-          questionIdListState: { tag: "Requesting" },
-          classList: [],
-        };
-      case mockProgramIdLong:
-        return {
-          name: lorem,
-          createAccountId: mockAccountId,
-          id: mockProgramIdA,
-          questionIdListState: { tag: "None" },
-          classList: [],
-        };
-    }
-    return undefined;
-  },
   account: (id) => {
     return {
       id,
@@ -153,9 +121,6 @@ export const mockClassWithParticipantListLoadingParticipant: ClassWithParticipan
     qClass: mockClass,
     participantList: undefined,
   };
-
-const lorem =
-  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse error earum, suscipit ullam";
 
 const korekara = "korekara" as d.QuestionId;
 const zinsei = "zinsei" as d.QuestionId;
