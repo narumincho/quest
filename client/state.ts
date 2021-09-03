@@ -7,6 +7,7 @@ import {
   ProgramWithClassList,
   QuestionListState,
   QuestionTreeListWithLoadingState,
+  setConfirmedAnswerList,
 } from "./state/loggedInState";
 import {
   LogInState,
@@ -25,6 +26,7 @@ import {
   setProgram,
   setQuestionListState,
   setStudentQuestionTree,
+  updateLoggedInState,
 } from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -125,6 +127,12 @@ export type AppState = {
     readonly classId: d.ClassId;
     readonly questionId: d.QuestionId;
     readonly isConfirm: boolean;
+  }) => void;
+  /** クラス作成者が生徒の回答を取得する */
+  readonly requestStudentConfirmedAnswerList: (option: {
+    readonly classId: d.ClassId;
+    readonly studentAccountId: d.AccountId;
+    readonly accountToken: d.AccountToken;
   }) => void;
 };
 
@@ -687,6 +695,38 @@ export const useAppState = (): AppState => {
       getStudentQuestionTree: (classId: d.ClassId) =>
         getStudentQuestionTree(logInState, classId),
       answerQuestion,
+      requestStudentConfirmedAnswerList: (option) => {
+        api
+          .getStudentConfirmedAnswerList({
+            accountToken: option.accountToken,
+            classId: option.classId,
+            studentAccountId: option.studentAccountId,
+          })
+          .then((response) => {
+            if (response._ === "Error") {
+              enqueueSnackbar(
+                `生徒の回答の取得に失敗しました ${response.errorValue}`,
+                {
+                  variant: "error",
+                }
+              );
+              return;
+            }
+            enqueueSnackbar(`生徒の回答の取得に成功しました`, {
+              variant: "success",
+            });
+            setLogInState((beforeLogInState) =>
+              updateLoggedInState(beforeLogInState, (beforeLoggedInState) =>
+                setConfirmedAnswerList(
+                  beforeLoggedInState,
+                  option.classId,
+                  option.studentAccountId,
+                  response.okValue
+                )
+              )
+            );
+          });
+      },
     }),
     [
       logInState,

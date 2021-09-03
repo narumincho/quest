@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import {
   QuestionTreeListWithLoadingState,
-  getClassNameAndStudentName,
+  getClassNameAndStudent,
   getCreatedProgramIdByClassId,
 } from "../state/loggedInState";
 import { ChevronRight } from "@material-ui/icons";
@@ -24,11 +24,20 @@ export const AdminStudentPage = (props: {
   readonly classId: d.ClassId;
   readonly accountId: d.AccountId;
 }): React.ReactElement => {
+  React.useEffect(() => {
+    props.appState.requestStudentConfirmedAnswerList({
+      accountToken: props.loggedInState.accountToken,
+      classId: props.classId,
+      studentAccountId: props.accountId,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.accountId, props.classId, props.loggedInState.accountToken]);
+
   const program = getCreatedProgramIdByClassId(
     props.loggedInState,
     props.classId
   );
-  const classNameAndStudent = getClassNameAndStudentName(
+  const classNameAndStudent = getClassNameAndStudent(
     props.loggedInState,
     props.classId,
     props.accountId

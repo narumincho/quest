@@ -80,6 +80,9 @@ export const mockAppState: AppState = {
   requestStudentQuestionTreeInClass: action("getStudentQuestionTreeInClass"),
   getStudentQuestionTree: () => mockStudentSelfQuestionTreeList,
   answerQuestion: action("answerQuestion"),
+  requestStudentConfirmedAnswerList: action(
+    "requestStudentConfirmedAnswerList"
+  ),
 };
 
 export const mockAccount: d.Account = {

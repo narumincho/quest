@@ -69,7 +69,15 @@ export const AdminClassPage = (props: {
                 classId: props.classWithParticipantList.qClass.id,
               })
             }
-            participantList={props.classWithParticipantList.participantList}
+            participantList={props.classWithParticipantList.participantList?.map(
+              (p): d.Participant => ({
+                account: p.account,
+                role:
+                  p.role === "student"
+                    ? d.ClassParticipantRole.Student
+                    : d.ClassParticipantRole.Guest,
+              })
+            )}
           />
         </Box>
         <Box padding={1}>
