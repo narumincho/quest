@@ -12,6 +12,7 @@ import {
   QuestionTreeListWithLoadingState,
   getClassNameAndStudent,
   getCreatedProgramIdByClassId,
+  getStudentConfirmedAnswer,
 } from "../state/loggedInState";
 import { ChevronRight } from "@material-ui/icons";
 import { Link } from "./Link";
@@ -95,6 +96,7 @@ export const AdminStudentPage = (props: {
             questionTreeListWithLoadingState={props.appState.getQuestionTreeListWithLoadingStateInProgram(
               program.id
             )}
+            loggedInState={props.loggedInState}
             appState={props.appState}
             classId={props.classId}
             studentAccountId={props.accountId}
@@ -110,6 +112,7 @@ export const AdminStudentPage = (props: {
 
 export const QuestionTreeListWithLoading = (props: {
   readonly questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
+  readonly loggedInState: LoggedInState;
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly studentAccountId: d.AccountId;
@@ -147,6 +150,7 @@ export const QuestionTreeListWithLoading = (props: {
   return (
     <QuestionTreeList
       questionTreeList={treeList}
+      loggedInState={props.loggedInState}
       appState={props.appState}
       classId={props.classId}
       studentAccountId={props.studentAccountId}
@@ -157,6 +161,7 @@ export const QuestionTreeListWithLoading = (props: {
 const QuestionTreeList = (props: {
   readonly questionTreeList: ReadonlyArray<QuestionTree>;
   readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
   readonly studentAccountId: d.AccountId;
 }): React.ReactElement => {
@@ -166,6 +171,7 @@ const QuestionTreeList = (props: {
         <QuestionTreeLoaded
           key={index}
           questionTree={questionTree}
+          loggedInState={props.loggedInState}
           appState={props.appState}
           classId={props.classId}
           studentAccountId={props.studentAccountId}
@@ -187,31 +193,46 @@ const useStyles = makeStyles((theme) => ({
 export const QuestionTreeLoaded = (props: {
   readonly questionTree: QuestionTree;
   readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
   readonly studentAccountId: d.AccountId;
 }): React.ReactElement => {
   const classes = useStyles();
+  const confirmedAnswer = getStudentConfirmedAnswer(
+    props.loggedInState,
+    props.classId,
+    props.studentAccountId,
+    props.questionTree.id
+  );
   return (
     <Box className={classes.item}>
-      <Link
-        appState={props.appState}
-        location={d.Location.AdminStudentAnswer({
-          questionId: props.questionTree.id,
-          studentAccountId: props.studentAccountId,
-          classId: props.classId,
-        })}
-      >
+      {confirmedAnswer === undefined ? (
         <Box className={classes.label}>
           <ChevronRight />
           <Typography>{props.questionTree.text}</Typography>
         </Box>
-      </Link>
+      ) : (
+        <Link
+          appState={props.appState}
+          location={d.Location.AdminStudentAnswer({
+            questionId: props.questionTree.id,
+            studentAccountId: props.studentAccountId,
+            classId: props.classId,
+          })}
+        >
+          <Box className={classes.label}>
+            <ChevronRight />
+            <Typography>{props.questionTree.text}</Typography>
+          </Box>
+        </Link>
+      )}
 
       <Box padding={1}>
         {props.questionTree.children.map((child) => (
           <QuestionTreeLoaded
             questionTree={child}
             appState={props.appState}
+            loggedInState={props.loggedInState}
             key={child.id}
             classId={props.classId}
             studentAccountId={props.studentAccountId}
