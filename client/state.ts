@@ -46,8 +46,6 @@ export type AppState = {
   readonly logInState: LogInState;
   /** 現在のページの場所 */
   readonly location: d.Location;
-  /** プログラムの情報を得る */
-  readonly program: (id: d.ProgramId) => ProgramWithClassList | undefined;
   /** アカウントの情報を得る */
   readonly account: (id: d.AccountId) => d.Account | undefined;
   /** 質問を取得する */
@@ -492,12 +490,6 @@ export const useAppState = (): AppState => {
             );
             changeLocation(d.Location.Class(response.okValue.id));
           });
-      },
-      program: (programId: d.ProgramId): ProgramWithClassList | undefined => {
-        if (logInState.tag !== "LoggedIn") {
-          return;
-        }
-        return logInState.loggedInState.createdProgramMap.get(programId);
       },
       account: useAccountMapResult.getById,
       requestGetQuestionListInProgram: (programId) => {

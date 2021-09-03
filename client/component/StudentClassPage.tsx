@@ -45,7 +45,10 @@ export const StudentClassPage = (props: {
       </Box>
       <Box padding={1}>
         <Typography variant="h6">クラスの参加者</Typography>
-        <ParticipantList participantList={props.participantList} />
+        <ParticipantList
+          appState={props.appState}
+          participantList={props.participantList}
+        />
       </Box>
       <Box padding={1}>
         <StudentSelfQuestionTreeList

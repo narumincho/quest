@@ -1,27 +1,29 @@
 import * as React from "react";
 import * as d from "../../data";
 import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
+import {
+  ClassWithParticipantList,
+  LoggedInState,
+} from "../state/loggedInState";
 import { AppState } from "../state";
-import { ClassWithParticipantList } from "../state/loggedInState";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { ParticipantList } from "./ParticipantList";
 
-export type Props = {
-  readonly a: AppState;
-  readonly classWithParticipantList: ClassWithParticipantList;
-};
-
 /**
  * クラス作成者向けのクラス詳細ページ
  */
-export const AdminClassPage: React.VFC<Props> = (props) => {
+export const AdminClassPage = (props: {
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly classWithParticipantList: ClassWithParticipantList;
+}): React.ReactElement => {
   React.useEffect(
     () => {
-      props.a.requestGetQuestionListInProgram(
+      props.appState.requestGetQuestionListInProgram(
         props.classWithParticipantList.qClass.programId
       );
-      props.a.requestParticipantListInClass(
+      props.appState.requestParticipantListInClass(
         props.classWithParticipantList.qClass.id
       );
     },
@@ -29,19 +31,19 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
     [props.classWithParticipantList.qClass.id]
   );
 
-  const program = props.a.program(
+  const program = props.loggedInState.createdProgramMap.get(
     props.classWithParticipantList.qClass.programId
   );
   return (
-    <PageContainer appState={props.a}>
+    <PageContainer appState={props.appState}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
-            <Link appState={props.a} location={d.Location.Top}>
+            <Link appState={props.appState} location={d.Location.Top}>
               トップページ
             </Link>
             <Link
-              appState={props.a}
+              appState={props.appState}
               location={d.Location.Program(
                 props.classWithParticipantList.qClass.programId
               )}
@@ -60,6 +62,13 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
         <Box padding={1}>
           <Typography variant="h6">クラスの参加者</Typography>
           <ParticipantList
+            appState={props.appState}
+            linkFunc={(accountId) =>
+              d.Location.AdminStudent({
+                accountId,
+                classId: props.classWithParticipantList.qClass.id,
+              })
+            }
             participantList={props.classWithParticipantList.participantList}
           />
         </Box>
@@ -69,7 +78,7 @@ export const AdminClassPage: React.VFC<Props> = (props) => {
             fullWidth
             color="primary"
             onClick={() => {
-              props.a.shareClassInviteLink(
+              props.appState.shareClassInviteLink(
                 props.classWithParticipantList.qClass.id
               );
             }}

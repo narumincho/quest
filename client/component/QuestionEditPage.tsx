@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -16,18 +17,18 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { AppState } from "../state";
 import { Close } from "@material-ui/icons";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { QuestionButton } from "./QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";
 
-export const QuestionEditPage: React.VFC<{
-  appState: AppState;
-  questionId: d.QuestionId;
-  programId: d.ProgramId;
-}> = (props) => {
+export const QuestionEditPage = (props: {
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly questionId: d.QuestionId;
+  readonly programId: d.ProgramId;
+}): React.ReactElement => {
   const question = props.appState.question(props.questionId);
 
   if (question === undefined) {
@@ -54,6 +55,7 @@ export const QuestionEditPage: React.VFC<{
   return (
     <EditQuestionLoaded
       appState={props.appState}
+      loggedInState={props.loggedInState}
       question={question}
       programId={props.programId}
     />
@@ -70,11 +72,12 @@ const useStyles = makeStyles({
   },
 });
 
-const EditQuestionLoaded: React.VFC<{
+const EditQuestionLoaded = (props: {
   readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
   readonly question: d.Question;
   readonly programId: d.ProgramId;
-}> = (props) => {
+}): React.ReactElement => {
   const classes = useStyles();
   const [text, setText] = React.useState<string>(props.question.name);
   const [parentQuestionId, setParentQuestionId] = React.useState<
@@ -82,7 +85,9 @@ const EditQuestionLoaded: React.VFC<{
   >(props.question.parent);
   const [editState, setEditState] = React.useState<EditState>("none");
   const textResult = stringToValidQuestionText(text);
-  const program = props.appState.program(props.question.programId);
+  const program = props.loggedInState.createdProgramMap.get(
+    props.question.programId
+  );
   const parentList = props.appState.questionParentList(props.question.parent);
 
   const editQuestion = () => {

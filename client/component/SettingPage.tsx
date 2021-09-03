@@ -8,7 +8,6 @@ import {
   Button,
   Typography,
 } from "@material-ui/core";
-import { AppBar } from "./AppBar";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";

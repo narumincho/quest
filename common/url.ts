@@ -103,6 +103,16 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
         ]),
         hash: new Map(),
       };
+    case "AdminStudent":
+      return {
+        resourceName: adminStudentPath,
+        resourceId: undefined,
+        searchParams: new Map<string, string>([
+          [adminStudentClassId, location.accountIdAndClassId.classId],
+          [adminStudentAccountId, location.accountIdAndClassId.accountId],
+        ]),
+        hash: new Map(),
+      };
   }
 };
 
@@ -232,6 +242,19 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
       }
       return d.UrlData.Normal(defaultLocation);
     }
+    case adminStudentPath: {
+      const classId = structuredUrl.searchParams.get(adminStudentClassId);
+      const accountId = structuredUrl.searchParams.get(adminStudentAccountId);
+      if (typeof classId === "string" && typeof accountId === "string") {
+        return d.UrlData.Normal(
+          d.Location.AdminStudent({
+            classId: d.ClassId.fromString(classId),
+            accountId: d.AccountId.fromString(accountId),
+          })
+        );
+      }
+      return d.UrlData.Normal(defaultLocation);
+    }
   }
   return d.UrlData.Normal(defaultLocation);
 };
@@ -259,6 +282,9 @@ const editQuestionPath = "edit-question";
 const editQuestionProgramId = "programId";
 const studentEditQuestionPath = "student-edit-question";
 const studentEditQuestionClassId = "classId";
+const adminStudentPath = "admin-student";
+const adminStudentClassId = "classId";
+const adminStudentAccountId = "accountId";
 
 const lineLoginCallbackPath = "lineLoginCallback";
 

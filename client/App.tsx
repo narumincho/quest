@@ -3,6 +3,7 @@ import * as d from "../data";
 import { AppState, LoggedInState, useAppState } from "./state";
 import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AdminClassPage } from "./component/AdminClassPage";
+import { AdminStudentPage } from "./component/AdminStudentPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
 import { Link } from "./component/Link";
@@ -40,10 +41,10 @@ export const App: React.VFC<Record<never, never>> = React.memo(() => {
 });
 App.displayName = "QuestApp";
 
-const LoggedIn: React.VFC<{
+const LoggedIn = (props: {
   readonly loggedInState: LoggedInState;
   readonly appState: AppState;
-}> = React.memo((props) => {
+}): React.ReactElement => {
   const location = props.appState.location;
   switch (location._) {
     case "Top":
@@ -64,12 +65,17 @@ const LoggedIn: React.VFC<{
       return <ProgramNewPage appState={props.appState} />;
     case "Program":
       return (
-        <ProgramPage programId={location.programId} appState={props.appState} />
+        <ProgramPage
+          programId={location.programId}
+          loggedInState={props.loggedInState}
+          appState={props.appState}
+        />
       );
     case "NewQuestion":
       return (
         <QuestionNewPage
           appState={props.appState}
+          loggedInState={props.loggedInState}
           programId={location.newQuestionParameter.programId}
           parent={
             location.newQuestionParameter.parent._ === "Some"
@@ -84,12 +90,25 @@ const LoggedIn: React.VFC<{
           questionId={location.programIdAndQuestionId.questionId}
           programId={location.programIdAndQuestionId.programId}
           appState={props.appState}
+          loggedInState={props.loggedInState}
         />
       );
     case "NewClass":
-      return <ClassNewPage a={props.appState} programId={location.programId} />;
+      return (
+        <ClassNewPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+          programId={location.programId}
+        />
+      );
     case "Class": {
-      return <ClassPage appState={props.appState} classId={location.classId} />;
+      return (
+        <ClassPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+          classId={location.classId}
+        />
+      );
     }
     case "ClassInvitation":
       return (
@@ -102,6 +121,7 @@ const LoggedIn: React.VFC<{
       return (
         <QuestionEditPage
           appState={props.appState}
+          loggedInState={props.loggedInState}
           questionId={location.programIdAndQuestionId.questionId}
           programId={location.programIdAndQuestionId.programId}
         />
@@ -114,14 +134,16 @@ const LoggedIn: React.VFC<{
           classId={location.classIdAndQuestionId.classId}
         />
       );
+    case "AdminStudent":
+      return <AdminStudentPage />;
   }
-});
-LoggedIn.displayName = "LoggedIn";
+};
 
-export const ClassPage: React.VFC<{
-  appState: AppState;
-  classId: d.ClassId;
-}> = (props) => {
+export const ClassPage = (props: {
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly classId: d.ClassId;
+}): React.ReactElement => {
   const classAndRole = props.appState.getClassAndRole(props.classId);
   switch (classAndRole.tag) {
     case "none":
@@ -146,7 +168,8 @@ export const ClassPage: React.VFC<{
     case "admin":
       return (
         <AdminClassPage
-          a={props.appState}
+          appState={props.appState}
+          loggedInState={props.loggedInState}
           classWithParticipantList={classAndRole.classWithParticipantList}
         />
       );

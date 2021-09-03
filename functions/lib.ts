@@ -299,6 +299,33 @@ export const apiFunc: {
       questionTreeToStudentSelfQuestionTree(tree, answerList)
     );
   },
+  getStudentConfirmedAnswerList: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const qClass = await firebaseInterface.getClassByClassId(parameter.classId);
+    if (qClass === undefined) {
+      throw new Error("クラスが存在しません");
+    }
+    if (qClass.createAccountId !== account.id) {
+      throw new Error(
+        "クラスの作成者以外が, 生徒の確定した回答を見ることはできません"
+      );
+    }
+    const list = await firebaseInterface.getAnswerListByAccountIdAndClassId(
+      parameter.studentAccountId,
+      parameter.classId
+    );
+    return list.flatMap((answer): ReadonlyArray<d.ConfirmedAnswer> => {
+      if (answer.isConfirm) {
+        return [
+          {
+            answer: answer.text,
+            questionId: answer.questionId,
+          },
+        ];
+      }
+      return [];
+    });
+  },
 };
 
 const questionTreeToStudentSelfQuestionTree = (
