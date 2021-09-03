@@ -424,3 +424,70 @@ export const setQuestionTree = (
     ),
   };
 };
+
+/**
+ * 作成したクラスからプロジェクト を取得する
+ * @param loggedInState
+ * @param classId
+ * @returns
+ */
+export const getCreatedProgramIdByClassId = (
+  loggedInState: LoggedInState,
+  classId: d.ClassId
+): d.Program | undefined => {
+  for (const createdProgram of loggedInState.createdProgramMap.values()) {
+    for (const classItem of createdProgram.classList) {
+      if (classItem.qClass.id === classId) {
+        return createdProgram;
+      }
+    }
+  }
+};
+
+export const getClassNameAndStudentName = (
+  loggedInState: LoggedInState,
+  classId: d.ClassId,
+  studentAccountId: d.AccountId
+):
+  | {
+      readonly className: string;
+      readonly studentName: string;
+      readonly studentImageHashValue: d.ImageHashValue;
+    }
+  | undefined => {
+  for (const createdProgram of loggedInState.createdProgramMap.values()) {
+    for (const classItem of createdProgram.classList) {
+      if (classItem.qClass.id === classId) {
+        if (classItem.participantList === undefined) {
+          return;
+        }
+        const studentAccount = getStudentInParticipantList(
+          classItem.participantList,
+          studentAccountId
+        );
+        if (studentAccount === undefined) {
+          return undefined;
+        }
+        return {
+          className: classItem.qClass.name,
+          studentImageHashValue: studentAccount.iconHash,
+          studentName: studentAccount.name,
+        };
+      }
+    }
+  }
+};
+
+const getStudentInParticipantList = (
+  participantList: ReadonlyArray<d.Participant>,
+  studentAccountId: d.AccountId
+): d.Account | undefined => {
+  for (const participant of participantList) {
+    if (
+      participant.account.id === studentAccountId &&
+      participant.role === d.ClassParticipantRole.Student
+    ) {
+      return participant.account;
+    }
+  }
+};

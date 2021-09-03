@@ -113,6 +113,26 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
         ]),
         hash: new Map(),
       };
+    case "AdminStudentAnswer":
+      return {
+        resourceName: adminStudentAnswerPath,
+        resourceId: undefined,
+        searchParams: new Map<string, string>([
+          [
+            adminStudentAnswerClassId,
+            location.adminStudentAnswerPageParameter.classId,
+          ],
+          [
+            adminStudentAnswerStudentAccountId,
+            location.adminStudentAnswerPageParameter.studentAccountId,
+          ],
+          [
+            adminStudentAnswerQuestionId,
+            location.adminStudentAnswerPageParameter.questionId,
+          ],
+        ]),
+        hash: new Map(),
+      };
   }
 };
 
@@ -255,6 +275,29 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
       }
       return d.UrlData.Normal(defaultLocation);
     }
+    case adminStudentAnswerPath: {
+      const classId = structuredUrl.searchParams.get(adminStudentAnswerClassId);
+      const studentAccountId = structuredUrl.searchParams.get(
+        adminStudentAnswerStudentAccountId
+      );
+      const questionId = structuredUrl.searchParams.get(
+        adminStudentAnswerQuestionId
+      );
+      if (
+        typeof classId === "string" &&
+        typeof studentAccountId === "string" &&
+        typeof questionId === "string"
+      ) {
+        return d.UrlData.Normal(
+          d.Location.AdminStudentAnswer({
+            classId: d.ClassId.fromString(classId),
+            studentAccountId: d.AccountId.fromString(studentAccountId),
+            questionId: d.QuestionId.fromString(questionId),
+          })
+        );
+      }
+      return d.UrlData.Normal(defaultLocation);
+    }
   }
   return d.UrlData.Normal(defaultLocation);
 };
@@ -282,9 +325,15 @@ const editQuestionPath = "edit-question";
 const editQuestionProgramId = "programId";
 const studentEditQuestionPath = "student-edit-question";
 const studentEditQuestionClassId = "classId";
+
 const adminStudentPath = "admin-student";
 const adminStudentClassId = "classId";
 const adminStudentAccountId = "accountId";
+
+const adminStudentAnswerPath = "admin-student-answer";
+const adminStudentAnswerClassId = "classId";
+const adminStudentAnswerStudentAccountId = "student-accountId";
+const adminStudentAnswerQuestionId = "questionId";
 
 const lineLoginCallbackPath = "lineLoginCallback";
 

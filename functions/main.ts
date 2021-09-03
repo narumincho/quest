@@ -8,12 +8,24 @@ import { nowMode } from "../common/nowMode";
 
 if (nowMode === "development") {
   firebaseInterface.createAccount({
-    id: "71d21c2b889f7479fc67e1abacb5d16b" as d.AccountId,
-    name: "テスト用アカウント",
+    id: d.AccountId.fromString("71d21c2b889f7479fc67e1abacb5d16b"),
+    name: "テスト0",
     accountTokenHash:
       "a565b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955",
-    iconHash:
-      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955" as d.ImageHashValue,
+    iconHash: d.ImageHashValue.fromString(
+      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
+    ),
+    lineId: "noLineId",
+  });
+  firebaseInterface.createAccount({
+    id: d.AccountId.fromString("443d74e7acc6c2098441e2e4d80cf604"),
+    name: "テスト1",
+    accountTokenHash: d.AccountToken.fromString(
+      "67bb8cdaca8b776f9a30154a3a3add4884d01992b2b4ca79f637d20af0dca4c2"
+    ),
+    iconHash: d.ImageHashValue.fromString(
+      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
+    ),
     lineId: "noLineId",
   });
 }

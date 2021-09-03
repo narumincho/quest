@@ -27,15 +27,27 @@ export const LogInPage: React.VFC<Props> = (props) => {
         <LineLoginButton appState={props.appState} />
       </Box>
       {nowMode === "development" ? (
-        <Box padding={1}>
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={props.appState.requestLogInAsTestAccount}
-            data-cy="logInAsTestAccount"
-          >
-            テストアカウントとしてログインする
-          </Button>
+        <Box>
+          <Box padding={1}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={() => props.appState.requestLogInAsTestAccount("test0")}
+              data-cy="logInAsTestAccount"
+            >
+              テスト0 としてログインする
+            </Button>
+          </Box>
+          <Box padding={1}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={() => props.appState.requestLogInAsTestAccount("test1")}
+              data-cy="logInAsTestAccount"
+            >
+              テスト1 としてログインする
+            </Button>
+          </Box>
         </Box>
       ) : (
         <></>
