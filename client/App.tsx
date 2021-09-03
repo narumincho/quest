@@ -135,7 +135,14 @@ const LoggedIn = (props: {
         />
       );
     case "AdminStudent":
-      return <AdminStudentPage />;
+      return (
+        <AdminStudentPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+          accountId={location.accountIdAndClassId.accountId}
+          classId={location.accountIdAndClassId.classId}
+        />
+      );
   }
 };
 
