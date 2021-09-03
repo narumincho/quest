@@ -3,7 +3,7 @@ import * as d from "../data";
 import { AppState, LoggedInState, useAppState } from "./state";
 import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AdminClassPage } from "./component/AdminClassPage";
-import { AdminStudentAnswer } from "./component/AdminStudentAnswer";
+import { AdminStudentAnswerPage } from "./component/AdminStudentAnswerPage";
 import { AdminStudentPage } from "./component/AdminStudentPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
@@ -145,7 +145,7 @@ const LoggedIn = (props: {
         />
       );
     case "AdminStudentAnswer":
-      return <AdminStudentAnswer appState={props.appState} />;
+      return <AdminStudentAnswerPage appState={props.appState} />;
   }
 };
 

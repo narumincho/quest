@@ -87,7 +87,8 @@ export const AdminStudentPage = (props: {
               program.id
             )}
             appState={props.appState}
-            programId={program.id}
+            classId={props.classId}
+            studentAccountId={props.accountId}
           />
         </Box>
         <Box padding={1}>
@@ -98,11 +99,12 @@ export const AdminStudentPage = (props: {
   );
 };
 
-export const QuestionTreeListWithLoading: React.VFC<{
-  questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
-  appState: AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+export const QuestionTreeListWithLoading = (props: {
+  readonly questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
+  readonly appState: AppState;
+  readonly classId: d.ClassId;
+  readonly studentAccountId: d.AccountId;
+}): React.ReactElement => {
   if (props.questionTreeListWithLoadingState.tag === "Empty") {
     return (
       <Box padding={1}>
@@ -137,16 +139,18 @@ export const QuestionTreeListWithLoading: React.VFC<{
     <QuestionTreeList
       questionTreeList={treeList}
       appState={props.appState}
-      programId={props.programId}
+      classId={props.classId}
+      studentAccountId={props.studentAccountId}
     />
   );
 };
 
-const QuestionTreeList: React.VFC<{
-  questionTreeList: ReadonlyArray<QuestionTree>;
-  appState: AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+const QuestionTreeList = (props: {
+  readonly questionTreeList: ReadonlyArray<QuestionTree>;
+  readonly appState: AppState;
+  readonly classId: d.ClassId;
+  readonly studentAccountId: d.AccountId;
+}): React.ReactElement => {
   return (
     <Box>
       {props.questionTreeList.map((questionTree, index) => (
@@ -154,7 +158,8 @@ const QuestionTreeList: React.VFC<{
           key={index}
           questionTree={questionTree}
           appState={props.appState}
-          programId={props.programId}
+          classId={props.classId}
+          studentAccountId={props.studentAccountId}
         />
       ))}
     </Box>
@@ -170,19 +175,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const QuestionTreeLoaded: React.VFC<{
-  questionTree: QuestionTree;
-  appState: AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+export const QuestionTreeLoaded = (props: {
+  readonly questionTree: QuestionTree;
+  readonly appState: AppState;
+  readonly classId: d.ClassId;
+  readonly studentAccountId: d.AccountId;
+}): React.ReactElement => {
   const classes = useStyles();
   return (
     <Box className={classes.item}>
       <Link
         appState={props.appState}
-        location={d.Location.AdminQuestion({
+        location={d.Location.AdminStudentAnswer({
           questionId: props.questionTree.id,
-          programId: props.programId,
+          studentAccountId: props.studentAccountId,
+          classId: props.classId,
         })}
       >
         <Box className={classes.label}>
@@ -197,7 +204,8 @@ export const QuestionTreeLoaded: React.VFC<{
             questionTree={child}
             appState={props.appState}
             key={child.id}
-            programId={props.programId}
+            classId={props.classId}
+            studentAccountId={props.studentAccountId}
           />
         ))}
       </Box>

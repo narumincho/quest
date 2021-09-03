@@ -5,7 +5,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 
-export const AdminStudentAnswer = (props: {
+export const AdminStudentAnswerPage = (props: {
   readonly appState: AppState;
 }): React.ReactElement => {
   return (
