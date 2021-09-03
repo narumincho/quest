@@ -6,7 +6,7 @@ import {
   getParentQuestionList as questionMapGetParentQuestionList,
   getQuestionThatCanBeParentList as questionMapGetQuestionThatCanBeParentList,
 } from "./question";
-import { mapSet, mapUpdate } from "../../common/map";
+import { mapSet, mapUpdate, mapUpdateAllValue } from "../../common/map";
 
 export type { QuestionTree };
 
@@ -35,8 +35,18 @@ export type ClassWithParticipantList = {
   /**
    * 参加者一覧. `undefined` は取得中か失敗
    */
-  readonly participantList: ReadonlyArray<d.Participant> | undefined;
+  readonly participantList:
+    | ReadonlyArray<ParticipantAndConfirmedAnswer>
+    | undefined;
 };
+
+export type ParticipantAndConfirmedAnswer =
+  | {
+      readonly role: "student";
+      readonly account: d.Account;
+      readonly confirmedAnswerList: ReadonlyArray<d.ConfirmedAnswer>;
+    }
+  | { readonly role: "guest"; readonly account: d.Account };
 
 /** 参加したクラス */
 export type JoinedClass = {
@@ -367,22 +377,27 @@ export const setClassParticipantList = (
   return {
     ...loggedInState,
     createdProgramMap: new Map<d.ProgramId, ProgramWithClassList>(
-      [...loggedInState.createdProgramMap.values()].map((program) => {
-        return [
-          program.id,
-          {
-            ...program,
-            classList: program.classList.map(
-              (qClass): ClassWithParticipantList => {
-                if (qClass.qClass.id === classId) {
-                  return { qClass: qClass.qClass, participantList };
-                }
-                return qClass;
-              }
-            ),
-          },
-        ];
-      })
+      mapUpdateAllValue(loggedInState.createdProgramMap, (program) => ({
+        ...program,
+        classList: program.classList.map((qClass): ClassWithParticipantList => {
+          if (qClass.qClass.id === classId) {
+            return {
+              qClass: qClass.qClass,
+              participantList: participantList.map(
+                (participant): ParticipantAndConfirmedAnswer =>
+                  participant.role === d.ClassParticipantRole.Guest
+                    ? { role: "guest", account: participant.account }
+                    : {
+                        role: "student",
+                        account: participant.account,
+                        confirmedAnswerList: [],
+                      }
+              ),
+            };
+          }
+          return qClass;
+        }),
+      }))
     ),
     joinedClassMap: new Map(
       [...loggedInState.joinedClassMap.values()].map((joinedClass) => {
@@ -444,7 +459,7 @@ export const getCreatedProgramIdByClassId = (
   }
 };
 
-export const getClassNameAndStudentName = (
+export const getClassNameAndStudent = (
   loggedInState: LoggedInState,
   classId: d.ClassId,
   studentAccountId: d.AccountId
@@ -455,39 +470,123 @@ export const getClassNameAndStudentName = (
       readonly studentImageHashValue: d.ImageHashValue;
     }
   | undefined => {
+  const classItem = getClassWithParticipantListByClassId(
+    loggedInState,
+    classId
+  );
+  if (classItem === undefined) {
+    return;
+  }
+
+  if (classItem.participantList === undefined) {
+    return;
+  }
+  const studentAccount = getStudentInParticipantList(
+    classItem.participantList,
+    studentAccountId
+  );
+  if (studentAccount === undefined) {
+    return undefined;
+  }
+  return {
+    className: classItem.qClass.name,
+    studentImageHashValue: studentAccount.iconHash,
+    studentName: studentAccount.name,
+  };
+};
+
+const getStudentInParticipantList = (
+  participantAndAnswerList: ReadonlyArray<ParticipantAndConfirmedAnswer>,
+  studentAccountId: d.AccountId
+): d.Account | undefined => {
+  for (const participant of participantAndAnswerList) {
+    if (
+      participant.role === "student" &&
+      participant.account.id === studentAccountId
+    ) {
+      return participant.account;
+    }
+  }
+};
+
+export const getStudentConfirmedAnswer = (
+  loggedInState: LoggedInState,
+  classId: d.ClassId,
+  studentAccountId: d.AccountId,
+  questionId: d.QuestionId
+): d.ConfirmedAnswer | undefined => {
+  const classItem = getClassWithParticipantListByClassId(
+    loggedInState,
+    classId
+  );
+  if (classItem === undefined) {
+    return;
+  }
+
+  if (classItem.participantList === undefined) {
+    return;
+  }
+  for (const participant of classItem.participantList) {
+    if (
+      participant.role === "student" &&
+      participant.account.id === studentAccountId
+    ) {
+      return participant.confirmedAnswerList.find(
+        (answer) => answer.questionId === questionId
+      );
+    }
+  }
+};
+
+const getClassWithParticipantListByClassId = (
+  loggedInState: LoggedInState,
+  classId: d.ClassId
+): ClassWithParticipantList | undefined => {
   for (const createdProgram of loggedInState.createdProgramMap.values()) {
     for (const classItem of createdProgram.classList) {
       if (classItem.qClass.id === classId) {
-        if (classItem.participantList === undefined) {
-          return;
-        }
-        const studentAccount = getStudentInParticipantList(
-          classItem.participantList,
-          studentAccountId
-        );
-        if (studentAccount === undefined) {
-          return undefined;
-        }
-        return {
-          className: classItem.qClass.name,
-          studentImageHashValue: studentAccount.iconHash,
-          studentName: studentAccount.name,
-        };
+        return classItem;
       }
     }
   }
 };
 
-const getStudentInParticipantList = (
-  participantList: ReadonlyArray<d.Participant>,
-  studentAccountId: d.AccountId
-): d.Account | undefined => {
-  for (const participant of participantList) {
-    if (
-      participant.account.id === studentAccountId &&
-      participant.role === d.ClassParticipantRole.Student
-    ) {
-      return participant.account;
-    }
-  }
+export const setConfirmedAnswerList = (
+  loggedInState: LoggedInState,
+  classId: d.ClassId,
+  accountId: d.AccountId,
+  list: ReadonlyArray<d.ConfirmedAnswer>
+): LoggedInState => {
+  return {
+    ...loggedInState,
+    createdProgramMap: mapUpdateAllValue(
+      loggedInState.createdProgramMap,
+      (program) => ({
+        ...program,
+        classList: program.classList.map((classItem) => {
+          if (classItem.qClass.id === classId) {
+            return {
+              ...classItem,
+              participantList: classItem.participantList?.map(
+                (participant): ParticipantAndConfirmedAnswer => {
+                  if (
+                    participant.account.id === accountId &&
+                    participant.role === "student"
+                  ) {
+                    return {
+                      role: "student",
+                      account: participant.account,
+                      confirmedAnswerList: list,
+                    };
+                  }
+                  return participant;
+                }
+              ),
+            };
+          }
+          return classItem;
+        }),
+      })
+    ),
+  };
 };

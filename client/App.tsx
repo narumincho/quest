@@ -145,7 +145,15 @@ const LoggedIn = (props: {
         />
       );
     case "AdminStudentAnswer":
-      return <AdminStudentAnswerPage appState={props.appState} />;
+      return (
+        <AdminStudentAnswerPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+          adminStudentAnswerPageParameter={
+            location.adminStudentAnswerPageParameter
+          }
+        />
+      );
   }
 };
 

@@ -9,6 +9,9 @@ export const mapSet = <Key, Value>(
   return mutableMap;
 };
 
+/**
+ * Map の値を更新する. 値がない場合は何もしない
+ */
 export const mapUpdate = <Key, Value>(
   map: ReadonlyMap<Key, Value>,
   key: Key,
@@ -21,4 +24,13 @@ export const mapUpdate = <Key, Value>(
   const mutableMap = new Map(map);
   mutableMap.set(key, valueFunc(beforeValue));
   return mutableMap;
+};
+
+export const mapUpdateAllValue = <Key, Value>(
+  map: ReadonlyMap<Key, Value>,
+  valueFunc: (before: Value) => Value
+): ReadonlyMap<Key, Value> => {
+  return new Map(
+    [...map].map(([key, value]): [Key, Value] => [key, valueFunc(value)])
+  );
 };

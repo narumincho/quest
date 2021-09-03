@@ -44,9 +44,9 @@ export const LoadedParticipantList: Story<never> = () => (
     classWithParticipantList={{
       qClass: mockClass,
       participantList: [
-        { account: mockAccount, role: d.ClassParticipantRole.Student },
-        { account: mockAccount2, role: d.ClassParticipantRole.Student },
-        { account: mockAccount3, role: d.ClassParticipantRole.Guest },
+        { account: mockAccount, role: "student", confirmedAnswerList: [] },
+        { account: mockAccount2, role: "student", confirmedAnswerList: [] },
+        { account: mockAccount3, role: "guest" },
       ],
     }}
   />

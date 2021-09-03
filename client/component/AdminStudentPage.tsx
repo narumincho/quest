@@ -10,8 +10,9 @@ import {
 } from "@material-ui/core";
 import {
   QuestionTreeListWithLoadingState,
-  getClassNameAndStudentName,
+  getClassNameAndStudent,
   getCreatedProgramIdByClassId,
+  getStudentConfirmedAnswer,
 } from "../state/loggedInState";
 import { ChevronRight } from "@material-ui/icons";
 import { Link } from "./Link";
@@ -24,11 +25,20 @@ export const AdminStudentPage = (props: {
   readonly classId: d.ClassId;
   readonly accountId: d.AccountId;
 }): React.ReactElement => {
+  React.useEffect(() => {
+    props.appState.requestStudentConfirmedAnswerList({
+      accountToken: props.loggedInState.accountToken,
+      classId: props.classId,
+      studentAccountId: props.accountId,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.accountId, props.classId, props.loggedInState.accountToken]);
+
   const program = getCreatedProgramIdByClassId(
     props.loggedInState,
     props.classId
   );
-  const classNameAndStudent = getClassNameAndStudentName(
+  const classNameAndStudent = getClassNameAndStudent(
     props.loggedInState,
     props.classId,
     props.accountId
@@ -86,6 +96,7 @@ export const AdminStudentPage = (props: {
             questionTreeListWithLoadingState={props.appState.getQuestionTreeListWithLoadingStateInProgram(
               program.id
             )}
+            loggedInState={props.loggedInState}
             appState={props.appState}
             classId={props.classId}
             studentAccountId={props.accountId}
@@ -101,6 +112,7 @@ export const AdminStudentPage = (props: {
 
 export const QuestionTreeListWithLoading = (props: {
   readonly questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
+  readonly loggedInState: LoggedInState;
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly studentAccountId: d.AccountId;
@@ -138,6 +150,7 @@ export const QuestionTreeListWithLoading = (props: {
   return (
     <QuestionTreeList
       questionTreeList={treeList}
+      loggedInState={props.loggedInState}
       appState={props.appState}
       classId={props.classId}
       studentAccountId={props.studentAccountId}
@@ -148,6 +161,7 @@ export const QuestionTreeListWithLoading = (props: {
 const QuestionTreeList = (props: {
   readonly questionTreeList: ReadonlyArray<QuestionTree>;
   readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
   readonly studentAccountId: d.AccountId;
 }): React.ReactElement => {
@@ -157,6 +171,7 @@ const QuestionTreeList = (props: {
         <QuestionTreeLoaded
           key={index}
           questionTree={questionTree}
+          loggedInState={props.loggedInState}
           appState={props.appState}
           classId={props.classId}
           studentAccountId={props.studentAccountId}
@@ -178,31 +193,46 @@ const useStyles = makeStyles((theme) => ({
 export const QuestionTreeLoaded = (props: {
   readonly questionTree: QuestionTree;
   readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
   readonly studentAccountId: d.AccountId;
 }): React.ReactElement => {
   const classes = useStyles();
+  const confirmedAnswer = getStudentConfirmedAnswer(
+    props.loggedInState,
+    props.classId,
+    props.studentAccountId,
+    props.questionTree.id
+  );
   return (
     <Box className={classes.item}>
-      <Link
-        appState={props.appState}
-        location={d.Location.AdminStudentAnswer({
-          questionId: props.questionTree.id,
-          studentAccountId: props.studentAccountId,
-          classId: props.classId,
-        })}
-      >
+      {confirmedAnswer === undefined ? (
         <Box className={classes.label}>
           <ChevronRight />
           <Typography>{props.questionTree.text}</Typography>
         </Box>
-      </Link>
+      ) : (
+        <Link
+          appState={props.appState}
+          location={d.Location.AdminStudentAnswer({
+            questionId: props.questionTree.id,
+            studentAccountId: props.studentAccountId,
+            classId: props.classId,
+          })}
+        >
+          <Box className={classes.label}>
+            <ChevronRight />
+            <Typography>{props.questionTree.text}</Typography>
+          </Box>
+        </Link>
+      )}
 
       <Box padding={1}>
         {props.questionTree.children.map((child) => (
           <QuestionTreeLoaded
             questionTree={child}
             appState={props.appState}
+            loggedInState={props.loggedInState}
             key={child.id}
             classId={props.classId}
             studentAccountId={props.studentAccountId}

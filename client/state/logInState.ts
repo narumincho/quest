@@ -250,3 +250,16 @@ export const getStudentQuestionTree = (
   }
   return joinedClass.questionTreeList;
 };
+
+export const updateLoggedInState = (
+  beforeLogInState: LogInState,
+  func: (loggedInState: ls.LoggedInState) => ls.LoggedInState
+): LogInState => {
+  if (beforeLogInState.tag !== "LoggedIn") {
+    return beforeLogInState;
+  }
+  return {
+    ...beforeLogInState,
+    loggedInState: func(beforeLogInState.loggedInState),
+  };
+};
