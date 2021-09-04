@@ -7,13 +7,17 @@ import {
   ProgramWithClassList,
   QuestionListState,
   QuestionTreeListWithLoadingState,
-  setConfirmedAnswerList,
-} from "./state/loggedInState";
-import {
-  LogInState,
   addCreatedClass,
   addCreatedOrEditedQuestion,
   addJoinedClass,
+  setClassParticipantList,
+  setConfirmedAnswerList,
+  setProgram,
+  setQuestionListState,
+  setStudentQuestionTree,
+} from "./state/loggedInState";
+import {
+  LogInState,
   getClassAndRole,
   getParentQuestionList,
   getQuestionById,
@@ -22,10 +26,6 @@ import {
   getQuestionTreeListWithLoadingStateInProgram,
   getStudentQuestionTree,
   loggedIn,
-  setClassParticipantList,
-  setProgram,
-  setQuestionListState,
-  setStudentQuestionTree,
   updateLoggedInState,
 } from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
@@ -310,8 +310,14 @@ export const useAppState = (): AppState => {
             variant: "success",
           });
           console.log("取得した", response.okValue);
-          setLogInState((beforeLogInState) =>
-            setClassParticipantList(beforeLogInState, classId, response.okValue)
+          setLogInState(
+            updateLoggedInState((beforeLogInState) =>
+              setClassParticipantList(
+                beforeLogInState,
+                classId,
+                response.okValue
+              )
+            )
           );
         });
     },
@@ -345,8 +351,14 @@ export const useAppState = (): AppState => {
           enqueueSnackbar("クラスの質問と回答状況の取得に成功しました", {
             variant: "success",
           });
-          setLogInState((beforeLogInState) =>
-            setStudentQuestionTree(beforeLogInState, classId, response.okValue)
+          setLogInState(
+            updateLoggedInState((beforeLogInState) =>
+              setStudentQuestionTree(
+                beforeLogInState,
+                classId,
+                response.okValue
+              )
+            )
           );
         });
     },
@@ -383,11 +395,13 @@ export const useAppState = (): AppState => {
           enqueueSnackbar("質問への回答に成功しました", {
             variant: "success",
           });
-          setLogInState((beforeLogInState) =>
-            setStudentQuestionTree(
-              beforeLogInState,
-              parameter.classId,
-              response.okValue
+          setLogInState(
+            updateLoggedInState((beforeLogInState) =>
+              setStudentQuestionTree(
+                beforeLogInState,
+                parameter.classId,
+                response.okValue
+              )
             )
           );
           setLocation(d.Location.Class(parameter.classId));
@@ -459,8 +473,10 @@ export const useAppState = (): AppState => {
                 variant: "success",
               }
             );
-            setLogInState((beforeLogInState) =>
-              setProgram(beforeLogInState, response.okValue)
+            setLogInState(
+              updateLoggedInState((beforeLogInState) =>
+                setProgram(beforeLogInState, response.okValue)
+              )
             );
             changeLocation(d.Location.Program(response.okValue.id));
           });
@@ -495,8 +511,10 @@ export const useAppState = (): AppState => {
                 variant: "success",
               }
             );
-            setLogInState((beforeLogInState) =>
-              addCreatedClass(beforeLogInState, response.okValue)
+            setLogInState(
+              updateLoggedInState((beforeLogInState) =>
+                addCreatedClass(beforeLogInState, response.okValue)
+              )
             );
             changeLocation(d.Location.Class(response.okValue.id));
           });
@@ -513,10 +531,15 @@ export const useAppState = (): AppState => {
           );
           return;
         }
-        setLogInState((beforeLogInState) =>
-          setQuestionListState(beforeLogInState, programId, {
-            tag: "Requesting",
-          })
+        setLogInState(
+          updateLoggedInState((beforeLogInState) =>
+            setQuestionListState(beforeLogInState, {
+              programId,
+              questionListState: {
+                tag: "Requesting",
+              },
+            })
+          )
         );
         api
           .getQuestionInCreatedProgram({
@@ -525,10 +548,15 @@ export const useAppState = (): AppState => {
           })
           .then((response) => {
             if (response._ === "Error") {
-              setLogInState((beforeLogInState) =>
-                setQuestionListState(beforeLogInState, programId, {
-                  tag: "Error",
-                })
+              setLogInState(
+                updateLoggedInState((beforeLogInState) =>
+                  setQuestionListState(beforeLogInState, {
+                    programId,
+                    questionListState: {
+                      tag: "Error",
+                    },
+                  })
+                )
               );
 
               enqueueSnackbar(
@@ -542,16 +570,21 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`プログラムに属している質問の取得に成功しました`, {
               variant: "success",
             });
-            setLogInState((beforeLogInState) =>
-              setQuestionListState(beforeLogInState, programId, {
-                tag: "Loaded",
-                questionMap: new Map(
-                  response.okValue.map((q): [d.QuestionId, d.Question] => [
-                    q.id,
-                    q,
-                  ])
-                ),
-              })
+            setLogInState(
+              updateLoggedInState((beforeLogInState) =>
+                setQuestionListState(beforeLogInState, {
+                  programId,
+                  questionListState: {
+                    tag: "Loaded",
+                    questionMap: new Map(
+                      response.okValue.map((q): [d.QuestionId, d.Question] => [
+                        q.id,
+                        q,
+                      ])
+                    ),
+                  },
+                })
+              )
             );
           });
       },
@@ -580,8 +613,10 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`質問を作成しました`, {
               variant: "success",
             });
-            setLogInState((beforeLogInState) =>
-              addCreatedOrEditedQuestion(beforeLogInState, response.okValue)
+            setLogInState(
+              updateLoggedInState((beforeLogInState) =>
+                addCreatedOrEditedQuestion(beforeLogInState, response.okValue)
+              )
             );
             setLocation(
               d.Location.AdminQuestion({
@@ -646,8 +681,10 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`質問を編集しました`, {
               variant: "success",
             });
-            setLogInState((beforeLogInState) =>
-              addCreatedOrEditedQuestion(beforeLogInState, response.okValue)
+            setLogInState(
+              updateLoggedInState((beforeLogInState) =>
+                addCreatedOrEditedQuestion(beforeLogInState, response.okValue)
+              )
             );
             setLocation(
               d.Location.AdminQuestion({
@@ -684,8 +721,10 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`クラスに参加しました`, {
               variant: "success",
             });
-            setLogInState((beforeLogInState) =>
-              addJoinedClass(beforeLogInState, response.okValue)
+            setLogInState(
+              updateLoggedInState((beforeLogInState) =>
+                addJoinedClass(beforeLogInState, response.okValue)
+              )
             );
             changeLocation(d.Location.Class(response.okValue.id));
           });
@@ -715,8 +754,8 @@ export const useAppState = (): AppState => {
             enqueueSnackbar(`生徒の回答の取得に成功しました`, {
               variant: "success",
             });
-            setLogInState((beforeLogInState) =>
-              updateLoggedInState(beforeLogInState, (beforeLoggedInState) =>
+            setLogInState(
+              updateLoggedInState((beforeLoggedInState) =>
                 setConfirmedAnswerList(
                   beforeLoggedInState,
                   option.classId,
