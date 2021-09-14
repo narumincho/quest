@@ -148,8 +148,8 @@ export const initLoggedInState = (option: {
 };
 
 export const setProgram = (
-  program: d.Program,
-  beforeLoggedInState: LoggedInState
+  beforeLoggedInState: LoggedInState,
+  program: d.Program
 ): LoggedInState => {
   return {
     ...beforeLoggedInState,
@@ -416,7 +416,7 @@ export const setClassParticipantList = (
   };
 };
 
-export const setQuestionTree = (
+export const setStudentQuestionTree = (
   loggedInState: LoggedInState,
   classId: d.ClassId,
   questionTreeList: ReadonlyArray<d.StudentSelfQuestionTree> | undefined
