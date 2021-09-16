@@ -94,7 +94,7 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
         ]),
         hash: new Map(),
       };
-    case "StudentQuestion":
+    case "StudentAnswer":
       return {
         resourceName: studentQuestionPath,
         resourceId: location.classIdAndQuestionId.questionId,
@@ -254,7 +254,7 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
         typeof classId === "string"
       ) {
         return d.UrlData.Normal(
-          d.Location.StudentQuestion({
+          d.Location.StudentAnswer({
             classId: d.ClassId.fromString(classId),
             questionId: d.QuestionId.fromString(structuredUrl.resourceId),
           })

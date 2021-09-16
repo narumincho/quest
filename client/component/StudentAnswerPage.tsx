@@ -25,7 +25,7 @@ export type Props = {
   readonly classId: d.ClassId;
 };
 
-export const StudentQuestionPage: React.VFC<Props> = (props) => {
+export const StudentAnswerPage: React.VFC<Props> = (props) => {
   const questionTreeList = props.appState.getStudentQuestionTree(props.classId);
 
   if (questionTreeList === undefined) {
