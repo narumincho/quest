@@ -6,16 +6,16 @@ import {
   mockKadaiQuestionId,
   mockManabiQuestionId,
 } from "../mock";
-import { StudentEditQuestionPage } from "../../client/component/StudentEditQuestionPage";
+import { StudentQuestionPage } from "../../client/component/StudentQuestionPage";
 
 const meta: Meta = {
-  title: "StudentEditQuestionPage",
-  component: StudentEditQuestionPage,
+  title: "StudentQuestionPage",
+  component: StudentQuestionPage,
 };
 export default meta;
 
 export const Default: Story<never> = () => (
-  <StudentEditQuestionPage
+  <StudentQuestionPage
     appState={mockAppState}
     questionId={mockKadaiQuestionId}
     classId={mockClassId}
@@ -23,7 +23,7 @@ export const Default: Story<never> = () => (
 );
 
 export const WithAnswer: Story<never> = () => (
-  <StudentEditQuestionPage
+  <StudentQuestionPage
     appState={mockAppState}
     questionId={mockManabiQuestionId}
     classId={mockClassId}

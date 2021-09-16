@@ -367,7 +367,7 @@ export type Participant = { readonly account: Account; readonly role: ClassParti
  * ページの場所を表現する
  * @typePartId b8fd5d17464422869c1b16b945f09c2a
  */
-export type Location = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly programId: ProgramId } | { readonly _: "NewQuestion"; readonly newQuestionParameter: NewQuestionParameter } | { readonly _: "AdminQuestion"; readonly programIdAndQuestionId: ProgramIdAndQuestionId } | { readonly _: "Class"; readonly classId: ClassId } | { readonly _: "NewClass"; readonly programId: ProgramId } | { readonly _: "ClassInvitation"; readonly studentClassInvitationToken: StudentClassInvitationToken } | { readonly _: "EditQuestion"; readonly programIdAndQuestionId: ProgramIdAndQuestionId } | { readonly _: "StudentEditQuestion"; readonly classIdAndQuestionId: ClassIdAndQuestionId } | { readonly _: "AdminStudent"; readonly accountIdAndClassId: AccountIdAndClassId } | { readonly _: "AdminStudentAnswer"; readonly adminStudentAnswerPageParameter: AdminStudentAnswerPageParameter };
+export type Location = { readonly _: "Top" } | { readonly _: "Setting" } | { readonly _: "NewProgram" } | { readonly _: "Program"; readonly programId: ProgramId } | { readonly _: "NewQuestion"; readonly newQuestionParameter: NewQuestionParameter } | { readonly _: "AdminQuestion"; readonly programIdAndQuestionId: ProgramIdAndQuestionId } | { readonly _: "Class"; readonly classId: ClassId } | { readonly _: "NewClass"; readonly programId: ProgramId } | { readonly _: "ClassInvitation"; readonly studentClassInvitationToken: StudentClassInvitationToken } | { readonly _: "EditQuestion"; readonly programIdAndQuestionId: ProgramIdAndQuestionId } | { readonly _: "AdminStudent"; readonly accountIdAndClassId: AccountIdAndClassId } | { readonly _: "AdminStudentAnswer"; readonly adminStudentAnswerPageParameter: AdminStudentAnswerPageParameter } | { readonly _: "StudentQuestion"; readonly classIdAndQuestionId: ClassIdAndQuestionId };
 
 
 /**
@@ -1218,17 +1218,17 @@ readonly ClassInvitation: (a: StudentClassInvitationToken) => Location;
  */
 readonly EditQuestion: (a: ProgramIdAndQuestionId) => Location; 
 /**
- * 生徒の質問回答ページ
- */
-readonly StudentEditQuestion: (a: ClassIdAndQuestionId) => Location; 
-/**
  * クラスに参加している生徒の詳細ページ
  */
 readonly AdminStudent: (a: AccountIdAndClassId) => Location; 
 /**
  * 生徒の確定された回答画面
  */
-readonly AdminStudentAnswer: (a: AdminStudentAnswerPageParameter) => Location } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (programId: ProgramId): Location => ({ _: "Program", programId }), NewQuestion: (newQuestionParameter: NewQuestionParameter): Location => ({ _: "NewQuestion", newQuestionParameter }), AdminQuestion: (programIdAndQuestionId: ProgramIdAndQuestionId): Location => ({ _: "AdminQuestion", programIdAndQuestionId }), Class: (classId: ClassId): Location => ({ _: "Class", classId }), NewClass: (programId: ProgramId): Location => ({ _: "NewClass", programId }), ClassInvitation: (studentClassInvitationToken: StudentClassInvitationToken): Location => ({ _: "ClassInvitation", studentClassInvitationToken }), EditQuestion: (programIdAndQuestionId: ProgramIdAndQuestionId): Location => ({ _: "EditQuestion", programIdAndQuestionId }), StudentEditQuestion: (classIdAndQuestionId: ClassIdAndQuestionId): Location => ({ _: "StudentEditQuestion", classIdAndQuestionId }), AdminStudent: (accountIdAndClassId: AccountIdAndClassId): Location => ({ _: "AdminStudent", accountIdAndClassId }), AdminStudentAnswer: (adminStudentAnswerPageParameter: AdminStudentAnswerPageParameter): Location => ({ _: "AdminStudentAnswer", adminStudentAnswerPageParameter }), typePartId: "b8fd5d17464422869c1b16b945f09c2a" as TypePartId, codec: { encode: (value: Location): ReadonlyArray<number> => {
+readonly AdminStudentAnswer: (a: AdminStudentAnswerPageParameter) => Location; 
+/**
+ * 生徒の質問, 自身の回答, フィードバック, 他の人の回答画面
+ */
+readonly StudentQuestion: (a: ClassIdAndQuestionId) => Location } = { Top: { _: "Top" }, Setting: { _: "Setting" }, NewProgram: { _: "NewProgram" }, Program: (programId: ProgramId): Location => ({ _: "Program", programId }), NewQuestion: (newQuestionParameter: NewQuestionParameter): Location => ({ _: "NewQuestion", newQuestionParameter }), AdminQuestion: (programIdAndQuestionId: ProgramIdAndQuestionId): Location => ({ _: "AdminQuestion", programIdAndQuestionId }), Class: (classId: ClassId): Location => ({ _: "Class", classId }), NewClass: (programId: ProgramId): Location => ({ _: "NewClass", programId }), ClassInvitation: (studentClassInvitationToken: StudentClassInvitationToken): Location => ({ _: "ClassInvitation", studentClassInvitationToken }), EditQuestion: (programIdAndQuestionId: ProgramIdAndQuestionId): Location => ({ _: "EditQuestion", programIdAndQuestionId }), AdminStudent: (accountIdAndClassId: AccountIdAndClassId): Location => ({ _: "AdminStudent", accountIdAndClassId }), AdminStudentAnswer: (adminStudentAnswerPageParameter: AdminStudentAnswerPageParameter): Location => ({ _: "AdminStudentAnswer", adminStudentAnswerPageParameter }), StudentQuestion: (classIdAndQuestionId: ClassIdAndQuestionId): Location => ({ _: "StudentQuestion", classIdAndQuestionId }), typePartId: "b8fd5d17464422869c1b16b945f09c2a" as TypePartId, codec: { encode: (value: Location): ReadonlyArray<number> => {
   switch (value._) {
     case "Top": {
       return [0];
@@ -1260,14 +1260,14 @@ readonly AdminStudentAnswer: (a: AdminStudentAnswerPageParameter) => Location } 
     case "EditQuestion": {
       return [9].concat(ProgramIdAndQuestionId.codec.encode(value.programIdAndQuestionId));
     }
-    case "StudentEditQuestion": {
-      return [10].concat(ClassIdAndQuestionId.codec.encode(value.classIdAndQuestionId));
-    }
     case "AdminStudent": {
-      return [11].concat(AccountIdAndClassId.codec.encode(value.accountIdAndClassId));
+      return [10].concat(AccountIdAndClassId.codec.encode(value.accountIdAndClassId));
     }
     case "AdminStudentAnswer": {
-      return [12].concat(AdminStudentAnswerPageParameter.codec.encode(value.adminStudentAnswerPageParameter));
+      return [11].concat(AdminStudentAnswerPageParameter.codec.encode(value.adminStudentAnswerPageParameter));
+    }
+    case "StudentQuestion": {
+      return [12].concat(ClassIdAndQuestionId.codec.encode(value.classIdAndQuestionId));
     }
   }
 }, decode: (index: number, binary: Uint8Array): { readonly result: Location; readonly nextIndex: number } => {
@@ -1310,16 +1310,16 @@ readonly AdminStudentAnswer: (a: AdminStudentAnswerPageParameter) => Location } 
     return { result: Location.EditQuestion(result.result), nextIndex: result.nextIndex };
   }
   if (patternIndex.result === 10) {
-    const result: { readonly result: ClassIdAndQuestionId; readonly nextIndex: number } = ClassIdAndQuestionId.codec.decode(patternIndex.nextIndex, binary);
-    return { result: Location.StudentEditQuestion(result.result), nextIndex: result.nextIndex };
-  }
-  if (patternIndex.result === 11) {
     const result: { readonly result: AccountIdAndClassId; readonly nextIndex: number } = AccountIdAndClassId.codec.decode(patternIndex.nextIndex, binary);
     return { result: Location.AdminStudent(result.result), nextIndex: result.nextIndex };
   }
-  if (patternIndex.result === 12) {
+  if (patternIndex.result === 11) {
     const result: { readonly result: AdminStudentAnswerPageParameter; readonly nextIndex: number } = AdminStudentAnswerPageParameter.codec.decode(patternIndex.nextIndex, binary);
     return { result: Location.AdminStudentAnswer(result.result), nextIndex: result.nextIndex };
+  }
+  if (patternIndex.result === 12) {
+    const result: { readonly result: ClassIdAndQuestionId; readonly nextIndex: number } = ClassIdAndQuestionId.codec.decode(patternIndex.nextIndex, binary);
+    return { result: Location.StudentQuestion(result.result), nextIndex: result.nextIndex };
   }
   throw new Error("存在しないパターンを指定された 型を更新してください");
 } } };
