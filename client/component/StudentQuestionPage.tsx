@@ -7,6 +7,8 @@ import {
   CircularProgress,
   Dialog,
   DialogTitle,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -168,35 +170,28 @@ const StudentEditQuestionPageLoaded = (props: {
         />
       </Box>
       <Box padding={1}>
-        <Button
-          fullWidth
+        <TemplateSaveButton
           onClick={() => {
             answerQuestion(false);
           }}
-          size="large"
           disabled={!isFirst && validationResult._ === "Error"}
-          variant="contained"
-          color="primary"
-          startIcon={<Save />}
-        >
-          回答を一時保存する
-        </Button>
+        />
       </Box>
       <Box padding={1}>
-        <Button
-          fullWidth
+        <ConfirmSaveButton
           onClick={() => {
             answerQuestion(true);
           }}
-          size="large"
           disabled={!isFirst && validationResult._ === "Error"}
-          variant="contained"
-          color="secondary"
-          startIcon={<Publish />}
-        >
-          回答を確定して保存する
-        </Button>
+        />
       </Box>
+      {props.question.answer._ === "Some" &&
+      props.question.answer.value.isConfirm ? (
+        <FeedbackOrAnswersFromOtherStudents />
+      ) : (
+        <></>
+      )}
+
       <Dialog open={isSaving}>
         <DialogTitle>質問を保存中</DialogTitle>
         <Box padding={2} display="grid" justifyContent="center">
@@ -204,5 +199,71 @@ const StudentEditQuestionPageLoaded = (props: {
         </Box>
       </Dialog>
     </PageContainer>
+  );
+};
+
+const TemplateSaveButton = (props: {
+  readonly onClick: () => void;
+  readonly disabled: boolean;
+}): React.ReactElement => {
+  return (
+    <Button
+      fullWidth
+      onClick={props.onClick}
+      size="large"
+      disabled={props.disabled}
+      variant="contained"
+      color="primary"
+      startIcon={<Save />}
+    >
+      回答を一時保存する
+    </Button>
+  );
+};
+
+const ConfirmSaveButton = (props: {
+  readonly onClick: () => void;
+  readonly disabled: boolean;
+}): React.ReactElement => {
+  return (
+    <Button
+      fullWidth
+      onClick={props.onClick}
+      size="large"
+      disabled={props.disabled}
+      variant="contained"
+      color="secondary"
+      startIcon={<Publish />}
+    >
+      回答を確定して保存する
+    </Button>
+  );
+};
+
+const FeedbackOrAnswersFromOtherStudents = (): React.ReactElement => {
+  const [selectedTab, setSelectedTab] = React.useState<
+    "feedback" | "answersFromOtherStudents"
+  >("feedback");
+
+  return (
+    <Box padding={1}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={selectedTab === "feedback" ? 0 : 1}
+          onChange={(_, v) => {
+            setSelectedTab(v === 0 ? "feedback" : "answersFromOtherStudents");
+          }}
+          variant="fullWidth"
+        >
+          <Tab label="受け取ったフィードバック" />
+          <Tab label="他の人の回答" />
+        </Tabs>
+      </Box>
+      <Box padding={1}>
+        {selectedTab === "feedback"
+          ? "フィードバックの一覧表示"
+          : "他の人の回答一覧表示"}
+      </Box>
+    </Box>
   );
 };
