@@ -4,6 +4,7 @@ import {
   mockAppState,
   mockClassId,
   mockKadaiQuestionId,
+  mockLoggedInState,
   mockManabiQuestionId,
 } from "../mock";
 import { StudentAnswerPage } from "../../client/component/StudentAnswerPage";
@@ -19,6 +20,7 @@ export const Default: Story<never> = () => (
     appState={mockAppState}
     questionId={mockKadaiQuestionId}
     classId={mockClassId}
+    loggedInState={mockLoggedInState}
   />
 );
 
@@ -27,5 +29,6 @@ export const WithAnswer: Story<never> = () => (
     appState={mockAppState}
     questionId={mockManabiQuestionId}
     classId={mockClassId}
+    loggedInState={mockLoggedInState}
   />
 );

@@ -83,6 +83,10 @@ export const mockAppState: AppState = {
   requestStudentConfirmedAnswerList: action(
     "requestStudentConfirmedAnswerList"
   ),
+  requestAnswersFromOtherStudents: (e) => {
+    action("requestAnswersFromOtherStudents")(e);
+    return Promise.resolve([]);
+  },
 };
 
 export const mockAccount: d.Account = {
