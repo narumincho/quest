@@ -47,7 +47,7 @@ export const StudentSelfQuestionTree = (props: {
     <Box className={classes.item}>
       <Link
         appState={props.appState}
-        location={d.Location.StudentEditQuestion({
+        location={d.Location.StudentAnswer({
           questionId: props.tree.questionId,
           classId: props.classId,
         })}

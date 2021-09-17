@@ -39,10 +39,20 @@
 <path fill="#ffffff" stroke="black" stroke-width="2" d="M812,-764.91C812,-764.91 899,-764.91 899,-764.91 905,-764.91 911,-770.91 911,-776.91 911,-776.91 911,-1548.91 911,-1548.91 911,-1554.91 905,-1560.91 899,-1560.91 899,-1560.91 812,-1560.91 812,-1560.91 806,-1560.91 800,-1554.91 800,-1548.91 800,-1548.91 800,-776.91 800,-776.91 800,-770.91 806,-764.91 812,-764.91"/>
 <text text-anchor="middle" x="855.5" y="-1549.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">node_modules</text>
 </g>
-<g id="clust17" class="cluster">
-<title>cluster_node_modules/jsonwebtoken</title>
-<path fill="#ffffff" stroke="black" stroke-width="2" d="M829,-1140.91C829,-1140.91 882,-1140.91 882,-1140.91 888,-1140.91 894,-1146.91 894,-1152.91 894,-1152.91 894,-1180.91 894,-1180.91 894,-1186.91 888,-1192.91 882,-1192.91 882,-1192.91 829,-1192.91 829,-1192.91 823,-1192.91 817,-1186.91 817,-1180.91 817,-1180.91 817,-1152.91 817,-1152.91 817,-1146.91 823,-1140.91 829,-1140.91"/>
-<text text-anchor="middle" x="855.5" y="-1181.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">jsonwebtoken</text>
+<g id="clust7" class="cluster">
+<title>cluster_node_modules/@material&#45;ui</title>
+<path fill="#ffffff" stroke="black" stroke-width="2" d="M824,-926.91C824,-926.91 886,-926.91 886,-926.91 892,-926.91 898,-932.91 898,-938.91 898,-938.91 898,-1060.91 898,-1060.91 898,-1066.91 892,-1072.91 886,-1072.91 886,-1072.91 824,-1072.91 824,-1072.91 818,-1072.91 812,-1066.91 812,-1060.91 812,-1060.91 812,-938.91 812,-938.91 812,-932.91 818,-926.91 824,-926.91"/>
+<text text-anchor="middle" x="855" y="-1061.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">@material&#45;ui</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_node_modules/@material&#45;ui/core</title>
+<path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-934.91C832,-934.91 878,-934.91 878,-934.91 884,-934.91 890,-940.91 890,-946.91 890,-946.91 890,-974.91 890,-974.91 890,-980.91 884,-986.91 878,-986.91 878,-986.91 832,-986.91 832,-986.91 826,-986.91 820,-980.91 820,-974.91 820,-974.91 820,-946.91 820,-946.91 820,-940.91 826,-934.91 832,-934.91"/>
+<text text-anchor="middle" x="855" y="-975.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">core</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_node_modules/@material&#45;ui/icons</title>
+<path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-994.91C832,-994.91 878,-994.91 878,-994.91 884,-994.91 890,-1000.91 890,-1006.91 890,-1006.91 890,-1034.91 890,-1034.91 890,-1040.91 884,-1046.91 878,-1046.91 878,-1046.91 832,-1046.91 832,-1046.91 826,-1046.91 820,-1040.91 820,-1034.91 820,-1034.91 820,-1006.91 820,-1006.91 820,-1000.91 826,-994.91 832,-994.91"/>
+<text text-anchor="middle" x="855" y="-1035.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">icons</text>
 </g>
 <g id="clust11" class="cluster">
 <title>cluster_node_modules/firebase&#45;admin</title>
@@ -54,6 +64,11 @@
 <path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-1456.91C832,-1456.91 878,-1456.91 878,-1456.91 884,-1456.91 890,-1462.91 890,-1468.91 890,-1468.91 890,-1496.91 890,-1496.91 890,-1502.91 884,-1508.91 878,-1508.91 878,-1508.91 832,-1508.91 832,-1508.91 826,-1508.91 820,-1502.91 820,-1496.91 820,-1496.91 820,-1468.91 820,-1468.91 820,-1462.91 826,-1456.91 832,-1456.91"/>
 <text text-anchor="middle" x="855" y="-1497.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">lib</text>
 </g>
+<g id="clust17" class="cluster">
+<title>cluster_node_modules/jsonwebtoken</title>
+<path fill="#ffffff" stroke="black" stroke-width="2" d="M829,-1140.91C829,-1140.91 882,-1140.91 882,-1140.91 888,-1140.91 894,-1146.91 894,-1152.91 894,-1152.91 894,-1180.91 894,-1180.91 894,-1186.91 888,-1192.91 882,-1192.91 882,-1192.91 829,-1192.91 829,-1192.91 823,-1192.91 817,-1186.91 817,-1180.91 817,-1180.91 817,-1152.91 817,-1152.91 817,-1146.91 823,-1140.91 829,-1140.91"/>
+<text text-anchor="middle" x="855.5" y="-1181.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">jsonwebtoken</text>
+</g>
 <g id="clust13" class="cluster">
 <title>cluster_node_modules/firebase&#45;functions</title>
 <path fill="#ffffff" stroke="black" stroke-width="2" d="M820,-1354.91C820,-1354.91 891,-1354.91 891,-1354.91 897,-1354.91 903,-1360.91 903,-1366.91 903,-1366.91 903,-1428.91 903,-1428.91 903,-1434.91 897,-1440.91 891,-1440.91 891,-1440.91 820,-1440.91 820,-1440.91 814,-1440.91 808,-1434.91 808,-1428.91 808,-1428.91 808,-1366.91 808,-1366.91 808,-1360.91 814,-1354.91 820,-1354.91"/>
@@ -63,21 +78,6 @@
 <title>cluster_node_modules/firebase&#45;functions/lib</title>
 <path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-1362.91C832,-1362.91 878,-1362.91 878,-1362.91 884,-1362.91 890,-1368.91 890,-1374.91 890,-1374.91 890,-1402.91 890,-1402.91 890,-1408.91 884,-1414.91 878,-1414.91 878,-1414.91 832,-1414.91 832,-1414.91 826,-1414.91 820,-1408.91 820,-1402.91 820,-1402.91 820,-1374.91 820,-1374.91 820,-1368.91 826,-1362.91 832,-1362.91"/>
 <text text-anchor="middle" x="855" y="-1403.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">lib</text>
-</g>
-<g id="clust7" class="cluster">
-<title>cluster_node_modules/@material&#45;ui</title>
-<path fill="#ffffff" stroke="black" stroke-width="2" d="M824,-926.91C824,-926.91 886,-926.91 886,-926.91 892,-926.91 898,-932.91 898,-938.91 898,-938.91 898,-1060.91 898,-1060.91 898,-1066.91 892,-1072.91 886,-1072.91 886,-1072.91 824,-1072.91 824,-1072.91 818,-1072.91 812,-1066.91 812,-1060.91 812,-1060.91 812,-938.91 812,-938.91 812,-932.91 818,-926.91 824,-926.91"/>
-<text text-anchor="middle" x="855" y="-1061.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">@material&#45;ui</text>
-</g>
-<g id="clust9" class="cluster">
-<title>cluster_node_modules/@material&#45;ui/icons</title>
-<path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-994.91C832,-994.91 878,-994.91 878,-994.91 884,-994.91 890,-1000.91 890,-1006.91 890,-1006.91 890,-1034.91 890,-1034.91 890,-1040.91 884,-1046.91 878,-1046.91 878,-1046.91 832,-1046.91 832,-1046.91 826,-1046.91 820,-1040.91 820,-1034.91 820,-1034.91 820,-1006.91 820,-1006.91 820,-1000.91 826,-994.91 832,-994.91"/>
-<text text-anchor="middle" x="855" y="-1035.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">icons</text>
-</g>
-<g id="clust8" class="cluster">
-<title>cluster_node_modules/@material&#45;ui/core</title>
-<path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-934.91C832,-934.91 878,-934.91 878,-934.91 884,-934.91 890,-940.91 890,-946.91 890,-946.91 890,-974.91 890,-974.91 890,-980.91 884,-986.91 878,-986.91 878,-986.91 832,-986.91 832,-986.91 826,-986.91 820,-980.91 820,-974.91 820,-974.91 820,-946.91 820,-946.91 820,-940.91 826,-934.91 832,-934.91"/>
-<text text-anchor="middle" x="855" y="-975.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">core</text>
 </g>
 <g id="clust10" class="cluster">
 <title>cluster_node_modules/axios</title>
@@ -94,11 +94,6 @@
 <path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-1208.91C832,-1208.91 878,-1208.91 878,-1208.91 884,-1208.91 890,-1214.91 890,-1220.91 890,-1220.91 890,-1248.91 890,-1248.91 890,-1254.91 884,-1260.91 878,-1260.91 878,-1260.91 832,-1260.91 832,-1260.91 826,-1260.91 820,-1254.91 820,-1248.91 820,-1248.91 820,-1220.91 820,-1220.91 820,-1214.91 826,-1208.91 832,-1208.91"/>
 <text text-anchor="middle" x="855" y="-1249.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">dist</text>
 </g>
-<g id="clust20" class="cluster">
-<title>cluster_node_modules/react&#45;dom</title>
-<path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-772.91C832,-772.91 878,-772.91 878,-772.91 884,-772.91 890,-778.91 890,-784.91 890,-784.91 890,-812.91 890,-812.91 890,-818.91 884,-824.91 878,-824.91 878,-824.91 832,-824.91 832,-824.91 826,-824.91 820,-818.91 820,-812.91 820,-812.91 820,-784.91 820,-784.91 820,-778.91 826,-772.91 832,-772.91"/>
-<text text-anchor="middle" x="855" y="-813.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">react&#45;dom</text>
-</g>
 <g id="clust21" class="cluster">
 <title>cluster_node_modules/react</title>
 <path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-1080.91C832,-1080.91 878,-1080.91 878,-1080.91 884,-1080.91 890,-1086.91 890,-1092.91 890,-1092.91 890,-1120.91 890,-1120.91 890,-1126.91 884,-1132.91 878,-1132.91 878,-1132.91 832,-1132.91 832,-1132.91 826,-1132.91 820,-1126.91 820,-1120.91 820,-1120.91 820,-1092.91 820,-1092.91 820,-1086.91 826,-1080.91 832,-1080.91"/>
@@ -113,6 +108,11 @@
 <title>cluster_node_modules/notistack/dist</title>
 <path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-840.91C832,-840.91 878,-840.91 878,-840.91 884,-840.91 890,-846.91 890,-852.91 890,-852.91 890,-880.91 890,-880.91 890,-886.91 884,-892.91 878,-892.91 878,-892.91 832,-892.91 832,-892.91 826,-892.91 820,-886.91 820,-880.91 820,-880.91 820,-852.91 820,-852.91 820,-846.91 826,-840.91 832,-840.91"/>
 <text text-anchor="middle" x="855" y="-881.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">dist</text>
+</g>
+<g id="clust20" class="cluster">
+<title>cluster_node_modules/react&#45;dom</title>
+<path fill="#ffffff" stroke="black" stroke-width="2" d="M832,-772.91C832,-772.91 878,-772.91 878,-772.91 884,-772.91 890,-778.91 890,-784.91 890,-784.91 890,-812.91 890,-812.91 890,-818.91 884,-824.91 878,-824.91 878,-824.91 832,-824.91 832,-824.91 826,-824.91 820,-818.91 820,-812.91 820,-812.91 820,-784.91 820,-784.91 820,-778.91 826,-772.91 832,-772.91"/>
+<text text-anchor="middle" x="855" y="-813.71" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="9.00">react&#45;dom</text>
 </g>
 <!-- client/App.tsx -->
 <g id="node1" class="node">
@@ -378,20 +378,20 @@
 <path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M210.87,-2075.98C217.14,-2083.67 227.08,-2094.44 238,-2100.91 289.64,-2131.45 358.16,-2145.66 402.66,-2152.04"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="402.54,-2154.14 408.77,-2152.89 403.12,-2149.98 402.54,-2154.14"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx -->
+<!-- client/component/StudentQuestionPage.tsx -->
 <g id="node19" class="node">
-<title>client/component/StudentEditQuestionPage.tsx</title>
-<g id="a_node19"><a xlink:href="client/component/StudentEditQuestionPage.tsx" xlink:title="StudentEditQuestionPage.tsx">
-<path fill="#bbfeff" stroke="black" d="M511.5,-2195.91C511.5,-2195.91 386.5,-2195.91 386.5,-2195.91 383.5,-2195.91 380.5,-2192.91 380.5,-2189.91 380.5,-2189.91 380.5,-2183.91 380.5,-2183.91 380.5,-2180.91 383.5,-2177.91 386.5,-2177.91 386.5,-2177.91 511.5,-2177.91 511.5,-2177.91 514.5,-2177.91 517.5,-2180.91 517.5,-2183.91 517.5,-2183.91 517.5,-2189.91 517.5,-2189.91 517.5,-2192.91 514.5,-2195.91 511.5,-2195.91"/>
-<text text-anchor="middle" x="449" y="-2184.71" font-family="Helvetica,sans-Serif" font-size="9.00">StudentEditQuestionPage.tsx</text>
+<title>client/component/StudentQuestionPage.tsx</title>
+<g id="a_node19"><a xlink:href="client/component/StudentQuestionPage.tsx" xlink:title="StudentQuestionPage.tsx">
+<path fill="#bbfeff" stroke="black" d="M503.5,-2195.91C503.5,-2195.91 394.5,-2195.91 394.5,-2195.91 391.5,-2195.91 388.5,-2192.91 388.5,-2189.91 388.5,-2189.91 388.5,-2183.91 388.5,-2183.91 388.5,-2180.91 391.5,-2177.91 394.5,-2177.91 394.5,-2177.91 503.5,-2177.91 503.5,-2177.91 506.5,-2177.91 509.5,-2180.91 509.5,-2183.91 509.5,-2183.91 509.5,-2189.91 509.5,-2189.91 509.5,-2192.91 506.5,-2195.91 503.5,-2195.91"/>
+<text text-anchor="middle" x="449" y="-2184.71" font-family="Helvetica,sans-Serif" font-size="9.00">StudentQuestionPage.tsx</text>
 </a>
 </g>
 </g>
-<!-- client/App.tsx&#45;&gt;client/component/StudentEditQuestionPage.tsx -->
+<!-- client/App.tsx&#45;&gt;client/component/StudentQuestionPage.tsx -->
 <g id="edge18" class="edge">
-<title>client/App.tsx&#45;&gt;client/component/StudentEditQuestionPage.tsx</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M206.79,-2076.04C211.26,-2089.18 221.27,-2113.32 238,-2126.91 276.51,-2158.18 330.52,-2173.16 374.12,-2180.33"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="373.94,-2182.43 380.2,-2181.29 374.6,-2178.28 373.94,-2182.43"/>
+<title>client/App.tsx&#45;&gt;client/component/StudentQuestionPage.tsx</title>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M206.79,-2076.04C211.26,-2089.18 221.27,-2113.32 238,-2126.91 278.99,-2160.19 337.52,-2175.02 382.38,-2181.62"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="382.1,-2183.7 388.34,-2182.46 382.69,-2179.54 382.1,-2183.7"/>
 </g>
 <!-- client/component/TopPage.tsx -->
 <g id="node20" class="node">
@@ -1177,46 +1177,46 @@
 <path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M489.14,-2156.63C500.44,-2158.61 511.69,-2163 519,-2171.91 543.69,-2201.96 517.65,-2835.75 532,-2871.91 555.9,-2932.15 598.24,-2923.4 630,-2979.91 639.99,-2997.68 627.97,-3010.12 643,-3023.91 654.08,-3034.07 670.13,-3038.12 684.4,-3039.5"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="684.25,-3041.59 690.39,-3039.94 684.56,-3037.41 684.25,-3041.59"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;data.ts -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;data.ts -->
 <g id="edge170" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;data.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M512.67,-2195.95C514.99,-2197.67 517.12,-2199.64 519,-2201.91 553.81,-2243.94 498.36,-2649.93 532,-2692.91 559.85,-2728.48 599.57,-2686.51 630,-2719.91 652.2,-2744.26 617.74,-2771.74 643,-2792.91 668.38,-2814.17 762.61,-2808.15 792,-2792.91 821.75,-2777.48 840.24,-2740.49 848.65,-2719.71"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;data.ts</title>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M509.67,-2193.94C513.17,-2196.07 516.34,-2198.69 519,-2201.91 553.81,-2243.94 498.36,-2649.93 532,-2692.91 559.85,-2728.48 599.57,-2686.51 630,-2719.91 652.2,-2744.26 617.74,-2771.74 643,-2792.91 668.38,-2814.17 762.61,-2808.15 792,-2792.91 821.75,-2777.48 840.24,-2740.49 848.65,-2719.71"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="850.63,-2720.43 850.85,-2714.07 846.71,-2718.9 850.63,-2720.43"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;client/component/Link.tsx -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;client/component/Link.tsx -->
 <g id="edge171" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;client/component/Link.tsx</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M517.69,-2189.7C604.41,-2191.98 748.7,-2191 792,-2161.91 830.35,-2136.14 845.97,-2079.39 851.44,-2052.12"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;client/component/Link.tsx</title>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M509.7,-2189.47C595.25,-2192.01 747.34,-2191.91 792,-2161.91 830.35,-2136.14 845.97,-2079.39 851.44,-2052.12"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="853.52,-2052.45 852.57,-2046.16 849.39,-2051.67 853.52,-2052.45"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;client/component/PageContainer.tsx -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;client/component/PageContainer.tsx -->
 <g id="edge172" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;client/component/PageContainer.tsx</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M511.64,-2177.88C514.3,-2176.17 516.78,-2174.19 519,-2171.91 541.03,-2149.19 516.5,-2129.49 532,-2101.91 538.81,-2089.78 550.33,-2079.29 560.38,-2071.71"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;client/component/PageContainer.tsx</title>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M509.76,-2179.02C513.14,-2177.07 516.27,-2174.72 519,-2171.91 541.03,-2149.19 516.5,-2129.49 532,-2101.91 538.81,-2089.78 550.33,-2079.29 560.38,-2071.71"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="561.84,-2073.24 565.46,-2068.01 559.37,-2069.84 561.84,-2073.24"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/core/index.js -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/core/index.js -->
 <g id="edge173" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/core/index.js</title>
-<path fill="none" stroke="#000000" stroke-opacity="0.200000" d="M512.72,-2177.9C515.03,-2176.17 517.14,-2174.19 519,-2171.91 542.8,-2142.67 521.94,-851.23 532,-814.91 554.97,-731.97 603.74,-729.86 630,-647.91 639.87,-617.1 619.12,-524.74 643,-502.91 667.44,-480.56 768.35,-479.73 792,-502.91 807.6,-518.19 791.62,-875.74 800,-895.91 807.32,-913.52 823,-928.75 835.59,-938.86"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/core/index.js</title>
+<path fill="none" stroke="#000000" stroke-opacity="0.200000" d="M509.74,-2179.92C513.22,-2177.78 516.37,-2175.14 519,-2171.91 542.8,-2142.67 521.94,-851.23 532,-814.91 554.97,-731.97 603.74,-729.86 630,-647.91 639.87,-617.1 619.12,-524.74 643,-502.91 667.44,-480.56 768.35,-479.73 792,-502.91 807.6,-518.19 791.62,-875.74 800,-895.91 807.32,-913.52 823,-928.75 835.59,-938.86"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-opacity="0.200000" points="834.39,-940.58 840.41,-942.61 836.96,-937.26 834.39,-940.58"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;node_modules/react/index.js -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;node_modules/react/index.js -->
 <g id="edge175" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;node_modules/react/index.js</title>
-<path fill="none" stroke="#000000" stroke-opacity="0.200000" d="M512.7,-2177.88C515.01,-2176.16 517.13,-2174.18 519,-2171.91 545.74,-2139.3 514.9,-1451.46 532,-1412.91 559.41,-1351.11 584.64,-1343.03 643,-1308.91 702.94,-1273.85 749.16,-1316.55 792,-1261.91 809.04,-1240.17 786.79,-1162.15 800,-1137.91 806.48,-1126.02 818.17,-1116.69 829.03,-1110.04"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;node_modules/react/index.js</title>
+<path fill="none" stroke="#000000" stroke-opacity="0.200000" d="M509.71,-2179.9C513.2,-2177.76 516.36,-2175.13 519,-2171.91 545.74,-2139.3 514.9,-1451.46 532,-1412.91 559.41,-1351.11 584.64,-1343.03 643,-1308.91 702.94,-1273.85 749.16,-1316.55 792,-1261.91 809.04,-1240.17 786.79,-1162.15 800,-1137.91 806.48,-1126.02 818.17,-1116.69 829.03,-1110.04"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-opacity="0.200000" points="830.13,-1111.83 834.26,-1107 828.02,-1108.2 830.13,-1111.83"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/icons/index.js -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/icons/index.js -->
 <g id="edge174" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/icons/index.js</title>
-<path fill="none" stroke="#000000" stroke-opacity="0.200000" d="M512.7,-2177.89C515.02,-2176.16 517.14,-2174.18 519,-2171.91 534.18,-2153.35 529.18,-1332.71 532,-1308.91 558.5,-1085.44 467.3,-955.51 643,-814.91 668.85,-794.22 768.06,-792.03 792,-814.91 806.07,-828.35 788.77,-974 800,-989.91 805.27,-997.36 813.52,-1002.3 822.01,-1005.56"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;node_modules/@material&#45;ui/icons/index.js</title>
+<path fill="none" stroke="#000000" stroke-opacity="0.200000" d="M509.72,-2179.91C513.2,-2177.76 516.36,-2175.13 519,-2171.91 534.18,-2153.35 529.18,-1332.71 532,-1308.91 558.5,-1085.44 467.3,-955.51 643,-814.91 668.85,-794.22 768.06,-792.03 792,-814.91 806.07,-828.35 788.77,-974 800,-989.91 805.27,-997.36 813.52,-1002.3 822.01,-1005.56"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-opacity="0.200000" points="821.53,-1007.61 827.89,-1007.56 822.89,-1003.64 821.53,-1007.61"/>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;common/validation.ts -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;common/validation.ts -->
 <g id="edge169" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;common/validation.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M512.69,-2195.93C515.01,-2197.65 517.13,-2199.63 519,-2201.91 542.75,-2230.79 513.16,-2842.6 532,-2874.91 557.49,-2918.63 596.75,-2894.75 630,-2932.91 639.81,-2944.17 631.45,-2954.42 643,-2963.91 652.95,-2972.07 666.17,-2976.17 678.65,-2978.12"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;common/validation.ts</title>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M509.7,-2193.92C513.19,-2196.06 516.35,-2198.69 519,-2201.91 542.75,-2230.79 513.16,-2842.6 532,-2874.91 557.49,-2918.63 596.75,-2894.75 630,-2932.91 639.81,-2944.17 631.45,-2954.42 643,-2963.91 652.95,-2972.07 666.17,-2976.17 678.65,-2978.12"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="678.48,-2980.22 684.7,-2978.92 679.03,-2976.05 678.48,-2980.22"/>
 </g>
 <!-- common/studentSelfQuestionTree.ts -->
@@ -1228,10 +1228,10 @@
 </a>
 </g>
 </g>
-<!-- client/component/StudentEditQuestionPage.tsx&#45;&gt;common/studentSelfQuestionTree.ts -->
+<!-- client/component/StudentQuestionPage.tsx&#45;&gt;common/studentSelfQuestionTree.ts -->
 <g id="edge168" class="edge">
-<title>client/component/StudentEditQuestionPage.tsx&#45;&gt;common/studentSelfQuestionTree.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M512.69,-2195.93C515.01,-2197.65 517.13,-2199.63 519,-2201.91 544.11,-2232.48 512.6,-2879.43 532,-2913.91 557.27,-2958.82 592.45,-2940.6 630,-2975.91 637.19,-2982.67 634.71,-2988.55 643,-2993.91 644.92,-2995.14 646.92,-2996.28 648.98,-2997.33"/>
+<title>client/component/StudentQuestionPage.tsx&#45;&gt;common/studentSelfQuestionTree.ts</title>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M509.7,-2193.91C513.2,-2196.05 516.35,-2198.68 519,-2201.91 544.11,-2232.48 512.6,-2879.43 532,-2913.91 557.27,-2958.82 592.45,-2940.6 630,-2975.91 637.19,-2982.67 634.71,-2988.55 643,-2993.91 644.92,-2995.14 646.92,-2996.28 648.98,-2997.33"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="648.24,-2999.3 654.57,-2999.9 649.99,-2995.48 648.24,-2999.3"/>
 </g>
 <!-- client/component/TopPage.tsx&#45;&gt;data.ts -->

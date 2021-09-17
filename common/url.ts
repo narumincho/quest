@@ -94,9 +94,9 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
         ]),
         hash: new Map(),
       };
-    case "StudentEditQuestion":
+    case "StudentAnswer":
       return {
-        resourceName: studentEditQuestionPath,
+        resourceName: studentQuestionPath,
         resourceId: location.classIdAndQuestionId.questionId,
         searchParams: new Map([
           [studentEditQuestionClassId, location.classIdAndQuestionId.classId],
@@ -245,7 +245,7 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
       }
       return d.UrlData.Normal(defaultLocation);
     }
-    case studentEditQuestionPath: {
+    case studentQuestionPath: {
       const classId = structuredUrl.searchParams.get(
         studentEditQuestionClassId
       );
@@ -254,7 +254,7 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
         typeof classId === "string"
       ) {
         return d.UrlData.Normal(
-          d.Location.StudentEditQuestion({
+          d.Location.StudentAnswer({
             classId: d.ClassId.fromString(classId),
             questionId: d.QuestionId.fromString(structuredUrl.resourceId),
           })
@@ -323,7 +323,7 @@ const newClassProgramId = "programId";
 const classInvitationPath = "class-invitation";
 const editQuestionPath = "edit-question";
 const editQuestionProgramId = "programId";
-const studentEditQuestionPath = "student-edit-question";
+const studentQuestionPath = "student-question";
 const studentEditQuestionClassId = "classId";
 
 const adminStudentPath = "admin-student";
