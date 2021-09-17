@@ -259,7 +259,7 @@ export const apiFunc: {
 
     const [questionList, answerList] = await Promise.all([
       firebaseInterface.getQuestionListByProgramId(qClass.programId),
-      firebaseInterface.getAnswerListByAccountIdAndClassId(account.id, classId),
+      firebaseInterface.getAnswerListByStudentIdAndClassId(account.id, classId),
     ]);
 
     return getQuestionTree(qClass.programId, questionList).map((tree) =>
@@ -292,7 +292,7 @@ export const apiFunc: {
 
     const [questionList, answerList] = await Promise.all([
       firebaseInterface.getQuestionListByProgramId(qClass.programId),
-      firebaseInterface.getAnswerListByAccountIdAndClassId(account.id, classId),
+      firebaseInterface.getAnswerListByStudentIdAndClassId(account.id, classId),
     ]);
 
     return getQuestionTree(qClass.programId, questionList).map((tree) =>
@@ -310,21 +310,46 @@ export const apiFunc: {
         "クラスの作成者以外が, 生徒の確定した回答を見ることはできません"
       );
     }
-    const list = await firebaseInterface.getAnswerListByAccountIdAndClassId(
+    const list = await firebaseInterface.getAnswerListByStudentIdAndClassId(
       parameter.studentAccountId,
       parameter.classId
     );
-    return list.flatMap((answer): ReadonlyArray<d.ConfirmedAnswer> => {
-      if (answer.isConfirm) {
-        return [
-          {
-            answer: answer.text,
-            questionId: answer.questionId,
-          },
-        ];
-      }
-      return [];
-    });
+    return list.flatMap(
+      (answer): ReadonlyArray<d.ConfirmedAnswer> =>
+        answer.isConfirm
+          ? [
+              {
+                answer: answer.text,
+                questionId: answer.questionId,
+              },
+            ]
+          : []
+    );
+  },
+  getAnswersFromOtherStudents: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const isStudent = firebaseInterface.isStudent(
+      account.id,
+      parameter.classId
+    );
+    if (!isStudent) {
+      throw new Error("生徒以外は他の生徒の回答を見ることはできません");
+    }
+    const list = await firebaseInterface.getAnswerListByClassIdAndQuestionId(
+      parameter.classId,
+      parameter.questionId
+    );
+    return list.flatMap(
+      (answer): ReadonlyArray<d.AnswersFromOtherStudent> =>
+        answer.isConfirm
+          ? [
+              {
+                answerText: answer.text,
+                studentId: answer.studentId,
+              },
+            ]
+          : []
+    );
   },
 };
 

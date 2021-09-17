@@ -153,3 +153,14 @@ export const getStudentConfirmedAnswerList: ApiCodec<
   request: d.GetStudentAnswerTreeParameter.codec,
   response: d.List.codec(d.ConfirmedAnswer.codec),
 };
+
+/**
+ * 他の人の回答を習得する
+ */
+export const getAnswersFromOtherStudents: ApiCodec<
+  d.GetAnswersFromOtherStudentsParameter,
+  ReadonlyArray<d.AnswersFromOtherStudent>
+> = {
+  request: d.GetAnswersFromOtherStudentsParameter.codec,
+  response: d.List.codec(d.AnswersFromOtherStudent.codec),
+};

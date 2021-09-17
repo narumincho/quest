@@ -96,6 +96,13 @@ readonly isConfirm: Bool };
 
 
 /**
+ * 同じクラスの他の生徒の回答を取得するときのパラメーター
+ * @typePartId 24899053ff6d82588e6956a52a3c1948
+ */
+export type GetAnswersFromOtherStudentsParameter = { readonly accountToken: AccountToken; readonly classId: ClassId; readonly questionId: QuestionId };
+
+
+/**
  * @typePartId 2aced1ad90c13f7bec7aec383f672fe0
  */
 export type ImageHashValue = string & { readonly _imageHashValue: never };
@@ -358,6 +365,23 @@ export type StudentClassInvitationToken = string & { readonly _studentClassInvit
 
 
 /**
+ * 日時.
+ * `0001-01-01T00:00:00.000Z to 9999-12-31T23:59:59.999Z`
+ * 最小単位はミリ秒. ミリ秒の求め方は `day*1000*60*60*24 + millisecond`
+ * @typePartId b6f8c8143e4165285d53c6f2beecaba6
+ */
+export type DateTime = { 
+/**
+ * `1970-01-01` からの経過日数. マイナスになることもある
+ */
+readonly day: Int32; 
+/**
+ * 日にちの中のミリ秒. `0 to 86399999 (=1000*60*60*24-1)
+ */
+readonly millisecond: Int32 };
+
+
+/**
  * @typePartId b75b40bd491f9a62c25da778f28ba6d8
  */
 export type Participant = { readonly account: Account; readonly role: ClassParticipantRole };
@@ -491,6 +515,13 @@ readonly accountToken: AccountToken;
  * 招待トークン
  */
 readonly classInvitationToken: StudentClassInvitationToken };
+
+
+/**
+ * 他の生徒の回答
+ * @typePartId f175351a9bf7d3ba293a525a1b20f08f
+ */
+export type AnswersFromOtherStudent = { readonly studentId: AccountId; readonly answerText: String };
 
 
 /**
@@ -647,6 +678,30 @@ readonly helper: (a: StudentAnswerAndIsConfirm) => StudentAnswerAndIsConfirm } =
   const textAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(index, binary);
   const isConfirmAndNextIndex: { readonly result: Bool; readonly nextIndex: number } = Bool.codec.decode(textAndNextIndex.nextIndex, binary);
   return { result: { text: textAndNextIndex.result, isConfirm: isConfirmAndNextIndex.result }, nextIndex: isConfirmAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * 同じクラスの他の生徒の回答を取得するときのパラメーター
+ * @typePartId 24899053ff6d82588e6956a52a3c1948
+ */
+export const GetAnswersFromOtherStudentsParameter: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<GetAnswersFromOtherStudentsParameter>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: GetAnswersFromOtherStudentsParameter) => GetAnswersFromOtherStudentsParameter } = { typePartId: "24899053ff6d82588e6956a52a3c1948" as TypePartId, helper: (getAnswersFromOtherStudentsParameter: GetAnswersFromOtherStudentsParameter): GetAnswersFromOtherStudentsParameter => getAnswersFromOtherStudentsParameter, codec: { encode: (value: GetAnswersFromOtherStudentsParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(ClassId.codec.encode(value.classId)).concat(QuestionId.codec.encode(value.questionId))), decode: (index: number, binary: Uint8Array): { readonly result: GetAnswersFromOtherStudentsParameter; readonly nextIndex: number } => {
+  const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+  const classIdAndNextIndex: { readonly result: ClassId; readonly nextIndex: number } = ClassId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+  const questionIdAndNextIndex: { readonly result: QuestionId; readonly nextIndex: number } = QuestionId.codec.decode(classIdAndNextIndex.nextIndex, binary);
+  return { result: { accountToken: accountTokenAndNextIndex.result, classId: classIdAndNextIndex.result, questionId: questionIdAndNextIndex.result }, nextIndex: questionIdAndNextIndex.nextIndex };
 } } };
 
 
@@ -1140,6 +1195,31 @@ readonly codec: Codec<StudentClassInvitationToken>;
  * 文字列から変換する
  */
 readonly fromString: (a: string) => StudentClassInvitationToken } = { typePartId: "a678f667362c1d8e27c5dad5a63dc56a" as TypePartId, codec: { encode: (value: StudentClassInvitationToken): ReadonlyArray<number> => (encodeToken(value)), decode: (index: number, binary: Uint8Array): { readonly result: StudentClassInvitationToken; readonly nextIndex: number } => (decodeToken(index, binary) as { readonly result: StudentClassInvitationToken; readonly nextIndex: number }) }, fromString: (str: string): StudentClassInvitationToken => (str as StudentClassInvitationToken) };
+
+
+/**
+ * 日時.
+ * `0001-01-01T00:00:00.000Z to 9999-12-31T23:59:59.999Z`
+ * 最小単位はミリ秒. ミリ秒の求め方は `day*1000*60*60*24 + millisecond`
+ * @typePartId b6f8c8143e4165285d53c6f2beecaba6
+ */
+export const DateTime: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<DateTime>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: DateTime) => DateTime } = { typePartId: "b6f8c8143e4165285d53c6f2beecaba6" as TypePartId, helper: (dateTime: DateTime): DateTime => dateTime, codec: { encode: (value: DateTime): ReadonlyArray<number> => (Int32.codec.encode(value.day).concat(Int32.codec.encode(value.millisecond))), decode: (index: number, binary: Uint8Array): { readonly result: DateTime; readonly nextIndex: number } => {
+  const dayAndNextIndex: { readonly result: Int32; readonly nextIndex: number } = Int32.codec.decode(index, binary);
+  const millisecondAndNextIndex: { readonly result: Int32; readonly nextIndex: number } = Int32.codec.decode(dayAndNextIndex.nextIndex, binary);
+  return { result: { day: dayAndNextIndex.result, millisecond: millisecondAndNextIndex.result }, nextIndex: millisecondAndNextIndex.nextIndex };
+} } };
 
 
 /**
@@ -1672,6 +1752,29 @@ readonly helper: (a: JoinClassAsStudentParameter) => JoinClassAsStudentParameter
   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
   const classInvitationTokenAndNextIndex: { readonly result: StudentClassInvitationToken; readonly nextIndex: number } = StudentClassInvitationToken.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
   return { result: { accountToken: accountTokenAndNextIndex.result, classInvitationToken: classInvitationTokenAndNextIndex.result }, nextIndex: classInvitationTokenAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * 他の生徒の回答
+ * @typePartId f175351a9bf7d3ba293a525a1b20f08f
+ */
+export const AnswersFromOtherStudent: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<AnswersFromOtherStudent>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: AnswersFromOtherStudent) => AnswersFromOtherStudent } = { typePartId: "f175351a9bf7d3ba293a525a1b20f08f" as TypePartId, helper: (answersFromOtherStudent: AnswersFromOtherStudent): AnswersFromOtherStudent => answersFromOtherStudent, codec: { encode: (value: AnswersFromOtherStudent): ReadonlyArray<number> => (AccountId.codec.encode(value.studentId).concat(String.codec.encode(value.answerText))), decode: (index: number, binary: Uint8Array): { readonly result: AnswersFromOtherStudent; readonly nextIndex: number } => {
+  const studentIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(index, binary);
+  const answerTextAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(studentIdAndNextIndex.nextIndex, binary);
+  return { result: { studentId: studentIdAndNextIndex.result, answerText: answerTextAndNextIndex.result }, nextIndex: answerTextAndNextIndex.nextIndex };
 } } };
 
 

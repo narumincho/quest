@@ -68,18 +68,21 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
   };
   answer: {
     key: `${d.QuestionId}_${d.ClassId}_${d.AccountId}`;
-    value: {
-      text: string;
-      questionId: d.QuestionId;
-      classId: d.ClassId;
-      accountId: d.AccountId;
-      createTime: admin.firestore.Timestamp;
-      updateTime: admin.firestore.Timestamp;
-      isConfirm: boolean;
-    };
+    value: AnswerDocument;
     subCollections: Record<never, never>;
   };
 }>;
+
+type AnswerDocument = {
+  readonly text: string;
+  readonly questionId: d.QuestionId;
+  readonly classId: d.ClassId;
+  readonly accountId: d.AccountId;
+  readonly createTime: admin.firestore.Timestamp;
+  readonly updateTime: admin.firestore.Timestamp;
+  readonly isConfirm: boolean;
+};
+
 const cloudStorageBucket = app.storage().bucket();
 
 export const createLogInState = async (
@@ -525,32 +528,60 @@ export const isStudent = async (
   );
 };
 
-export const getAnswerListByAccountIdAndClassId = async (
+type AnswerItem = {
+  readonly text: string;
+  readonly questionId: d.QuestionId;
+  readonly classId: d.ClassId;
+  readonly studentId: d.AccountId;
+  readonly createTime: d.DateTime;
+  readonly updateTime: d.DateTime;
+  readonly isConfirm: boolean;
+};
+
+export const getAnswerListByStudentIdAndClassId = async (
   accountId: d.AccountId,
   classId: d.ClassId
-): Promise<
-  ReadonlyArray<{
-    readonly questionId: d.QuestionId;
-    readonly text: string;
-    readonly isConfirm: boolean;
-  }>
-> => {
-  const queryDocumentSnapshot = (
-    await firestore
-      .collection("answer")
-      .where("accountId", "==", accountId)
-      .where("classId", "==", classId)
-      .get()
-  ).docs;
-  return queryDocumentSnapshot.map<{
-    readonly questionId: d.QuestionId;
-    readonly text: string;
-    readonly isConfirm: boolean;
-  }>((document) => {
+): Promise<ReadonlyArray<AnswerItem>> => {
+  return answerQueryDocumentSnapshotToAnswerItemList(
+    (
+      await firestore
+        .collection("answer")
+        .where("accountId", "==", accountId)
+        .where("classId", "==", classId)
+        .get()
+    ).docs
+  );
+};
+
+export const getAnswerListByClassIdAndQuestionId = async (
+  classId: d.ClassId,
+  questionId: d.QuestionId
+): Promise<ReadonlyArray<AnswerItem>> => {
+  return answerQueryDocumentSnapshotToAnswerItemList(
+    (
+      await firestore
+        .collection("answer")
+        .where("classId", "==", classId)
+        .where("questionId", "==", questionId)
+        .get()
+    ).docs
+  );
+};
+
+const answerQueryDocumentSnapshotToAnswerItemList = (
+  queryDocumentSnapshot: ReadonlyArray<
+    typedFirestore.QueryDocumentSnapshot<string, AnswerDocument>
+  >
+): ReadonlyArray<AnswerItem> => {
+  return queryDocumentSnapshot.map<AnswerItem>((document): AnswerItem => {
     const answer = document.data();
     return {
-      questionId: answer.questionId,
       text: answer.text,
+      classId: answer.classId,
+      studentId: answer.accountId,
+      createTime: firestoreTimestampToDateTime(answer.createTime),
+      updateTime: firestoreTimestampToDateTime(answer.updateTime),
+      questionId: answer.questionId,
       isConfirm: answer.isConfirm,
     };
   });
@@ -595,4 +626,16 @@ export const lineLoginSecret = (): string => {
     );
   }
   return config.linelogin.secret;
+};
+
+const millisecondInDay = 1000 * 60 * 60 * 24;
+
+export const firestoreTimestampToDateTime = (
+  firestoreTimestamp: admin.firestore.Timestamp
+): d.DateTime => {
+  const millisecond = firestoreTimestamp.toMillis();
+  return {
+    day: Math.floor(millisecond / millisecondInDay),
+    millisecond: millisecond % millisecondInDay,
+  };
 };
