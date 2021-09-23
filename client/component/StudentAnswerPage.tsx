@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
+import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -13,19 +14,17 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Publish, Save } from "@material-ui/icons";
-import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { stringToValidAnswerText } from "../../common/validation";
 import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestionTree";
 
-export type Props = {
+export const StudentAnswerPage = (props: {
   readonly appState: AppState;
   readonly questionId: d.QuestionId;
   readonly classId: d.ClassId;
-};
-
-export const StudentAnswerPage: React.VFC<Props> = (props) => {
+  readonly loggedInState: LoggedInState;
+}): React.ReactElement => {
   const questionTreeList = props.appState.getStudentQuestionTree(props.classId);
 
   if (questionTreeList === undefined) {
@@ -49,6 +48,7 @@ export const StudentAnswerPage: React.VFC<Props> = (props) => {
       question={question}
       appState={props.appState}
       classId={props.classId}
+      loggedInState={props.loggedInState}
     />
   );
 };
@@ -85,6 +85,7 @@ const StudentEditQuestionPageLoaded = (props: {
   readonly question: d.StudentSelfQuestionTree;
   readonly appState: AppState;
   readonly classId: d.ClassId;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
   const [answerText, setAnswerText] = React.useState<string>(
     props.question.answer._ === "Some" ? props.question.answer.value.text : ""
@@ -187,7 +188,12 @@ const StudentEditQuestionPageLoaded = (props: {
       </Box>
       {props.question.answer._ === "Some" &&
       props.question.answer.value.isConfirm ? (
-        <FeedbackOrAnswersFromOtherStudents />
+        <FeedbackOrAnswersFromOtherStudents
+          appSate={props.appState}
+          classId={props.classId}
+          questionId={props.question.questionId}
+          loggedInState={props.loggedInState}
+        />
       ) : (
         <></>
       )}
@@ -240,10 +246,30 @@ const ConfirmSaveButton = (props: {
   );
 };
 
-const FeedbackOrAnswersFromOtherStudents = (): React.ReactElement => {
+const FeedbackOrAnswersFromOtherStudents = (props: {
+  readonly appSate: AppState;
+  readonly classId: d.ClassId;
+  readonly questionId: d.QuestionId;
+  readonly loggedInState: LoggedInState;
+}): React.ReactElement => {
   const [selectedTab, setSelectedTab] = React.useState<
     "feedback" | "answersFromOtherStudents"
   >("feedback");
+  const [answersFromOtherStudents, setAnswersFromOtherStudents] =
+    React.useState<string>("");
+
+  React.useEffect(() => {
+    props.appSate
+      .requestAnswersFromOtherStudents({
+        accountToken: props.loggedInState.accountToken,
+        classId: props.classId,
+        questionId: props.questionId,
+      })
+      .then((response) => {
+        setAnswersFromOtherStudents(JSON.stringify(response));
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.classId, props.questionId]);
 
   return (
     <Box padding={1}>
@@ -263,6 +289,7 @@ const FeedbackOrAnswersFromOtherStudents = (): React.ReactElement => {
         {selectedTab === "feedback"
           ? "フィードバックの一覧表示"
           : "他の人の回答一覧表示"}
+        {answersFromOtherStudents}
       </Box>
     </Box>
   );

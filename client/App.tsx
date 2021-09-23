@@ -133,6 +133,7 @@ const LoggedIn = (props: {
           appState={props.appState}
           questionId={location.classIdAndQuestionId.questionId}
           classId={location.classIdAndQuestionId.classId}
+          loggedInState={props.loggedInState}
         />
       );
     case "AdminStudent":
