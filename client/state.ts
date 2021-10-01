@@ -48,7 +48,7 @@ export type AppState = {
   /** ログインページを取得して移動させる */
   readonly requestLogin: () => void;
   /** テストアカウントとしてログインする */
-  readonly requestLogInAsTestAccount: (option: "test0" | "test1") => void;
+  readonly requestLogInAsTestAccount: (accountToken: d.AccountToken) => void;
   /** ログアウトする */
   readonly logout: () => void;
   /** 指定したページへ移動する */
@@ -391,13 +391,9 @@ export const useAppState = (): AppState => {
   return {
     logInState,
     requestLogin,
-    requestLogInAsTestAccount: (option: "test0" | "test1"): void => {
+    requestLogInAsTestAccount: (accountToken: d.AccountToken): void => {
       setLogInData({
-        accountToken: d.AccountToken.fromString(
-          option === "test0"
-            ? "a5b7058a6c75fe48875a8591abe7a49f82f5c3aaf52614f4fbc971ae9db1c91b"
-            : "27a078a04810cd94e77ba7900ec09dcfa18093fdf80f154723fb102588772615"
-        ),
+        accountToken,
         location: d.Location.Top,
       });
     },
