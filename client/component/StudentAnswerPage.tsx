@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as d from "../../data";
 import {
+  Avatar,
   Box,
   Breadcrumbs,
   Button,
@@ -19,6 +20,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
+import { imageUrl } from "../../common/url";
 import { stringToValidAnswerText } from "../../common/validation";
 import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestionTree";
 
@@ -404,6 +406,8 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
           <FeedbackListWithInput
             feedbackList={feedbackList}
             onSubmitFeedback={submitFeedback}
+            classId={props.classId}
+            loggedInState={props.loggedInState}
           />
         ) : (
           <AnswerList
@@ -411,6 +415,8 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
             classId={props.classId}
             questionId={props.questionId}
             appState={props.appSate}
+            loggedInState={props.loggedInState}
+            extractStudentId={props.answerStudentId}
           />
         )}
       </Box>
@@ -421,6 +427,8 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
 const FeedbackListWithInput = (props: {
   readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
   readonly onSubmitFeedback: (message: string) => void;
+  readonly classId: d.ClassId;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
   const [feedbackEditText, setFeedbackEditText] = React.useState<string>("");
   const onChange = (
@@ -451,7 +459,11 @@ const FeedbackListWithInput = (props: {
       >
         送信
       </Button>
-      <FeedbackList feedbackList={props.feedbackList} />
+      <FeedbackList
+        feedbackList={props.feedbackList}
+        classId={props.classId}
+        loggedInState={props.loggedInState}
+      />
     </div>
   );
 };
@@ -468,7 +480,9 @@ const useStyles = makeStyles({
 });
 
 const FeedbackList = (props: {
-  feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly loggedInState: LoggedInState;
+  readonly classId: d.ClassId;
 }): React.ReactElement => {
   const classes = useStyles();
   if (props.feedbackList === undefined) {
@@ -477,13 +491,32 @@ const FeedbackList = (props: {
   if (props.feedbackList.length === 0) {
     return <div>フィードバックはまだありません</div>;
   }
+  const participantList: ReadonlyArray<d.Participant> =
+    props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
+    [];
   return (
     <Box className={classes.list}>
-      {props.feedbackList.map((feedback) => (
-        <Paper key={feedback.accountId} className={classes.item}>
-          {feedback.message}
-        </Paper>
-      ))}
+      {props.feedbackList.map((feedback, index) => {
+        const account: d.Account | undefined = participantList.find(
+          (participant) => participant.account.id === feedback.accountId
+        )?.account;
+        return (
+          <Paper key={index} className={classes.item}>
+            {account === undefined ? (
+              <></>
+            ) : (
+              <Box display="flex">
+                <Avatar
+                  alt={account.name}
+                  src={imageUrl(account.iconHash).toString()}
+                />
+                {account.name}
+              </Box>
+            )}
+            {feedback.message}
+          </Paper>
+        );
+      })}
     </Box>
   );
 };
@@ -495,29 +528,55 @@ const AnswerList = (props: {
   readonly classId: d.ClassId;
   readonly questionId: d.QuestionId;
   readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly extractStudentId: d.AccountId;
 }): React.ReactElement => {
   const classes = useStyles();
   if (props.answersFromOtherStudents === undefined) {
     return <div>他の人の回答取得中...</div>;
   }
-  if (props.answersFromOtherStudents.length === 0) {
+  const filteredList = props.answersFromOtherStudents.filter(
+    (answer) => answer.studentId !== props.extractStudentId
+  );
+  if (filteredList.length === 0) {
     return <div>他の人の回答はまだありません</div>;
   }
+  const participantList: ReadonlyArray<d.Participant> =
+    props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
+    [];
   return (
     <Box className={classes.list}>
-      {props.answersFromOtherStudents.map((answer) => (
-        <Link
-          key={answer.studentId}
-          location={d.Location.StudentAnswer({
-            classId: props.classId,
-            questionId: props.questionId,
-            answerStudentId: answer.studentId,
-          })}
-          appState={props.appState}
-        >
-          <Paper className={classes.item}>{answer.answerText}</Paper>
-        </Link>
-      ))}
+      {filteredList.map((answer) => {
+        const account: d.Account | undefined = participantList.find(
+          (participant) => participant.account.id === answer.studentId
+        )?.account;
+        return (
+          <Link
+            key={answer.studentId}
+            location={d.Location.StudentAnswer({
+              classId: props.classId,
+              questionId: props.questionId,
+              answerStudentId: answer.studentId,
+            })}
+            appState={props.appState}
+          >
+            <Paper className={classes.item}>
+              {account === undefined ? (
+                <></>
+              ) : (
+                <Box display="flex">
+                  <Avatar
+                    alt={account.name}
+                    src={imageUrl(account.iconHash).toString()}
+                  />
+                  {account.name}
+                </Box>
+              )}
+              {answer.answerText}
+            </Paper>
+          </Link>
+        );
+      })}
     </Box>
   );
 };
