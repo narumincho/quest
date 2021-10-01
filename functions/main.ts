@@ -28,6 +28,17 @@ if (nowMode === "development") {
     ),
     lineId: "noLineId",
   });
+  firebaseInterface.createAccount({
+    id: d.AccountId.fromString("5abdaa7f315f7906cf5eb41ac95d3a77"),
+    name: "テスト2",
+    accountTokenHash: d.AccountToken.fromString(
+      "1759bc4af3049e16edd06fc8f71b301d4fe04116b52aa4451d96e49bad139609"
+    ),
+    iconHash: d.ImageHashValue.fromString(
+      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
+    ),
+    lineId: "noLineId",
+  });
 }
 /*
  * =====================================================================

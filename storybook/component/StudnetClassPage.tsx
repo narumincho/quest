@@ -6,6 +6,7 @@ import {
   mockAccount2,
   mockAccount3,
   mockAppState,
+  mockLoggedInState,
   mockQClassStudentOrGuest,
   mockStudentSelfQuestionTreeList,
 } from "../mock";
@@ -23,6 +24,7 @@ export const Loading: Story<never> = () => (
     participantList={undefined}
     participantClass={mockQClassStudentOrGuest}
     questionTreeList={undefined}
+    loggedInState={mockLoggedInState}
   />
 );
 
@@ -36,5 +38,6 @@ export const Loaded: Story<never> = () => (
     ]}
     participantClass={mockQClassStudentOrGuest}
     questionTreeList={mockStudentSelfQuestionTreeList}
+    loggedInState={mockLoggedInState}
   />
 );

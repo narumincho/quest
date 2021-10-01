@@ -132,9 +132,8 @@ const LoggedIn = (props: {
       return (
         <StudentAnswerPage
           appState={props.appState}
-          questionId={location.classIdAndQuestionId.questionId}
-          classId={location.classIdAndQuestionId.classId}
           loggedInState={props.loggedInState}
+          answerIdData={location.answerIdData}
         />
       );
     case "AdminStudent":
@@ -198,6 +197,7 @@ export const ClassPage = (props: {
         <ParticipantClassPage
           appState={props.appState}
           joinedClass={classAndRole.joinedClass}
+          loggedInState={props.loggedInState}
         />
       );
   }

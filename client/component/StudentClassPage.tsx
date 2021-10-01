@@ -3,6 +3,7 @@ import * as d from "../../data";
 import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { ParticipantList } from "./ParticipantList";
 import { StudentSelfQuestionTreeList } from "./StudentSelfQuestionTreeList";
@@ -18,6 +19,7 @@ export const StudentClassPage = (props: {
   readonly questionTreeList:
     | ReadonlyArray<d.StudentSelfQuestionTree>
     | undefined;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
   React.useEffect(
     () => {
@@ -55,6 +57,7 @@ export const StudentClassPage = (props: {
           treeList={props.questionTreeList}
           classId={props.participantClass.id}
           appState={props.appState}
+          loggedInState={props.loggedInState}
         />
       </Box>
       <Box padding={1}>クラスID: {props.participantClass.id}</Box>

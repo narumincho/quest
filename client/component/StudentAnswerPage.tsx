@@ -1,56 +1,78 @@
 import * as React from "react";
 import * as d from "../../data";
 import {
+  Avatar,
   Box,
   Breadcrumbs,
   Button,
   CircularProgress,
   Dialog,
   DialogTitle,
+  Paper,
   Tab,
   Tabs,
   TextField,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
 import { Publish, Save } from "@material-ui/icons";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
+import { imageUrl } from "../../common/url";
 import { stringToValidAnswerText } from "../../common/validation";
 import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestionTree";
 
 export const StudentAnswerPage = (props: {
   readonly appState: AppState;
-  readonly questionId: d.QuestionId;
-  readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
+  readonly answerIdData: d.AnswerIdData;
 }): React.ReactElement => {
-  const questionTreeList = props.appState.getStudentQuestionTree(props.classId);
+  const questionTreeList = props.appState.getStudentQuestionTree(
+    props.answerIdData.classId
+  );
 
   if (questionTreeList === undefined) {
     return (
-      <NotFoundQuestion appState={props.appState} classId={props.classId} />
+      <NotFoundQuestion
+        appState={props.appState}
+        classId={props.answerIdData.classId}
+      />
     );
   }
   const question = studentSelfQuestionTreeListFind(
     questionTreeList,
-    props.questionId
+    props.answerIdData.questionId
   );
 
   if (question === undefined) {
     return (
-      <NotFoundQuestion appState={props.appState} classId={props.classId} />
+      <NotFoundQuestion
+        appState={props.appState}
+        classId={props.answerIdData.classId}
+      />
     );
   }
 
+  if (props.loggedInState.account.id === props.answerIdData.answerStudentId) {
+    return (
+      <StudentSelfEditQuestionPageLoaded
+        question={question}
+        appState={props.appState}
+        classId={props.answerIdData.classId}
+        loggedInState={props.loggedInState}
+        loggedInAccountId={props.loggedInState.account.id}
+      />
+    );
+  }
   return (
-    <StudentEditQuestionPageLoaded
+    <PageLoadedOtherStudentView
       question={question}
       appState={props.appState}
-      classId={props.classId}
+      classId={props.answerIdData.classId}
+      answerStudentId={props.answerIdData.answerStudentId}
       loggedInState={props.loggedInState}
-      answerStudentId={props.loggedInState.account.id}
     />
   );
 };
@@ -83,12 +105,12 @@ const NotFoundQuestion = (props: {
   );
 };
 
-const StudentEditQuestionPageLoaded = (props: {
+const StudentSelfEditQuestionPageLoaded = (props: {
   readonly question: d.StudentSelfQuestionTree;
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
-  readonly answerStudentId: d.AccountId;
+  readonly loggedInAccountId: d.AccountId;
 }): React.ReactElement => {
   const [answerText, setAnswerText] = React.useState<string>(
     props.question.answer._ === "Some" ? props.question.answer.value.text : ""
@@ -196,7 +218,7 @@ const StudentEditQuestionPageLoaded = (props: {
           classId={props.classId}
           questionId={props.question.questionId}
           loggedInState={props.loggedInState}
-          answerStudentId={props.answerStudentId}
+          answerStudentId={props.loggedInAccountId}
         />
       ) : (
         <></>
@@ -250,6 +272,65 @@ const ConfirmSaveButton = (props: {
   );
 };
 
+const PageLoadedOtherStudentView = (props: {
+  readonly question: d.StudentSelfQuestionTree;
+  readonly appState: AppState;
+  readonly classId: d.ClassId;
+  readonly loggedInState: LoggedInState;
+  readonly answerStudentId: d.AccountId;
+}): React.ReactElement => {
+  const qClass = props.appState.getClassAndRole(props.classId);
+
+  return (
+    <PageContainer appState={props.appState}>
+      <Box padding={1}>
+        <Breadcrumbs>
+          <Link appState={props.appState} location={d.Location.Top}>
+            トップページ
+          </Link>
+          <Link
+            appState={props.appState}
+            location={d.Location.Class(props.classId)}
+          >
+            {qClass.tag === "participant"
+              ? qClass.joinedClass.class.name
+              : "クラス"}
+          </Link>
+
+          <div></div>
+        </Breadcrumbs>
+      </Box>
+      <Box padding={1}>
+        <Typography variant="h4">{props.question.questionText}</Typography>
+      </Box>
+      {props.question.answer._ === "Some" ? (
+        <Box padding={1}>
+          <Typography variant="h5">
+            保存した回答
+            {props.question.answer.value.isConfirm ? " (確定済み)" : ""}
+          </Typography>
+          {props.question.answer.value.text}
+        </Box>
+      ) : (
+        <></>
+      )}
+
+      {props.question.answer._ === "Some" &&
+      props.question.answer.value.isConfirm ? (
+        <FeedbackOrAnswersFromOtherStudents
+          appSate={props.appState}
+          classId={props.classId}
+          questionId={props.question.questionId}
+          loggedInState={props.loggedInState}
+          answerStudentId={props.answerStudentId}
+        />
+      ) : (
+        <></>
+      )}
+    </PageContainer>
+  );
+};
+
 const FeedbackOrAnswersFromOtherStudents = (props: {
   readonly appSate: AppState;
   readonly classId: d.ClassId;
@@ -292,6 +373,20 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.classId, props.questionId, props.answerStudentId]);
 
+  const submitFeedback = (message: string): void => {
+    props.appSate
+      .addFeedback({
+        accountToken: props.loggedInState.accountToken,
+        classId: props.classId,
+        questionId: props.questionId,
+        answerStudentId: props.answerStudentId,
+        message,
+      })
+      .then((response) => {
+        setFeedbackList(response);
+      });
+  };
+
   return (
     <Box padding={1}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -308,9 +403,21 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
       </Box>
       <Box padding={1}>
         {selectedTab === "feedback" ? (
-          <FeedbackListWithInput feedbackList={feedbackList} />
+          <FeedbackListWithInput
+            feedbackList={feedbackList}
+            onSubmitFeedback={submitFeedback}
+            classId={props.classId}
+            loggedInState={props.loggedInState}
+          />
         ) : (
-          <AnswerList answersFromOtherStudents={answersFromOtherStudents} />
+          <AnswerList
+            answersFromOtherStudents={answersFromOtherStudents}
+            classId={props.classId}
+            questionId={props.questionId}
+            appState={props.appSate}
+            loggedInState={props.loggedInState}
+            extractStudentId={props.answerStudentId}
+          />
         )}
       </Box>
     </Box>
@@ -318,8 +425,18 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
 };
 
 const FeedbackListWithInput = (props: {
-  feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly onSubmitFeedback: (message: string) => void;
+  readonly classId: d.ClassId;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
+  const [feedbackEditText, setFeedbackEditText] = React.useState<string>("");
+  const onChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
+    setFeedbackEditText(event.target.value);
+  };
+  const isNotEmpty = feedbackEditText.trim().length === 0;
   return (
     <div>
       <TextField
@@ -327,52 +444,139 @@ const FeedbackListWithInput = (props: {
         required
         fullWidth
         label="この回答に対するフィードバック"
-        value={""}
-        onChange={() => {}}
+        value={feedbackEditText}
+        onChange={onChange}
         variant="outlined"
-        InputProps={{
-          readOnly: false,
-        }}
       />
-      <FeedbackList feedbackList={props.feedbackList} />
+      <Button
+        fullWidth
+        onClick={() => props.onSubmitFeedback(feedbackEditText)}
+        size="large"
+        disabled={isNotEmpty}
+        variant="contained"
+        color="secondary"
+        startIcon={<Publish />}
+      >
+        送信
+      </Button>
+      <FeedbackList
+        feedbackList={props.feedbackList}
+        classId={props.classId}
+        loggedInState={props.loggedInState}
+      />
     </div>
   );
 };
 
+const useStyles = makeStyles({
+  list: {
+    display: "grid",
+    gap: 8,
+    padding: 8,
+  },
+  item: {
+    padding: 8,
+  },
+});
+
 const FeedbackList = (props: {
-  feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly loggedInState: LoggedInState;
+  readonly classId: d.ClassId;
 }): React.ReactElement => {
+  const classes = useStyles();
   if (props.feedbackList === undefined) {
     return <div>フィードバック取得中...</div>;
   }
   if (props.feedbackList.length === 0) {
     return <div>フィードバックはまだありません</div>;
   }
+  const participantList: ReadonlyArray<d.Participant> =
+    props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
+    [];
   return (
-    <div>
-      {props.feedbackList.map((feedback) => (
-        <div key={feedback.accountId}>{feedback.message}</div>
-      ))}
-    </div>
+    <Box className={classes.list}>
+      {props.feedbackList.map((feedback, index) => {
+        const account: d.Account | undefined = participantList.find(
+          (participant) => participant.account.id === feedback.accountId
+        )?.account;
+        return (
+          <Paper key={index} className={classes.item}>
+            {account === undefined ? (
+              <></>
+            ) : (
+              <Box display="flex">
+                <Avatar
+                  alt={account.name}
+                  src={imageUrl(account.iconHash).toString()}
+                />
+                {account.name}
+              </Box>
+            )}
+            {feedback.message}
+          </Paper>
+        );
+      })}
+    </Box>
   );
 };
 
 const AnswerList = (props: {
-  answersFromOtherStudents:
+  readonly answersFromOtherStudents:
     | ReadonlyArray<d.AnswersFromOtherStudent>
     | undefined;
+  readonly classId: d.ClassId;
+  readonly questionId: d.QuestionId;
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
+  readonly extractStudentId: d.AccountId;
 }): React.ReactElement => {
+  const classes = useStyles();
   if (props.answersFromOtherStudents === undefined) {
     return <div>他の人の回答取得中...</div>;
   }
-  if (props.answersFromOtherStudents.length === 0) {
+  const filteredList = props.answersFromOtherStudents.filter(
+    (answer) => answer.studentId !== props.extractStudentId
+  );
+  if (filteredList.length === 0) {
     return <div>他の人の回答はまだありません</div>;
   }
+  const participantList: ReadonlyArray<d.Participant> =
+    props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
+    [];
   return (
-    <div>
-      {props.answersFromOtherStudents.map((answer) => (
-        <div key={answer.studentId}>{answer.answerText}</div>
-      ))}
-    </div>
+    <Box className={classes.list}>
+      {filteredList.map((answer) => {
+        const account: d.Account | undefined = participantList.find(
+          (participant) => participant.account.id === answer.studentId
+        )?.account;
+        return (
+          <Link
+            key={answer.studentId}
+            location={d.Location.StudentAnswer({
+              classId: props.classId,
+              questionId: props.questionId,
+              answerStudentId: answer.studentId,
+            })}
+            appState={props.appState}
+          >
+            <Paper className={classes.item}>
+              {account === undefined ? (
+                <></>
+              ) : (
+                <Box display="flex">
+                  <Avatar
+                    alt={account.name}
+                    src={imageUrl(account.iconHash).toString()}
+                  />
+                  {account.name}
+                </Box>
+              )}
+              {answer.answerText}
+            </Paper>
+          </Link>
+        );
+      })}
+    </Box>
   );
 };

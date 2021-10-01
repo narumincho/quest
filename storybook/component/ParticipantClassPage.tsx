@@ -1,7 +1,11 @@
 import * as React from "react";
 import * as d from "../../data";
 import { Meta, Story } from "@storybook/react";
-import { mockAppState, mockQClassStudentOrGuest } from "../mock";
+import {
+  mockAppState,
+  mockLoggedInState,
+  mockQClassStudentOrGuest,
+} from "../mock";
 import { ParticipantClassPage } from "../../client/component/ParticipantClassPage";
 
 const meta: Meta = {
@@ -21,6 +25,7 @@ export const Guest: Story<never> = () => (
       participantList: undefined,
       questionTreeList: undefined,
     }}
+    loggedInState={mockLoggedInState}
   />
 );
 
@@ -35,5 +40,6 @@ export const Student: Story<never> = () => (
       participantList: undefined,
       questionTreeList: undefined,
     }}
+    loggedInState={mockLoggedInState}
   />
 );

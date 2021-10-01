@@ -3,6 +3,7 @@ import { Meta, Story } from "@storybook/react";
 import {
   mockAppState,
   mockClassId,
+  mockLoggedInState,
   mockStudentSelfQuestionTreeList,
 } from "../mock";
 import { StudentSelfQuestionTreeList } from "../../client/component/StudentSelfQuestionTreeList";
@@ -18,5 +19,6 @@ export const Default: Story<never> = () => (
     treeList={mockStudentSelfQuestionTreeList}
     classId={mockClassId}
     appState={mockAppState}
+    loggedInState={mockLoggedInState}
   />
 );

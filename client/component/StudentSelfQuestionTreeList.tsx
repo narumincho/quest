@@ -4,11 +4,13 @@ import { Box, Typography, makeStyles } from "@material-ui/core";
 import { ChevronRight, Done, Edit } from "@material-ui/icons";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { LoggedInState } from "../state/loggedInState";
 
 export const StudentSelfQuestionTreeList = (props: {
   readonly treeList: ReadonlyArray<d.StudentSelfQuestionTree> | undefined;
   readonly appState: AppState;
   readonly classId: d.ClassId;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
   if (props.treeList === undefined) {
     return <Box padding={1}>取得中 </Box>;
@@ -21,6 +23,7 @@ export const StudentSelfQuestionTreeList = (props: {
           tree={tree}
           appState={props.appState}
           classId={props.classId}
+          loggedInState={props.loggedInState}
         />
       ))}
     </Box>
@@ -41,6 +44,7 @@ export const StudentSelfQuestionTree = (props: {
   readonly tree: d.StudentSelfQuestionTree;
   readonly appState: AppState;
   readonly classId: d.ClassId;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
   const classes = useStyles();
   return (
@@ -50,6 +54,7 @@ export const StudentSelfQuestionTree = (props: {
         location={d.Location.StudentAnswer({
           questionId: props.tree.questionId,
           classId: props.classId,
+          answerStudentId: props.loggedInState.account.id,
         })}
       >
         <Box className={classes.label}>
@@ -61,6 +66,7 @@ export const StudentSelfQuestionTree = (props: {
         treeList={props.tree.children}
         appState={props.appState}
         classId={props.classId}
+        loggedInState={props.loggedInState}
       />
     </Box>
   );
