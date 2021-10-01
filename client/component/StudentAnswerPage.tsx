@@ -7,10 +7,12 @@ import {
   CircularProgress,
   Dialog,
   DialogTitle,
+  Paper,
   Tab,
   Tabs,
   TextField,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
 import { Publish, Save } from "@material-ui/icons";
 import { AppState } from "../state";
@@ -369,6 +371,20 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.classId, props.questionId, props.answerStudentId]);
 
+  const submitFeedback = (message: string): void => {
+    props.appSate
+      .addFeedback({
+        accountToken: props.loggedInState.accountToken,
+        classId: props.classId,
+        questionId: props.questionId,
+        answerStudentId: props.answerStudentId,
+        message,
+      })
+      .then((response) => {
+        setFeedbackList(response);
+      });
+  };
+
   return (
     <Box padding={1}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -385,7 +401,10 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
       </Box>
       <Box padding={1}>
         {selectedTab === "feedback" ? (
-          <FeedbackListWithInput feedbackList={feedbackList} />
+          <FeedbackListWithInput
+            feedbackList={feedbackList}
+            onSubmitFeedback={submitFeedback}
+          />
         ) : (
           <AnswerList
             answersFromOtherStudents={answersFromOtherStudents}
@@ -400,8 +419,16 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
 };
 
 const FeedbackListWithInput = (props: {
-  feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly onSubmitFeedback: (message: string) => void;
 }): React.ReactElement => {
+  const [feedbackEditText, setFeedbackEditText] = React.useState<string>("");
+  const onChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
+    setFeedbackEditText(event.target.value);
+  };
+  const isNotEmpty = feedbackEditText.trim().length === 0;
   return (
     <div>
       <TextField
@@ -409,21 +436,41 @@ const FeedbackListWithInput = (props: {
         required
         fullWidth
         label="この回答に対するフィードバック"
-        value={""}
-        onChange={() => {}}
+        value={feedbackEditText}
+        onChange={onChange}
         variant="outlined"
-        InputProps={{
-          readOnly: false,
-        }}
       />
+      <Button
+        fullWidth
+        onClick={() => props.onSubmitFeedback(feedbackEditText)}
+        size="large"
+        disabled={isNotEmpty}
+        variant="contained"
+        color="secondary"
+        startIcon={<Publish />}
+      >
+        送信
+      </Button>
       <FeedbackList feedbackList={props.feedbackList} />
     </div>
   );
 };
 
+const useStyles = makeStyles({
+  list: {
+    display: "grid",
+    gap: 8,
+    padding: 8,
+  },
+  item: {
+    padding: 8,
+  },
+});
+
 const FeedbackList = (props: {
   feedbackList: ReadonlyArray<d.Feedback> | undefined;
 }): React.ReactElement => {
+  const classes = useStyles();
   if (props.feedbackList === undefined) {
     return <div>フィードバック取得中...</div>;
   }
@@ -431,11 +478,13 @@ const FeedbackList = (props: {
     return <div>フィードバックはまだありません</div>;
   }
   return (
-    <div>
+    <Box className={classes.list}>
       {props.feedbackList.map((feedback) => (
-        <div key={feedback.accountId}>{feedback.message}</div>
+        <Paper key={feedback.accountId} className={classes.item}>
+          {feedback.message}
+        </Paper>
       ))}
-    </div>
+    </Box>
   );
 };
 
@@ -447,6 +496,7 @@ const AnswerList = (props: {
   readonly questionId: d.QuestionId;
   readonly appState: AppState;
 }): React.ReactElement => {
+  const classes = useStyles();
   if (props.answersFromOtherStudents === undefined) {
     return <div>他の人の回答取得中...</div>;
   }
@@ -454,7 +504,7 @@ const AnswerList = (props: {
     return <div>他の人の回答はまだありません</div>;
   }
   return (
-    <div>
+    <Box className={classes.list}>
       {props.answersFromOtherStudents.map((answer) => (
         <Link
           key={answer.studentId}
@@ -465,9 +515,9 @@ const AnswerList = (props: {
           })}
           appState={props.appState}
         >
-          <div>{answer.answerText}</div>
+          <Paper className={classes.item}>{answer.answerText}</Paper>
         </Link>
       ))}
-    </div>
+    </Box>
   );
 };

@@ -121,6 +121,16 @@ export const mockAppState: AppState = {
       },
     ]);
   },
+  addFeedback: (e) => {
+    action("requestFeedback")(e);
+    return Promise.resolve<ReadonlyArray<d.Feedback>>([
+      {
+        accountId: mockAccount3.id,
+        message: "フィードバックが追加されたあとのフィードバック",
+        createDateTime: { day: 0, millisecond: 0 },
+      },
+    ]);
+  },
 };
 
 export const mockAccount: d.Account = {
