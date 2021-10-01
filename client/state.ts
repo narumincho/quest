@@ -128,6 +128,13 @@ export type AppState = {
     readonly questionId: d.QuestionId;
     readonly accountToken: d.AccountToken;
   }) => Promise<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>;
+  /** フィードバックを取得する */
+  readonly requestFeedback: (option: {
+    readonly classId: d.ClassId;
+    readonly questionId: d.QuestionId;
+    readonly answerStudentId: d.AccountId;
+    readonly accountToken: d.AccountToken;
+  }) => Promise<ReadonlyArray<d.Feedback> | undefined>;
 };
 
 export const useAppState = (): AppState => {
@@ -739,6 +746,16 @@ export const useAppState = (): AppState => {
       const response = await api.getAnswersFromOtherStudents(parameter);
       if (response._ === "Error") {
         enqueueSnackbar(`他の生徒の回答の取得に失敗しました`, {
+          variant: "error",
+        });
+        return undefined;
+      }
+      return response.okValue;
+    },
+    requestFeedback: async (parameter) => {
+      const response = await api.getFeedback(parameter);
+      if (response._ === "Error") {
+        enqueueSnackbar(`フィードバックの取得に失敗しました`, {
           variant: "error",
         });
         return undefined;
