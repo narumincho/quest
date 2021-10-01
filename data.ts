@@ -259,6 +259,12 @@ readonly accountToken: AccountToken };
 
 
 /**
+ * @typePartId 623f5bcda082b879673ce3fae33ff73e
+ */
+export type GetFeedbackParameter = { readonly accountToken: AccountToken; readonly questionId: QuestionId; readonly classId: ClassId; readonly answerStudentId: AccountId };
+
+
+/**
  * @typePartId 6930f80e4e0e3dad38287e08a3a832d7
  */
 export type NewQuestionParameter = { readonly programId: ProgramId; readonly parent: Option<QuestionId> };
@@ -341,6 +347,12 @@ export type QuestionId = string & { readonly _questionId: never };
  * @typePartId 9aa6158ecc8bb71ca25a1f02a5001604
  */
 export type AccountTokenAndProgramId = { readonly accountToken: AccountToken; readonly programId: ProgramId };
+
+
+/**
+ * @typePartId a5c4ceae4af6d68040a6bd46548cbf40
+ */
+export type User = { readonly name: String; readonly age: Int32 };
 
 
 /**
@@ -472,6 +484,14 @@ export type AccountToken = string & { readonly _accountToken: never };
 
 
 /**
+ * フィードバックのID.
+ * 1つの回答に対する複数のフィードバック
+ * @typePartId ddc436ab9f9477953f7f5fdf6b5fe8cc
+ */
+export type FeedbackId = string & { readonly _feedbackId: never };
+
+
+/**
  * @typePartId e0d22ba37d182c0def8905e0dd44b56a
  */
 export type AccountId = string & { readonly _accountId: never };
@@ -522,6 +542,19 @@ readonly classInvitationToken: StudentClassInvitationToken };
  * @typePartId f175351a9bf7d3ba293a525a1b20f08f
  */
 export type AnswersFromOtherStudent = { readonly studentId: AccountId; readonly answerText: String };
+
+
+/**
+ * @typePartId f2c5ecf28ee97364a0a738490f09de29
+ */
+export type Feedback = { readonly accountId: AccountId; readonly message: String; readonly createDateTime: DateTime };
+
+
+/**
+ * フィードバックを追加する
+ * @typePartId f8d4a640f7f6a2087fb6dd5f905aa0fd
+ */
+export type AddFeedbackParameter = { readonly accountToken: AccountToken; readonly questionId: QuestionId; readonly classId: ClassId; readonly answerStudentId: AccountId; readonly message: String };
 
 
 /**
@@ -941,6 +974,30 @@ readonly helper: (a: CreateProgramParameter) => CreateProgramParameter } = { typ
 
 
 /**
+ * @typePartId 623f5bcda082b879673ce3fae33ff73e
+ */
+export const GetFeedbackParameter: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<GetFeedbackParameter>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: GetFeedbackParameter) => GetFeedbackParameter } = { typePartId: "623f5bcda082b879673ce3fae33ff73e" as TypePartId, helper: (getFeedbackParameter: GetFeedbackParameter): GetFeedbackParameter => getFeedbackParameter, codec: { encode: (value: GetFeedbackParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QuestionId.codec.encode(value.questionId)).concat(ClassId.codec.encode(value.classId)).concat(AccountId.codec.encode(value.answerStudentId))), decode: (index: number, binary: Uint8Array): { readonly result: GetFeedbackParameter; readonly nextIndex: number } => {
+  const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+  const questionIdAndNextIndex: { readonly result: QuestionId; readonly nextIndex: number } = QuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+  const classIdAndNextIndex: { readonly result: ClassId; readonly nextIndex: number } = ClassId.codec.decode(questionIdAndNextIndex.nextIndex, binary);
+  const answerStudentIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(classIdAndNextIndex.nextIndex, binary);
+  return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, classId: classIdAndNextIndex.result, answerStudentId: answerStudentIdAndNextIndex.result }, nextIndex: answerStudentIdAndNextIndex.nextIndex };
+} } };
+
+
+/**
  * @typePartId 6930f80e4e0e3dad38287e08a3a832d7
  */
 export const NewQuestionParameter: { 
@@ -1153,6 +1210,28 @@ readonly helper: (a: AccountTokenAndProgramId) => AccountTokenAndProgramId } = {
   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
   const programIdAndNextIndex: { readonly result: ProgramId; readonly nextIndex: number } = ProgramId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
   return { result: { accountToken: accountTokenAndNextIndex.result, programId: programIdAndNextIndex.result }, nextIndex: programIdAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * @typePartId a5c4ceae4af6d68040a6bd46548cbf40
+ */
+export const User: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<User>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: User) => User } = { typePartId: "a5c4ceae4af6d68040a6bd46548cbf40" as TypePartId, helper: (user: User): User => user, codec: { encode: (value: User): ReadonlyArray<number> => (String.codec.encode(value.name).concat(Int32.codec.encode(value.age))), decode: (index: number, binary: Uint8Array): { readonly result: User; readonly nextIndex: number } => {
+  const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(index, binary);
+  const ageAndNextIndex: { readonly result: Int32; readonly nextIndex: number } = Int32.codec.decode(nameAndNextIndex.nextIndex, binary);
+  return { result: { name: nameAndNextIndex.result, age: ageAndNextIndex.result }, nextIndex: ageAndNextIndex.nextIndex };
 } } };
 
 
@@ -1672,6 +1751,26 @@ readonly fromString: (a: string) => AccountToken } = { typePartId: "dc8aedd2ba2b
 
 
 /**
+ * フィードバックのID.
+ * 1つの回答に対する複数のフィードバック
+ * @typePartId ddc436ab9f9477953f7f5fdf6b5fe8cc
+ */
+export const FeedbackId: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<FeedbackId>; 
+/**
+ * 文字列から変換する
+ */
+readonly fromString: (a: string) => FeedbackId } = { typePartId: "ddc436ab9f9477953f7f5fdf6b5fe8cc" as TypePartId, codec: { encode: (value: FeedbackId): ReadonlyArray<number> => (encodeId(value)), decode: (index: number, binary: Uint8Array): { readonly result: FeedbackId; readonly nextIndex: number } => (decodeId(index, binary) as { readonly result: FeedbackId; readonly nextIndex: number }) }, fromString: (str: string): FeedbackId => (str as FeedbackId) };
+
+
+/**
  * @typePartId e0d22ba37d182c0def8905e0dd44b56a
  */
 export const AccountId: { 
@@ -1775,6 +1874,55 @@ readonly helper: (a: AnswersFromOtherStudent) => AnswersFromOtherStudent } = { t
   const studentIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(index, binary);
   const answerTextAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(studentIdAndNextIndex.nextIndex, binary);
   return { result: { studentId: studentIdAndNextIndex.result, answerText: answerTextAndNextIndex.result }, nextIndex: answerTextAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * @typePartId f2c5ecf28ee97364a0a738490f09de29
+ */
+export const Feedback: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<Feedback>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: Feedback) => Feedback } = { typePartId: "f2c5ecf28ee97364a0a738490f09de29" as TypePartId, helper: (feedback: Feedback): Feedback => feedback, codec: { encode: (value: Feedback): ReadonlyArray<number> => (AccountId.codec.encode(value.accountId).concat(String.codec.encode(value.message)).concat(DateTime.codec.encode(value.createDateTime))), decode: (index: number, binary: Uint8Array): { readonly result: Feedback; readonly nextIndex: number } => {
+  const accountIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(index, binary);
+  const messageAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(accountIdAndNextIndex.nextIndex, binary);
+  const createDateTimeAndNextIndex: { readonly result: DateTime; readonly nextIndex: number } = DateTime.codec.decode(messageAndNextIndex.nextIndex, binary);
+  return { result: { accountId: accountIdAndNextIndex.result, message: messageAndNextIndex.result, createDateTime: createDateTimeAndNextIndex.result }, nextIndex: createDateTimeAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * フィードバックを追加する
+ * @typePartId f8d4a640f7f6a2087fb6dd5f905aa0fd
+ */
+export const AddFeedbackParameter: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<AddFeedbackParameter>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: AddFeedbackParameter) => AddFeedbackParameter } = { typePartId: "f8d4a640f7f6a2087fb6dd5f905aa0fd" as TypePartId, helper: (addFeedbackParameter: AddFeedbackParameter): AddFeedbackParameter => addFeedbackParameter, codec: { encode: (value: AddFeedbackParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(QuestionId.codec.encode(value.questionId)).concat(ClassId.codec.encode(value.classId)).concat(AccountId.codec.encode(value.answerStudentId)).concat(String.codec.encode(value.message))), decode: (index: number, binary: Uint8Array): { readonly result: AddFeedbackParameter; readonly nextIndex: number } => {
+  const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+  const questionIdAndNextIndex: { readonly result: QuestionId; readonly nextIndex: number } = QuestionId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+  const classIdAndNextIndex: { readonly result: ClassId; readonly nextIndex: number } = ClassId.codec.decode(questionIdAndNextIndex.nextIndex, binary);
+  const answerStudentIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(classIdAndNextIndex.nextIndex, binary);
+  const messageAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(answerStudentIdAndNextIndex.nextIndex, binary);
+  return { result: { accountToken: accountTokenAndNextIndex.result, questionId: questionIdAndNextIndex.result, classId: classIdAndNextIndex.result, answerStudentId: answerStudentIdAndNextIndex.result, message: messageAndNextIndex.result }, nextIndex: messageAndNextIndex.nextIndex };
 } } };
 
 

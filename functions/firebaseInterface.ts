@@ -71,6 +71,11 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     value: AnswerDocument;
     subCollections: Record<never, never>;
   };
+  feedback: {
+    key: d.FeedbackId;
+    value: FeedbackDocument;
+    subCollections: Record<never, never>;
+  };
 }>;
 
 type AnswerDocument = {
@@ -81,6 +86,15 @@ type AnswerDocument = {
   readonly createTime: admin.firestore.Timestamp;
   readonly updateTime: admin.firestore.Timestamp;
   readonly isConfirm: boolean;
+};
+
+type FeedbackDocument = {
+  readonly message: string;
+  readonly questionId: d.QuestionId;
+  readonly classId: d.ClassId;
+  readonly answerAccountId: d.AccountId;
+  readonly feedbackAccountId: d.AccountId;
+  readonly createTime: admin.firestore.Timestamp;
 };
 
 const cloudStorageBucket = app.storage().bucket();
@@ -583,6 +597,45 @@ const answerQueryDocumentSnapshotToAnswerItemList = (
       updateTime: firestoreTimestampToDateTime(answer.updateTime),
       questionId: answer.questionId,
       isConfirm: answer.isConfirm,
+    };
+  });
+};
+
+export const addFeedback = async (option: {
+  feedbackId: d.FeedbackId;
+  classId: d.ClassId;
+  answerStudentId: d.AccountId;
+  feedbackAccountId: d.AccountId;
+  questionId: d.QuestionId;
+  message: string;
+}): Promise<void> => {
+  await firestore.collection("feedback").doc(option.feedbackId).create({
+    classId: option.classId,
+    answerAccountId: option.answerStudentId,
+    createTime: admin.firestore.FieldValue.serverTimestamp(),
+    feedbackAccountId: option.feedbackAccountId,
+    questionId: option.questionId,
+    message: option.message,
+  });
+};
+
+export const getFeedbackInAnswer = async (option: {
+  questionId: d.QuestionId;
+  classId: d.ClassId;
+  accountId: d.AccountId;
+}): Promise<ReadonlyArray<d.Feedback>> => {
+  const result = await firestore
+    .collection("feedback")
+    .where("questionId", "==", option.questionId)
+    .where("classId", "==", option.classId)
+    .where("answerAccountId", "==", option.accountId)
+    .get();
+  return result.docs.map((doc): d.Feedback => {
+    const data = doc.data();
+    return {
+      accountId: data.feedbackAccountId,
+      message: data.message,
+      createDateTime: firestoreTimestampToDateTime(data.createTime),
     };
   });
 };

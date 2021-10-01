@@ -1,19 +1,17 @@
 import * as d from "../data";
 import {
-  AppState,
+  ClassAndRole,
+  ClassWithParticipantList,
   LoggedInState,
   ProgramWithClassList,
   QuestionTreeListWithLoadingState,
-} from "../client/state";
-import {
-  ClassAndRole,
-  ClassWithParticipantList,
 } from "../client/state/loggedInState";
 import {
   getParentQuestionList,
   getQuestionTree,
   questionChildren,
 } from "../client/state/question";
+import { AppState } from "../client/state";
 import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {
@@ -85,23 +83,59 @@ export const mockAppState: AppState = {
   ),
   requestAnswersFromOtherStudents: (e) => {
     action("requestAnswersFromOtherStudents")(e);
-    return Promise.resolve([]);
+    return Promise.resolve<
+      ReadonlyArray<d.AnswersFromOtherStudent> | undefined
+    >([
+      {
+        answerText: "山が良いな",
+        studentId: mockAccount3.id,
+      },
+      {
+        answerText: "海が好き",
+        studentId: mockAccount2.id,
+      },
+      {
+        answerText: "砂漠も良いぞ",
+        studentId: mockAccount.id,
+      },
+    ]);
+  },
+  requestFeedback: (e) => {
+    action("requestFeedback")(e);
+    return Promise.resolve<ReadonlyArray<d.Feedback>>([
+      {
+        accountId: mockAccount3.id,
+        message: "サンプルフィードバック",
+        createDateTime: { day: 0, millisecond: 0 },
+      },
+      {
+        accountId: mockAccount2.id,
+        message: "良いね",
+        createDateTime: { day: 0, millisecond: 0 },
+      },
+      {
+        accountId: mockAccount.id,
+        message:
+          "ここをこうするとこうなるから, こうやってこうしてみると良いんじゃないか?",
+        createDateTime: { day: 0, millisecond: 0 },
+      },
+    ]);
   },
 };
 
 export const mockAccount: d.Account = {
-  id: "fakeAccountId" as d.AccountId,
-  iconHash: "fakeIconHash" as d.ImageHashValue,
+  id: d.AccountId.fromString("fakeAccountId"),
+  iconHash: d.ImageHashValue.fromString("fakeIconHash"),
   name: "サンプルアカウント名",
 };
 export const mockAccount2: d.Account = {
-  id: "fakeAccountId2" as d.AccountId,
-  iconHash: "fakeIconHash2" as d.ImageHashValue,
+  id: d.AccountId.fromString("fakeAccountId2"),
+  iconHash: d.ImageHashValue.fromString("fakeIconHash2"),
   name: "なんとかさん",
 };
 export const mockAccount3: d.Account = {
-  id: "fakeAccountId3" as d.AccountId,
-  iconHash: "fakeIconHash3" as d.ImageHashValue,
+  id: d.AccountId.fromString("fakeAccountId3"),
+  iconHash: d.ImageHashValue.fromString("fakeIconHash3"),
   name: "大将",
 };
 

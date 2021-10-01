@@ -8,7 +8,7 @@ import {
 import { App } from "./App";
 import { SnackbarProvider } from "notistack";
 
-export const ThemedApp: React.FC<Record<never, never>> = () => {
+export const ThemedApp = (): React.ReactElement => {
   const [darkOrLight, setDarkOrLight] = React.useState<PaletteType>(
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );

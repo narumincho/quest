@@ -1,11 +1,12 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState } from "../state";
 import { Avatar, Box, Breadcrumbs, Typography } from "@material-ui/core";
 import {
+  LoggedInState,
   getClassNameAndStudent,
   getStudentConfirmedAnswer,
 } from "../state/loggedInState";
+import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { imageUrl } from "../../common/url";

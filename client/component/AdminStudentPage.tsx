@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState, QuestionTree } from "../state";
 import {
   Avatar,
   Box,
@@ -9,11 +8,14 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import {
+  LoggedInState,
+  QuestionTree,
   QuestionTreeListWithLoadingState,
   getClassNameAndStudent,
   getCreatedProgramIdByClassId,
   getStudentConfirmedAnswer,
 } from "../state/loggedInState";
+import { AppState } from "../state";
 import { ChevronRight } from "@material-ui/icons";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";

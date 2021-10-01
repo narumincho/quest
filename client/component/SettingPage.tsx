@@ -12,9 +12,10 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 
-export type Props = { account: d.Account; appState: AppState };
-
-export const SettingPage: React.VFC<Props> = (props) => {
+export const SettingPage = (props: {
+  readonly account: d.Account;
+  readonly appState: AppState;
+}): React.ReactElement => {
   return (
     <PageContainer appState={props.appState}>
       <Box padding={1}>

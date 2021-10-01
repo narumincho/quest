@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 /**
  * 質問へのリンクがついた, 質問の内容を表示するカード
  */
-export const QuestionCard: React.VFC<Props> = (props) => {
+export const QuestionCard = (props: Props): React.ReactElement => {
   const classes = useStyles();
   const question = props.appState.question(props.questionId);
   if (question === undefined) {
@@ -46,9 +46,9 @@ export const QuestionCard: React.VFC<Props> = (props) => {
 /**
  * 質問の内容を表示するカード
  */
-export const QuestionButton: React.VFC<Props & { onClick: () => void }> = (
-  props
-) => {
+export const QuestionButton = (
+  props: Props & { readonly onClick: () => void }
+): React.ReactElement => {
   const classes = useStyles();
   const question = props.appState.question(props.questionId);
   if (question === undefined) {

@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -14,7 +13,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Publish, Save } from "@material-ui/icons";
+import { AppState } from "../state";
 import { Link } from "./Link";
+import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { stringToValidAnswerText } from "../../common/validation";
 import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestionTree";
@@ -49,6 +50,7 @@ export const StudentAnswerPage = (props: {
       appState={props.appState}
       classId={props.classId}
       loggedInState={props.loggedInState}
+      answerStudentId={props.loggedInState.account.id}
     />
   );
 };
@@ -86,6 +88,7 @@ const StudentEditQuestionPageLoaded = (props: {
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
+  readonly answerStudentId: d.AccountId;
 }): React.ReactElement => {
   const [answerText, setAnswerText] = React.useState<string>(
     props.question.answer._ === "Some" ? props.question.answer.value.text : ""
@@ -193,6 +196,7 @@ const StudentEditQuestionPageLoaded = (props: {
           classId={props.classId}
           questionId={props.question.questionId}
           loggedInState={props.loggedInState}
+          answerStudentId={props.answerStudentId}
         />
       ) : (
         <></>
@@ -251,12 +255,18 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
   readonly classId: d.ClassId;
   readonly questionId: d.QuestionId;
   readonly loggedInState: LoggedInState;
+  readonly answerStudentId: d.AccountId;
 }): React.ReactElement => {
   const [selectedTab, setSelectedTab] = React.useState<
     "feedback" | "answersFromOtherStudents"
   >("feedback");
   const [answersFromOtherStudents, setAnswersFromOtherStudents] =
-    React.useState<string>("");
+    React.useState<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>(
+      undefined
+    );
+  const [feedbackList, setFeedbackList] = React.useState<
+    ReadonlyArray<d.Feedback> | undefined
+  >(undefined);
 
   React.useEffect(() => {
     props.appSate
@@ -266,10 +276,21 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
         questionId: props.questionId,
       })
       .then((response) => {
-        setAnswersFromOtherStudents(JSON.stringify(response));
+        setAnswersFromOtherStudents(response);
+      });
+
+    props.appSate
+      .requestFeedback({
+        accountToken: props.loggedInState.accountToken,
+        classId: props.classId,
+        questionId: props.questionId,
+        answerStudentId: props.answerStudentId,
+      })
+      .then((response) => {
+        setFeedbackList(response);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.classId, props.questionId]);
+  }, [props.classId, props.questionId, props.answerStudentId]);
 
   return (
     <Box padding={1}>
@@ -286,11 +307,72 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
         </Tabs>
       </Box>
       <Box padding={1}>
-        {selectedTab === "feedback"
-          ? "フィードバックの一覧表示"
-          : "他の人の回答一覧表示"}
-        {answersFromOtherStudents}
+        {selectedTab === "feedback" ? (
+          <FeedbackListWithInput feedbackList={feedbackList} />
+        ) : (
+          <AnswerList answersFromOtherStudents={answersFromOtherStudents} />
+        )}
       </Box>
     </Box>
+  );
+};
+
+const FeedbackListWithInput = (props: {
+  feedbackList: ReadonlyArray<d.Feedback> | undefined;
+}): React.ReactElement => {
+  return (
+    <div>
+      <TextField
+        multiline
+        required
+        fullWidth
+        label="この回答に対するフィードバック"
+        value={""}
+        onChange={() => {}}
+        variant="outlined"
+        InputProps={{
+          readOnly: false,
+        }}
+      />
+      <FeedbackList feedbackList={props.feedbackList} />
+    </div>
+  );
+};
+
+const FeedbackList = (props: {
+  feedbackList: ReadonlyArray<d.Feedback> | undefined;
+}): React.ReactElement => {
+  if (props.feedbackList === undefined) {
+    return <div>フィードバック取得中...</div>;
+  }
+  if (props.feedbackList.length === 0) {
+    return <div>フィードバックはまだありません</div>;
+  }
+  return (
+    <div>
+      {props.feedbackList.map((feedback) => (
+        <div key={feedback.accountId}>{feedback.message}</div>
+      ))}
+    </div>
+  );
+};
+
+const AnswerList = (props: {
+  answersFromOtherStudents:
+    | ReadonlyArray<d.AnswersFromOtherStudent>
+    | undefined;
+}): React.ReactElement => {
+  if (props.answersFromOtherStudents === undefined) {
+    return <div>他の人の回答取得中...</div>;
+  }
+  if (props.answersFromOtherStudents.length === 0) {
+    return <div>他の人の回答はまだありません</div>;
+  }
+  return (
+    <div>
+      {props.answersFromOtherStudents.map((answer) => (
+        <div key={answer.studentId}>{answer.answerText}</div>
+      ))}
+    </div>
   );
 };

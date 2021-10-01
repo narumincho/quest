@@ -17,17 +17,15 @@ import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { stringToValidProgramName } from "../../common/validation";
 
-export type Props = {
-  readonly appState: AppState;
-};
-
 const useStyles = makeStyles({
   createButton: {
     textTransform: "none",
   },
 });
 
-export const ProgramNewPage: React.VFC<Props> = (props) => {
+export const ProgramNewPage = (props: {
+  readonly appState: AppState;
+}): React.ReactElement => {
   const classes = useStyles();
   const [projectName, setProjectName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);

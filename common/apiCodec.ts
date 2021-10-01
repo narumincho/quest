@@ -164,3 +164,25 @@ export const getAnswersFromOtherStudents: ApiCodec<
   request: d.GetAnswersFromOtherStudentsParameter.codec,
   response: d.List.codec(d.AnswersFromOtherStudent.codec),
 };
+
+/**
+ * フィードバックを送信する
+ */
+export const addFeedback: ApiCodec<
+  d.AddFeedbackParameter,
+  ReadonlyArray<d.Feedback>
+> = {
+  request: d.AddFeedbackParameter.codec,
+  response: d.List.codec(d.Feedback.codec),
+};
+
+/**
+ * フィードバックを取得する
+ */
+export const getFeedback: ApiCodec<
+  d.GetFeedbackParameter,
+  ReadonlyArray<d.Feedback>
+> = {
+  request: d.GetFeedbackParameter.codec,
+  response: d.List.codec(d.Feedback.codec),
+};

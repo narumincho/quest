@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState, ProgramWithClassList } from "../state";
 import { Paper, Typography, makeStyles } from "@material-ui/core";
+import { AppState } from "../state";
 import { Link } from "./Link";
+import { ProgramWithClassList } from "../state/loggedInState";
 
 const useStyles = makeStyles({
   card: {

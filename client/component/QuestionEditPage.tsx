@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState } from "../state";
+
 import {
   Box,
   Breadcrumbs,
@@ -17,8 +17,10 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import { AppState } from "../state";
 import { Close } from "@material-ui/icons";
 import { Link } from "./Link";
+import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { QuestionButton } from "./QuestionCard";
 import { stringToValidQuestionText } from "../../common/validation";

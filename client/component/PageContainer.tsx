@@ -12,12 +12,12 @@ export const PageContainer: React.FC<{
   /**
    * アプリの状態
    */
-  appState: AppState;
+  readonly appState: AppState;
   /**
    * 戻るボタンを隠すか
    * @default false
    */
-  isHideBack?: boolean;
+  readonly isHideBack?: boolean;
 }> = (props) => {
   return (
     <Box width="100%" height="100%">

@@ -351,6 +351,53 @@ export const apiFunc: {
           : []
     );
   },
+  addFeedback: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const isStudentOrClassCreator = getIsStudentOrClassCreator(
+      account.id,
+      parameter.classId
+    );
+    if (!isStudentOrClassCreator) {
+      throw new Error("生徒か管理者以外はフィードバックに追加できません");
+    }
+    const answerStudentIsValidStudent = await firebaseInterface.isStudent(
+      parameter.answerStudentId,
+      parameter.classId
+    );
+    if (!answerStudentIsValidStudent) {
+      throw new Error(
+        "クラスに属していない生徒に対してフィードバックはできない"
+      );
+    }
+    await firebaseInterface.addFeedback({
+      feedbackId: d.FeedbackId.fromString(createRandomId()),
+      answerStudentId: parameter.answerStudentId,
+      classId: parameter.classId,
+      feedbackAccountId: account.id,
+      message: parameter.message,
+      questionId: parameter.questionId,
+    });
+    return firebaseInterface.getFeedbackInAnswer({
+      accountId: parameter.answerStudentId,
+      classId: parameter.classId,
+      questionId: parameter.questionId,
+    });
+  },
+  getFeedback: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const isStudentOrClassCreator = getIsStudentOrClassCreator(
+      account.id,
+      parameter.classId
+    );
+    if (!isStudentOrClassCreator) {
+      throw new Error("生徒か管理者以外はフィードバックを取得できません");
+    }
+    return firebaseInterface.getFeedbackInAnswer({
+      accountId: parameter.answerStudentId,
+      classId: parameter.classId,
+      questionId: parameter.questionId,
+    });
+  },
 };
 
 const questionTreeToStudentSelfQuestionTree = (
@@ -576,4 +623,18 @@ const validateAndGetProgram = async (
     throw new Error("指定したプログラムが存在しないか, 作った本人でない");
   }
   return program;
+};
+
+export const getIsStudentOrClassCreator = async (
+  accountId: d.AccountId,
+  classId: d.ClassId
+): Promise<boolean> => {
+  const qClass = await firebaseInterface.getClassByClassId(classId);
+  if (qClass === undefined) {
+    throw new Error("クラスが存在しません");
+  }
+  if (qClass.createAccountId === accountId) {
+    return true;
+  }
+  return firebaseInterface.isStudent(accountId, classId);
 };

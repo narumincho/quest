@@ -11,7 +11,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const LoadingPage: React.VFC<Record<never, never>> = () => {
+export const LoadingPage = (): React.ReactElement => {
   const classes = useStyles();
   return (
     <Box className={classes.loadingIcon}>

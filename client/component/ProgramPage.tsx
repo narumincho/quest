@@ -1,19 +1,19 @@
 import * as React from "react";
 import * as d from "../../data";
 import {
-  AppState,
-  LoggedInState,
-  QuestionTreeListWithLoadingState,
-} from "../state";
-import {
   Box,
   Breadcrumbs,
   Button,
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import {
+  LoggedInState,
+  QuestionTreeListWithLoadingState,
+} from "../state/loggedInState";
 import { AccountCard } from "./AccountCard";
 import { Add } from "@material-ui/icons";
+import { AppState } from "../state";
 import { ClassCard } from "./ClassCard";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
@@ -127,11 +127,11 @@ export const ProgramPage = (props: {
   );
 };
 
-export const QuestionList: React.VFC<{
-  questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
-  appState: AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+export const QuestionList = (props: {
+  readonly questionTreeListWithLoadingState: QuestionTreeListWithLoadingState;
+  readonly appState: AppState;
+  readonly programId: d.ProgramId;
+}): React.ReactElement => {
   if (props.questionTreeListWithLoadingState.tag === "Empty") {
     return (
       <Box padding={1}>
@@ -179,11 +179,11 @@ const useStyle = makeStyles({
   },
 });
 
-const ClassList: React.VFC<{
-  classList: ReadonlyArray<d.AdminClass>;
-  a: AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+const ClassList = (props: {
+  readonly classList: ReadonlyArray<d.AdminClass>;
+  readonly a: AppState;
+  readonly programId: d.ProgramId;
+}): React.ReactElement => {
   const classes = useStyle();
   if (props.classList.length === 0) {
     return (

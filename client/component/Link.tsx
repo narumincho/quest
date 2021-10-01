@@ -18,9 +18,10 @@ const useStyles = makeStyles((theme): StyleRules<"link"> => {
   };
 });
 
-export const Link: React.FC<{ appState: AppState; location: d.Location }> = (
-  props
-) => {
+export const Link: React.FC<{
+  readonly appState: AppState;
+  readonly location: d.Location;
+}> = (props) => {
   const classes = useStyles();
   return (
     <MuiLink
