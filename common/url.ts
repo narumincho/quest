@@ -96,10 +96,12 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
       };
     case "StudentAnswer":
       return {
-        resourceName: studentQuestionPath,
-        resourceId: location.classIdAndQuestionId.questionId,
-        searchParams: new Map([
-          [studentEditQuestionClassId, location.classIdAndQuestionId.classId],
+        resourceName: studentAnswerPath,
+        resourceId: undefined,
+        searchParams: new Map<string, string>([
+          [studentAnswerClassId, location.answerIdData.classId],
+          [studentAnswerQuestionId, location.answerIdData.questionId],
+          [studentAnswerStudentId, location.answerIdData.answerStudentId],
         ]),
         hash: new Map(),
       };
@@ -245,18 +247,22 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
       }
       return d.UrlData.Normal(defaultLocation);
     }
-    case studentQuestionPath: {
-      const classId = structuredUrl.searchParams.get(
-        studentEditQuestionClassId
+    case studentAnswerPath: {
+      const classId = structuredUrl.searchParams.get(studentAnswerClassId);
+      const studentId = structuredUrl.searchParams.get(studentAnswerStudentId);
+      const questionId = structuredUrl.searchParams.get(
+        studentAnswerQuestionId
       );
       if (
-        typeof structuredUrl.resourceId === "string" &&
-        typeof classId === "string"
+        typeof classId === "string" &&
+        typeof studentId === "string" &&
+        typeof questionId === "string"
       ) {
         return d.UrlData.Normal(
           d.Location.StudentAnswer({
             classId: d.ClassId.fromString(classId),
-            questionId: d.QuestionId.fromString(structuredUrl.resourceId),
+            questionId: d.QuestionId.fromString(questionId),
+            answerStudentId: d.AccountId.fromString(studentId),
           })
         );
       }
@@ -323,8 +329,10 @@ const newClassProgramId = "programId";
 const classInvitationPath = "class-invitation";
 const editQuestionPath = "edit-question";
 const editQuestionProgramId = "programId";
-const studentQuestionPath = "student-question";
-const studentEditQuestionClassId = "classId";
+const studentAnswerPath = "student-answer";
+const studentAnswerQuestionId = "questionId";
+const studentAnswerClassId = "classId";
+const studentAnswerStudentId = "studentId";
 
 const adminStudentPath = "admin-student";
 const adminStudentClassId = "classId";

@@ -22,35 +22,53 @@ import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestio
 
 export const StudentAnswerPage = (props: {
   readonly appState: AppState;
-  readonly questionId: d.QuestionId;
-  readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
+  readonly answerIdData: d.AnswerIdData;
 }): React.ReactElement => {
-  const questionTreeList = props.appState.getStudentQuestionTree(props.classId);
+  const questionTreeList = props.appState.getStudentQuestionTree(
+    props.answerIdData.classId
+  );
 
   if (questionTreeList === undefined) {
     return (
-      <NotFoundQuestion appState={props.appState} classId={props.classId} />
+      <NotFoundQuestion
+        appState={props.appState}
+        classId={props.answerIdData.classId}
+      />
     );
   }
   const question = studentSelfQuestionTreeListFind(
     questionTreeList,
-    props.questionId
+    props.answerIdData.questionId
   );
 
   if (question === undefined) {
     return (
-      <NotFoundQuestion appState={props.appState} classId={props.classId} />
+      <NotFoundQuestion
+        appState={props.appState}
+        classId={props.answerIdData.classId}
+      />
     );
   }
 
+  if (props.loggedInState.account.id === props.answerIdData.answerStudentId) {
+    return (
+      <StudentSelfEditQuestionPageLoaded
+        question={question}
+        appState={props.appState}
+        classId={props.answerIdData.classId}
+        loggedInState={props.loggedInState}
+        loggedInAccountId={props.loggedInState.account.id}
+      />
+    );
+  }
   return (
-    <StudentEditQuestionPageLoaded
+    <PageLoadedOtherStudentView
       question={question}
       appState={props.appState}
-      classId={props.classId}
+      classId={props.answerIdData.classId}
+      answerStudentId={props.answerIdData.answerStudentId}
       loggedInState={props.loggedInState}
-      answerStudentId={props.loggedInState.account.id}
     />
   );
 };
@@ -83,12 +101,12 @@ const NotFoundQuestion = (props: {
   );
 };
 
-const StudentEditQuestionPageLoaded = (props: {
+const StudentSelfEditQuestionPageLoaded = (props: {
   readonly question: d.StudentSelfQuestionTree;
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
-  readonly answerStudentId: d.AccountId;
+  readonly loggedInAccountId: d.AccountId;
 }): React.ReactElement => {
   const [answerText, setAnswerText] = React.useState<string>(
     props.question.answer._ === "Some" ? props.question.answer.value.text : ""
@@ -196,7 +214,7 @@ const StudentEditQuestionPageLoaded = (props: {
           classId={props.classId}
           questionId={props.question.questionId}
           loggedInState={props.loggedInState}
-          answerStudentId={props.answerStudentId}
+          answerStudentId={props.loggedInAccountId}
         />
       ) : (
         <></>
@@ -247,6 +265,65 @@ const ConfirmSaveButton = (props: {
     >
       回答を確定して保存する
     </Button>
+  );
+};
+
+const PageLoadedOtherStudentView = (props: {
+  readonly question: d.StudentSelfQuestionTree;
+  readonly appState: AppState;
+  readonly classId: d.ClassId;
+  readonly loggedInState: LoggedInState;
+  readonly answerStudentId: d.AccountId;
+}): React.ReactElement => {
+  const qClass = props.appState.getClassAndRole(props.classId);
+
+  return (
+    <PageContainer appState={props.appState}>
+      <Box padding={1}>
+        <Breadcrumbs>
+          <Link appState={props.appState} location={d.Location.Top}>
+            トップページ
+          </Link>
+          <Link
+            appState={props.appState}
+            location={d.Location.Class(props.classId)}
+          >
+            {qClass.tag === "participant"
+              ? qClass.joinedClass.class.name
+              : "クラス"}
+          </Link>
+
+          <div></div>
+        </Breadcrumbs>
+      </Box>
+      <Box padding={1}>
+        <Typography variant="h4">{props.question.questionText}</Typography>
+      </Box>
+      {props.question.answer._ === "Some" ? (
+        <Box padding={1}>
+          <Typography variant="h5">
+            保存した回答
+            {props.question.answer.value.isConfirm ? " (確定済み)" : ""}
+          </Typography>
+          {props.question.answer.value.text}
+        </Box>
+      ) : (
+        <></>
+      )}
+
+      {props.question.answer._ === "Some" &&
+      props.question.answer.value.isConfirm ? (
+        <FeedbackOrAnswersFromOtherStudents
+          appSate={props.appState}
+          classId={props.classId}
+          questionId={props.question.questionId}
+          loggedInState={props.loggedInState}
+          answerStudentId={props.answerStudentId}
+        />
+      ) : (
+        <></>
+      )}
+    </PageContainer>
   );
 };
 
@@ -310,7 +387,12 @@ const FeedbackOrAnswersFromOtherStudents = (props: {
         {selectedTab === "feedback" ? (
           <FeedbackListWithInput feedbackList={feedbackList} />
         ) : (
-          <AnswerList answersFromOtherStudents={answersFromOtherStudents} />
+          <AnswerList
+            answersFromOtherStudents={answersFromOtherStudents}
+            classId={props.classId}
+            questionId={props.questionId}
+            appState={props.appSate}
+          />
         )}
       </Box>
     </Box>
@@ -358,9 +440,12 @@ const FeedbackList = (props: {
 };
 
 const AnswerList = (props: {
-  answersFromOtherStudents:
+  readonly answersFromOtherStudents:
     | ReadonlyArray<d.AnswersFromOtherStudent>
     | undefined;
+  readonly classId: d.ClassId;
+  readonly questionId: d.QuestionId;
+  readonly appState: AppState;
 }): React.ReactElement => {
   if (props.answersFromOtherStudents === undefined) {
     return <div>他の人の回答取得中...</div>;
@@ -371,7 +456,17 @@ const AnswerList = (props: {
   return (
     <div>
       {props.answersFromOtherStudents.map((answer) => (
-        <div key={answer.studentId}>{answer.answerText}</div>
+        <Link
+          key={answer.studentId}
+          location={d.Location.StudentAnswer({
+            classId: props.classId,
+            questionId: props.questionId,
+            answerStudentId: answer.studentId,
+          })}
+          appState={props.appState}
+        >
+          <div>{answer.answerText}</div>
+        </Link>
       ))}
     </div>
   );

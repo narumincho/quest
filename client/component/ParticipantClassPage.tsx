@@ -1,7 +1,7 @@
 import * as React from "react";
+import { JoinedClass, LoggedInState } from "../state/loggedInState";
 import { AppState } from "../state";
 import { GuestClassPage } from "./GuestClassPage";
-import { JoinedClass } from "../state/loggedInState";
 import { StudentClassPage } from "./StudentClassPage";
 
 /**
@@ -10,6 +10,7 @@ import { StudentClassPage } from "./StudentClassPage";
 export const ParticipantClassPage = (props: {
   readonly appState: AppState;
   readonly joinedClass: JoinedClass;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
   if (props.joinedClass.class.role === "Guest") {
     return (
@@ -25,6 +26,7 @@ export const ParticipantClassPage = (props: {
       participantClass={props.joinedClass.class}
       participantList={props.joinedClass.participantList}
       questionTreeList={props.joinedClass.questionTreeList}
+      loggedInState={props.loggedInState}
     />
   );
 };
