@@ -4,11 +4,6 @@ import { Paper, Typography, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 import { Link } from "./Link";
 
-export type Props = {
-  readonly class: d.AdminClass;
-  readonly appState: AppState;
-};
-
 const useStyles = makeStyles({
   card: {
     display: "grid",
@@ -18,7 +13,10 @@ const useStyles = makeStyles({
   },
 });
 
-export const ClassCard: React.VFC<Props> = (props) => {
+export const ClassCard = (props: {
+  readonly class: d.AdminClass;
+  readonly appState: AppState;
+}): React.ReactElement => {
   const classes = useStyles();
   return (
     <Link appState={props.appState} location={d.Location.Class(props.class.id)}>

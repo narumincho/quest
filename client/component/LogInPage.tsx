@@ -5,14 +5,12 @@ import { LineLoginButton } from "./LineLoginButton";
 import { PageContainer } from "./PageContainer";
 import { nowMode } from "../../common/nowMode";
 
-export type Props = {
-  readonly appState: AppState;
-};
-
 /**
  * ログインページ. ログインしていない時に表示されるページ
  */
-export const LogInPage: React.VFC<Props> = (props) => {
+export const LogInPage = (props: {
+  readonly appState: AppState;
+}): React.ReactElement => {
   return (
     <PageContainer appState={props.appState} isHideBack>
       <Box padding={1}>

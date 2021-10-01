@@ -12,10 +12,10 @@ type ClassNameAndClassId = {
   readonly classId: d.ClassId;
 };
 
-export const ClassInvitationPage: React.VFC<{
+export const ClassInvitationPage = (props: {
   readonly appState: AppState;
   readonly studentClassInvitationToken: d.StudentClassInvitationToken;
-}> = (props) => {
+}): React.ReactElement => {
   const [classNameAndClassId, setClassNameAndClassId] = React.useState<
     ClassNameAndClassId | undefined
   >(undefined);

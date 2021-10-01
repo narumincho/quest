@@ -4,10 +4,6 @@ import { AppState } from "../state";
 
 export type CallState = "notCalled" | "calling" | "jumping";
 
-export type Props = {
-  readonly appState: AppState;
-};
-
 const useStyle = makeStyles({
   button: {
     background: "#00c300",
@@ -35,7 +31,9 @@ const useStyle = makeStyles({
   },
 });
 
-export const LineLoginButton: React.VFC<Props> = (props) => {
+export const LineLoginButton = (props: {
+  readonly appState: AppState;
+}): React.ReactElement => {
   const classes = useStyle();
   switch (props.appState.logInState.tag) {
     case "NoLogin":

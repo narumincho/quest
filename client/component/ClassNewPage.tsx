@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -13,7 +12,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import { AppState } from "../state";
 import { Link } from "./Link";
+import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { stringToValidClassName } from "../../common/validation";
 

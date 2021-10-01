@@ -13,17 +13,6 @@ import { AppState } from "../state";
 import { ArrowBack } from "@material-ui/icons";
 import { Link } from "./Link";
 
-export type Props = {
-  /**
-   * アプリの状態
-   */
-  appState: AppState;
-  /**
-   * 戻るボタンを隠すか
-   */
-  isHideBack: boolean;
-};
-
 const useStyles = makeStyles({
   title: {
     flexGrow: 1,
@@ -33,7 +22,12 @@ const useStyles = makeStyles({
 /**
  * 画面上部に 大抵いつも表示される AppBar. 戻るボタンと, ログインしているアカウントを確認できる
  */
-export const AppBar: React.VFC<Props> = (props) => {
+export const AppBar = (props: {
+  /** アプリの状態と操作 */
+  readonly appState: AppState;
+  /** 戻るボタンを隠すか */
+  readonly isHideBack: boolean;
+}): React.ReactElement => {
   const classes = useStyles();
   return (
     <MAppBar position="sticky">

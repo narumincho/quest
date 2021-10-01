@@ -3,9 +3,6 @@ import * as d from "../data";
 import * as indexedDb from "./indexedDb";
 import {
   ClassAndRole,
-  LoggedInState,
-  ProgramWithClassList,
-  QuestionListState,
   QuestionTreeListWithLoadingState,
   addCreatedClass,
   addCreatedOrEditedQuestion,
@@ -29,19 +26,10 @@ import {
   updateLoggedInState,
 } from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { QuestionTree } from "./state/question";
+import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
 import { useAccountMap } from "./state/account";
-
-export type {
-  QuestionTree,
-  LoggedInState,
-  ProgramWithClassList,
-  QuestionListState,
-  QuestionTreeListWithLoadingState,
-};
 
 export type AppState = {
   /** ログイン状態 */
@@ -194,59 +182,56 @@ export const useAppState = (): AppState => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const setLogInData = useCallback(
-    async (
-      accountTokenAndLocation: d.AccountTokenAndLocation
-    ): Promise<void> => {
-      indexedDb.setAccountToken(accountTokenAndLocation.accountToken);
-      setLogInState({
-        tag: "VerifyingAccountToken",
-        accountToken: accountTokenAndLocation.accountToken,
+  const setLogInData = async (
+    accountTokenAndLocation: d.AccountTokenAndLocation
+  ): Promise<void> => {
+    indexedDb.setAccountToken(accountTokenAndLocation.accountToken);
+    setLogInState({
+      tag: "VerifyingAccountToken",
+      accountToken: accountTokenAndLocation.accountToken,
+    });
+    history.replaceState(
+      undefined,
+      "",
+      commonUrl.locationToUrl(accountTokenAndLocation.location).toString()
+    );
+
+    const response = await api.getAccountData(
+      accountTokenAndLocation.accountToken
+    );
+    if (response._ === "Error") {
+      enqueueSnackbar(`ログインに失敗しました ${response.errorValue}`, {
+        variant: "error",
       });
-      history.replaceState(
-        undefined,
-        "",
-        commonUrl.locationToUrl(accountTokenAndLocation.location).toString()
-      );
+      setLogInState({ tag: "NoLogin" });
+      indexedDb.deleteAccountToken();
+      return;
+    }
+    setLogInState(
+      loggedIn(response.okValue, accountTokenAndLocation.accountToken)
+    );
+    setLocation(accountTokenAndLocation.location);
+    useAccountMapResult.set(response.okValue.account);
+  };
 
-      const response = await api.getAccountData(
-        accountTokenAndLocation.accountToken
-      );
-      if (response._ === "Error") {
-        enqueueSnackbar(`ログインに失敗しました ${response.errorValue}`, {
-          variant: "error",
-        });
-        setLogInState({ tag: "NoLogin" });
-        indexedDb.deleteAccountToken();
-        return;
-      }
-      setLogInState(
-        loggedIn(response.okValue, accountTokenAndLocation.accountToken)
-      );
-      setLocation(accountTokenAndLocation.location);
-      useAccountMapResult.set(response.okValue.account);
-    },
-    [enqueueSnackbar, useAccountMapResult]
-  );
-
-  const getAccountToken = useCallback((): d.AccountToken | undefined => {
+  const getAccountToken = (): d.AccountToken | undefined => {
     switch (logInState.tag) {
       case "LoggedIn":
         return logInState.loggedInState.accountToken;
     }
     return undefined;
-  }, [logInState]);
+  };
 
-  const jump = useCallback((newLocation: d.Location): void => {
+  const jump = (newLocation: d.Location): void => {
     window.history.pushState(
       undefined,
       "",
       commonUrl.locationToUrl(newLocation).toString()
     );
     setLocation(newLocation);
-  }, []);
+  };
 
-  const requestLogin = useCallback(() => {
+  const requestLogin = () => {
     setLogInState({ tag: "RequestingLogInUrl" });
     api.requestLineLoginUrl(location).then((response) => {
       if (response._ === "Error") {
@@ -261,160 +246,140 @@ export const useAppState = (): AppState => {
         window.location.href = response.okValue;
       });
     });
-  }, [enqueueSnackbar, location]);
+  };
 
-  const changeLocation = useCallback((newLocation: d.Location): void => {
+  const changeLocation = (newLocation: d.Location): void => {
     window.history.replaceState(
       undefined,
       "",
       commonUrl.locationToUrl(newLocation).toString()
     );
     setLocation(newLocation);
-  }, []);
+  };
 
-  const getCreatedClass = useCallback(
-    (qClassId: d.ClassId): d.AdminClass | undefined => {
-      if (logInState.tag !== "LoggedIn") {
-        return;
-      }
-      for (const program of logInState.loggedInState.createdProgramMap.values()) {
-        for (const classWithParticipantList of program.classList) {
-          if (classWithParticipantList.qClass.id === qClassId) {
-            return classWithParticipantList.qClass;
-          }
+  const getCreatedClass = (qClassId: d.ClassId): d.AdminClass | undefined => {
+    if (logInState.tag !== "LoggedIn") {
+      return;
+    }
+    for (const program of logInState.loggedInState.createdProgramMap.values()) {
+      for (const classWithParticipantList of program.classList) {
+        if (classWithParticipantList.qClass.id === qClassId) {
+          return classWithParticipantList.qClass;
         }
       }
-    },
-    [logInState]
-  );
+    }
+  };
 
-  const requestParticipantListInClass = useCallback(
-    (classId: d.ClassId): void => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(`クラスのの参加者の取得にはログインが必要です`, {
-          variant: "warning",
-        });
-        return;
-      }
-      api
-        .getClassParticipant({
-          accountToken,
-          classId,
-        })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(
-              `クラスの参加者取得中にエラーが発生しました ${response.errorValue}`,
-              {
-                variant: "warning",
-              }
-            );
-            return;
-          }
-          enqueueSnackbar("クラスの参加者取得に成功しました", {
-            variant: "success",
-          });
-          console.log("取得した", response.okValue);
-          setLogInState(
-            updateLoggedInState((beforeLogInState) =>
-              setClassParticipantList(
-                beforeLogInState,
-                classId,
-                response.okValue
-              )
-            )
+  const requestParticipantListInClass = (classId: d.ClassId): void => {
+    const accountToken = getAccountToken();
+    if (accountToken === undefined) {
+      enqueueSnackbar(`クラスのの参加者の取得にはログインが必要です`, {
+        variant: "warning",
+      });
+      return;
+    }
+    api
+      .getClassParticipant({
+        accountToken,
+        classId,
+      })
+      .then((response) => {
+        if (response._ === "Error") {
+          enqueueSnackbar(
+            `クラスの参加者取得中にエラーが発生しました ${response.errorValue}`,
+            {
+              variant: "warning",
+            }
           );
+          return;
+        }
+        enqueueSnackbar("クラスの参加者取得に成功しました", {
+          variant: "success",
         });
-    },
-    [enqueueSnackbar, getAccountToken]
-  );
+        console.log("取得した", response.okValue);
+        setLogInState(
+          updateLoggedInState((beforeLogInState) =>
+            setClassParticipantList(beforeLogInState, classId, response.okValue)
+          )
+        );
+      });
+  };
 
-  const getStudentQuestionTreeInClass = useCallback(
-    (classId: d.ClassId): void => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(`クラスの質問と回答状況の取得にはログインが必要です`, {
-          variant: "warning",
-        });
-        return;
-      }
-      api
-        .getStudentQuestionTreeInClass({
-          accountToken,
-          classId,
-        })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(
-              `クラスの質問と回答状況の取得にエラーが発生しました ${response.errorValue}`,
-              {
-                variant: "warning",
-              }
-            );
-            return;
-          }
-          enqueueSnackbar("クラスの質問と回答状況の取得に成功しました", {
-            variant: "success",
-          });
-          setLogInState(
-            updateLoggedInState((beforeLogInState) =>
-              setStudentQuestionTree(
-                beforeLogInState,
-                classId,
-                response.okValue
-              )
-            )
+  const getStudentQuestionTreeInClass = (classId: d.ClassId): void => {
+    const accountToken = getAccountToken();
+    if (accountToken === undefined) {
+      enqueueSnackbar(`クラスの質問と回答状況の取得にはログインが必要です`, {
+        variant: "warning",
+      });
+      return;
+    }
+    api
+      .getStudentQuestionTreeInClass({
+        accountToken,
+        classId,
+      })
+      .then((response) => {
+        if (response._ === "Error") {
+          enqueueSnackbar(
+            `クラスの質問と回答状況の取得にエラーが発生しました ${response.errorValue}`,
+            {
+              variant: "warning",
+            }
           );
+          return;
+        }
+        enqueueSnackbar("クラスの質問と回答状況の取得に成功しました", {
+          variant: "success",
         });
-    },
-    [enqueueSnackbar, getAccountToken]
-  );
+        setLogInState(
+          updateLoggedInState((beforeLogInState) =>
+            setStudentQuestionTree(beforeLogInState, classId, response.okValue)
+          )
+        );
+      });
+  };
 
-  const answerQuestion: AppState["answerQuestion"] = useCallback(
-    (parameter) => {
-      const accountToken = getAccountToken();
-      if (accountToken === undefined) {
-        enqueueSnackbar(`質問への回答にはログインが必要です`, {
-          variant: "warning",
-        });
-        return;
-      }
-      api
-        .answerQuestion({
-          accountToken,
-          answerText: parameter.answerText,
-          classId: parameter.classId,
-          isConfirm: parameter.isConfirm,
-          questionId: parameter.questionId,
-        })
-        .then((response) => {
-          if (response._ === "Error") {
-            enqueueSnackbar(
-              `質問への回答にエラーが発生しました ${response.errorValue}`,
-              {
-                variant: "warning",
-              }
-            );
-            return;
-          }
-          enqueueSnackbar("質問への回答に成功しました", {
-            variant: "success",
-          });
-          setLogInState(
-            updateLoggedInState((beforeLogInState) =>
-              setStudentQuestionTree(
-                beforeLogInState,
-                parameter.classId,
-                response.okValue
-              )
-            )
+  const answerQuestion: AppState["answerQuestion"] = (parameter) => {
+    const accountToken = getAccountToken();
+    if (accountToken === undefined) {
+      enqueueSnackbar(`質問への回答にはログインが必要です`, {
+        variant: "warning",
+      });
+      return;
+    }
+    api
+      .answerQuestion({
+        accountToken,
+        answerText: parameter.answerText,
+        classId: parameter.classId,
+        isConfirm: parameter.isConfirm,
+        questionId: parameter.questionId,
+      })
+      .then((response) => {
+        if (response._ === "Error") {
+          enqueueSnackbar(
+            `質問への回答にエラーが発生しました ${response.errorValue}`,
+            {
+              variant: "warning",
+            }
           );
-          setLocation(d.Location.Class(parameter.classId));
+          return;
+        }
+        enqueueSnackbar("質問への回答に成功しました", {
+          variant: "success",
         });
-    },
-    [enqueueSnackbar, getAccountToken]
-  );
+        setLogInState(
+          updateLoggedInState((beforeLogInState) =>
+            setStudentQuestionTree(
+              beforeLogInState,
+              parameter.classId,
+              response.okValue
+            )
+          )
+        );
+        setLocation(d.Location.Class(parameter.classId));
+      });
+  };
 
   return {
     logInState,

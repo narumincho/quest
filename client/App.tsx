@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../data";
-import { AppState, LoggedInState, useAppState } from "./state";
+import { AppState, useAppState } from "./state";
 import { Box, Breadcrumbs, Typography } from "@material-ui/core";
 import { AdminClassPage } from "./component/AdminClassPage";
 import { AdminStudentAnswerPage } from "./component/AdminStudentAnswerPage";
@@ -10,6 +10,7 @@ import { ClassNewPage } from "./component/ClassNewPage";
 import { Link } from "./component/Link";
 import { LoadingPage } from "./component/LoadingPage";
 import { LogInPage } from "./component/LogInPage";
+import { LoggedInState } from "./state/loggedInState";
 import { PageContainer } from "./component/PageContainer";
 import { ParticipantClassPage } from "./component/ParticipantClassPage";
 import { ProgramNewPage } from "./component/ProgramNewPage";
@@ -21,7 +22,7 @@ import { SettingPage } from "./component/SettingPage";
 import { StudentAnswerPage } from "./component/StudentAnswerPage";
 import { TopPage } from "./component/TopPage";
 
-export const App: React.VFC<Record<never, never>> = React.memo(() => {
+export const App = (): React.ReactElement => {
   const appState = useAppState();
 
   switch (appState.logInState.tag) {
@@ -39,7 +40,7 @@ export const App: React.VFC<Record<never, never>> = React.memo(() => {
     default:
       return <LoadingPage />;
   }
-});
+};
 App.displayName = "QuestApp";
 
 const LoggedIn = (props: {

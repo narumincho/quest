@@ -1,15 +1,16 @@
 import * as React from "react";
 import * as d from "../../data";
-import * as state from "../state";
+import * as q from "../state/question";
 import { Box, Typography, makeStyles } from "@material-ui/core";
+import { AppState } from "../state";
 import { ChevronRight } from "@material-ui/icons";
 import { Link } from "./Link";
 
-export const QuestionTreeList: React.VFC<{
-  questionTreeList: ReadonlyArray<state.QuestionTree>;
-  appState: state.AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+export const QuestionTreeList = (props: {
+  readonly questionTreeList: ReadonlyArray<q.QuestionTree>;
+  readonly appState: AppState;
+  readonly programId: d.ProgramId;
+}): React.ReactElement => {
   return (
     <Box>
       {props.questionTreeList.map((questionTree, index) => (
@@ -33,11 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const QuestionTree: React.VFC<{
-  questionTree: state.QuestionTree;
-  appState: state.AppState;
-  programId: d.ProgramId;
-}> = (props) => {
+export const QuestionTree = (props: {
+  readonly questionTree: q.QuestionTree;
+  readonly appState: AppState;
+  readonly programId: d.ProgramId;
+}): React.ReactElement => {
   const classes = useStyles();
   return (
     <Box className={classes.item}>

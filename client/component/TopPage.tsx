@@ -1,19 +1,23 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState, ProgramWithClassList } from "../state";
 import { Box, Button, Paper, Typography, makeStyles } from "@material-ui/core";
+import {
+  JoinedClass,
+  LoggedInState,
+  ProgramWithClassList,
+} from "../state/loggedInState";
 import { Add } from "@material-ui/icons";
-import { JoinedClass } from "../state/loggedInState";
+import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 
 export type Props = {
-  appState: AppState;
-  loggedInState: LoggedInState;
+  readonly appState: AppState;
+  readonly loggedInState: LoggedInState;
 };
 
-export const TopPage: React.VFC<Props> = (props) => {
+export const TopPage = (props: Props): React.ReactElement => {
   return (
     <PageContainer isHideBack appState={props.appState}>
       <Box padding={1}>
@@ -49,10 +53,10 @@ const useCreatedProgramListStyles = makeStyles({
   },
 });
 
-export const CreatedProgramList: React.VFC<{
+export const CreatedProgramList = (props: {
   readonly appState: AppState;
   readonly createdProgramList: ReadonlyMap<d.ProgramId, ProgramWithClassList>;
-}> = (props) => {
+}): React.ReactElement => {
   const classes = useCreatedProgramListStyles();
   if (props.createdProgramList.size === 0) {
     return (

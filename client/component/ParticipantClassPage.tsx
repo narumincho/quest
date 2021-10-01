@@ -4,15 +4,13 @@ import { GuestClassPage } from "./GuestClassPage";
 import { JoinedClass } from "../state/loggedInState";
 import { StudentClassPage } from "./StudentClassPage";
 
-export type Props = {
-  readonly appState: AppState;
-  readonly joinedClass: JoinedClass;
-};
-
 /**
  * クラス参加者の詳細ページ
  */
-export const ParticipantClassPage: React.VFC<Props> = (props) => {
+export const ParticipantClassPage = (props: {
+  readonly appState: AppState;
+  readonly joinedClass: JoinedClass;
+}): React.ReactElement => {
   if (props.joinedClass.class.role === "Guest") {
     return (
       <GuestClassPage

@@ -1,19 +1,17 @@
 import * as d from "../data";
 import {
-  AppState,
+  ClassAndRole,
+  ClassWithParticipantList,
   LoggedInState,
   ProgramWithClassList,
   QuestionTreeListWithLoadingState,
-} from "../client/state";
-import {
-  ClassAndRole,
-  ClassWithParticipantList,
 } from "../client/state/loggedInState";
 import {
   getParentQuestionList,
   getQuestionTree,
   questionChildren,
 } from "../client/state/question";
+import { AppState } from "../client/state";
 import { action } from "@storybook/addon-actions";
 
 export const mockAppState: AppState = {

@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as d from "../../data";
-import { AppState, LoggedInState } from "../state";
 import {
   Box,
   Breadcrumbs,
@@ -14,7 +13,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Publish, Save } from "@material-ui/icons";
+import { AppState } from "../state";
 import { Link } from "./Link";
+import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { stringToValidAnswerText } from "../../common/validation";
 import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestionTree";

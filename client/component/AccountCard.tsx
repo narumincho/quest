@@ -4,11 +4,6 @@ import * as d from "../../data";
 import { Avatar, Box, Paper, Typography, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
 
-export type Props = {
-  readonly accountId: d.AccountId;
-  readonly appState: AppState;
-};
-
 const useStyles = makeStyles({
   card: {
     display: "grid",
@@ -18,7 +13,10 @@ const useStyles = makeStyles({
   },
 });
 
-export const AccountCard: React.VFC<Props> = (props) => {
+export const AccountCard = (props: {
+  readonly accountId: d.AccountId;
+  readonly appState: AppState;
+}): React.ReactElement => {
   const classes = useStyles();
   const account = props.appState.account(props.accountId);
   if (account === undefined) {
