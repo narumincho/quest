@@ -299,13 +299,7 @@ const PageLoadedOtherStudentView = (props: {
         <Typography variant="h4">{props.question.questionText}</Typography>
       </Box>
       {props.question.answer._ === "Some" ? (
-        <Box padding={1}>
-          <Typography variant="h5">
-            保存した回答
-            {props.question.answer.value.isConfirm ? " (確定済み)" : ""}
-          </Typography>
-          {props.question.answer.value.text}
-        </Box>
+        <Box padding={1}>[調整中...]</Box>
       ) : (
         <></>
       )}

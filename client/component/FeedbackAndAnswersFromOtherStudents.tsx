@@ -135,7 +135,9 @@ const FeedbackListWithInput = (props: {
       />
       <Button
         fullWidth
-        onClick={() => props.onSubmitFeedback(feedbackEditText)}
+        onClick={(): void => {
+          props.onSubmitFeedback(feedbackEditText);
+        }}
         size="large"
         disabled={isNotEmpty}
         variant="contained"
