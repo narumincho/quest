@@ -128,7 +128,7 @@ export type AppState = {
     readonly questionId: d.QuestionId;
     readonly accountToken: d.AccountToken;
   }) => Promise<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>;
-  /** フィードバックを取得する */
+  /** コメントを取得する */
   readonly requestFeedback: (
     option: d.GetFeedbackParameter
   ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
@@ -751,7 +751,7 @@ export const useAppState = (): AppState => {
     requestFeedback: async (parameter) => {
       const response = await api.getFeedback(parameter);
       if (response._ === "Error") {
-        enqueueSnackbar(`フィードバックの取得に失敗しました`, {
+        enqueueSnackbar(`コメントの取得に失敗しました`, {
           variant: "error",
         });
         return undefined;
@@ -761,7 +761,7 @@ export const useAppState = (): AppState => {
     addFeedback: async (parameter) => {
       const response = await api.addFeedback(parameter);
       if (response._ === "Error") {
-        enqueueSnackbar(`フィードバックの送信に失敗しました`, {
+        enqueueSnackbar(`コメントの送信に失敗しました`, {
           variant: "error",
         });
         return undefined;

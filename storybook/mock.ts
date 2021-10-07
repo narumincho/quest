@@ -105,7 +105,7 @@ export const mockAppState: AppState = {
     return Promise.resolve<ReadonlyArray<d.Feedback>>([
       {
         accountId: mockAccount3.id,
-        message: "サンプルフィードバック",
+        message: "サンプルコメント",
         createDateTime: { day: 0, millisecond: 0 },
       },
       {
@@ -126,7 +126,7 @@ export const mockAppState: AppState = {
     return Promise.resolve<ReadonlyArray<d.Feedback>>([
       {
         accountId: mockAccount3.id,
-        message: "フィードバックが追加されたあとのフィードバック",
+        message: "コメントが追加されたあとのコメント",
         createDateTime: { day: 0, millisecond: 0 },
       },
     ]);
