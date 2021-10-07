@@ -6,7 +6,7 @@ import * as jimp from "jimp";
 import * as jsonWebToken from "jsonwebtoken";
 import * as validation from "../common/validation";
 import { QuestionTree, getQuestionTree } from "../client/state/question";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { imagePng } from "./mimeType";
 import { lineLoginCallbackUrl } from "../common/url";
 
@@ -481,7 +481,10 @@ const createRandomId = (): string => {
 const getLineProfile = async (
   code: string
 ): Promise<{ name: string; id: string; imageUrl: URL }> => {
-  const response = await axios.post<{ [key in string]: unknown }>(
+  const response = await axios.post<
+    URLSearchParams,
+    AxiosResponse<{ [key in string]: unknown }>
+  >(
     "https://api.line.me/oauth2/v2.1/token",
     new URLSearchParams([
       ["grant_type", "authorization_code"],
