@@ -358,16 +358,14 @@ export const apiFunc: {
       parameter.classId
     );
     if (!isStudentOrClassCreator) {
-      throw new Error("生徒か管理者以外はフィードバックに追加できません");
+      throw new Error("生徒か管理者以外はコメントに追加できません");
     }
     const answerStudentIsValidStudent = await firebaseInterface.isStudent(
       parameter.answerStudentId,
       parameter.classId
     );
     if (!answerStudentIsValidStudent) {
-      throw new Error(
-        "クラスに属していない生徒に対してフィードバックはできない"
-      );
+      throw new Error("クラスに属していない生徒に対してコメントはできない");
     }
     await firebaseInterface.addFeedback({
       feedbackId: d.FeedbackId.fromString(createRandomId()),
@@ -390,7 +388,7 @@ export const apiFunc: {
       parameter.classId
     );
     if (!isStudentOrClassCreator) {
-      throw new Error("生徒か管理者以外はフィードバックを取得できません");
+      throw new Error("生徒か管理者以外はコメントを取得できません");
     }
     return firebaseInterface.getFeedbackInAnswer({
       accountId: parameter.answerStudentId,

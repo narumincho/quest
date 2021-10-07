@@ -166,7 +166,7 @@ export const getAnswersFromOtherStudents: ApiCodec<
 };
 
 /**
- * フィードバックを送信する
+ * コメントを送信する
  */
 export const addFeedback: ApiCodec<
   d.AddFeedbackParameter,
@@ -177,7 +177,7 @@ export const addFeedback: ApiCodec<
 };
 
 /**
- * フィードバックを取得する
+ * コメントを取得する
  */
 export const getFeedback: ApiCodec<
   d.GetFeedbackParameter,

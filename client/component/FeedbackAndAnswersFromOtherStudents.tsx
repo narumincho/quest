@@ -82,7 +82,7 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
           }}
           variant="fullWidth"
         >
-          <Tab label="受け取ったフィードバック" />
+          <Tab label="受け取ったコメント" />
           <Tab label="他の人の回答" />
         </Tabs>
       </Box>
@@ -128,7 +128,7 @@ const FeedbackListWithInput = (props: {
         multiline
         required
         fullWidth
-        label="この回答に対するフィードバック"
+        label="この回答に対するコメント"
         value={feedbackEditText}
         onChange={onChange}
         variant="outlined"
@@ -173,10 +173,10 @@ const FeedbackList = (props: {
 }): React.ReactElement => {
   const classes = useStyles();
   if (props.feedbackList === undefined) {
-    return <div>フィードバック取得中...</div>;
+    return <div>コメント取得中...</div>;
   }
   if (props.feedbackList.length === 0) {
-    return <div>フィードバックはまだありません</div>;
+    return <div>コメントはまだありません</div>;
   }
   const participantList: ReadonlyArray<d.Participant> =
     props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
