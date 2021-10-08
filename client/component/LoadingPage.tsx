@@ -1,20 +1,17 @@
 import * as React from "react";
-import { Box, CircularProgress, makeStyles } from "@material-ui/core";
-
-const useStyles = makeStyles({
-  loadingIcon: {
-    width: "100%",
-    height: "100vh",
-    display: "grid",
-    justifyContent: "center",
-    alignContent: "center",
-  },
-});
+import { Box, CircularProgress } from "@mui/material";
 
 export const LoadingPage = (): React.ReactElement => {
-  const classes = useStyles();
   return (
-    <Box className={classes.loadingIcon}>
+    <Box
+      sx={{
+        width: "100%",
+        height: "100vh",
+        display: "grid",
+        justifyContent: "center",
+        alignContent: "center",
+      }}
+    >
       <CircularProgress />
     </Box>
   );

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Breadcrumbs, Button, Paper, makeStyles } from "@material-ui/core";
+import { Box, Breadcrumbs, Button, Paper } from "@mui/material";
 import { AppState } from "../state";
 import { JoinedClass } from "../state/loggedInState";
 import { Link } from "./Link";
@@ -71,15 +71,6 @@ export const ClassInvitationPage = (props: {
   );
 };
 
-const useStyles = makeStyles({
-  card: {
-    display: "grid",
-    alignItems: "center",
-    gridAutoFlow: "column",
-    padding: 16,
-  },
-});
-
 const MessageOrButton = (props: {
   readonly classNameAndClassId: ClassNameAndClassId | undefined;
   readonly joinedClassData: JoinedClass | undefined;
@@ -87,8 +78,6 @@ const MessageOrButton = (props: {
   readonly requestJoin: () => void;
   readonly appState: AppState;
 }): React.ReactElement => {
-  const classes = useStyles();
-
   if (props.classNameAndClassId === undefined) {
     return <Box> 確認中……</Box>;
   }
@@ -101,7 +90,14 @@ const MessageOrButton = (props: {
             location={d.Location.Class(props.joinedClassData.class.id)}
             appState={props.appState}
           >
-            <Paper className={classes.card}>
+            <Paper
+              sx={{
+                display: "grid",
+                alignItems: "center",
+                gridAutoFlow: "column",
+                padding: 2,
+              }}
+            >
               {props.joinedClassData.class.name} のページ
             </Paper>
           </Link>

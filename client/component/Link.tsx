@@ -1,35 +1,25 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Link as MuiLink, StyleRules, makeStyles } from "@material-ui/core";
 import { AppState } from "../state";
+import { Link as MuiLink } from "@mui/material";
 import { locationToUrl } from "../../common/url";
-
-const useStyles = makeStyles((theme): StyleRules<"link"> => {
-  if (theme.palette.type === "dark") {
-    return {
-      link: {
-        color: "#99e1ff",
-      },
-    };
-  }
-
-  return {
-    link: {},
-  };
-});
 
 export const Link: React.FC<{
   readonly appState: AppState;
   readonly location: d.Location;
 }> = (props) => {
-  const classes = useStyles();
   return (
     <MuiLink
+      sx={{
+        color: (theme) => {
+          console.log("link color", theme);
+          return theme.palette.mode === "dark" ? "#99e1ff" : undefined;
+        },
+      }}
       href={locationToUrl(props.location).toString()}
       onClick={(mouseEvent: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
         onClick(mouseEvent, () => props.appState.jump(props.location))
       }
-      className={classes.link}
     >
       {props.children}
     </MuiLink>
@@ -39,7 +29,7 @@ export const Link: React.FC<{
 const onClick = (
   mouseEvent: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   handler: () => void
-) => {
+): void => {
   /*
    * リンクを
    * Ctrlなどを押しながらクリックか,

@@ -15,10 +15,9 @@ import {
   ListItemText,
   TextField,
   Typography,
-  makeStyles,
-} from "@material-ui/core";
+} from "@mui/material";
 import { AppState } from "../state";
-import { Close } from "@material-ui/icons";
+import { Close } from "@mui/icons-material";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
@@ -66,21 +65,12 @@ export const QuestionEditPage = (props: {
 
 type EditState = "none" | "selectParent" | "requesting";
 
-const useStyles = makeStyles({
-  dialogTitle: {
-    display: "grid",
-    gridTemplateColumns: "1fr auto",
-    alignItems: "center",
-  },
-});
-
 const EditQuestionLoaded = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
   readonly question: d.Question;
   readonly programId: d.ProgramId;
 }): React.ReactElement => {
-  const classes = useStyles();
   const [text, setText] = React.useState<string>(props.question.name);
   const [parentQuestionId, setParentQuestionId] = React.useState<
     d.Option<d.QuestionId>
@@ -205,7 +195,13 @@ const EditQuestionLoaded = (props: {
         scroll="paper"
       >
         <DialogTitle>
-          <Box className={classes.dialogTitle}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              alignItems: "center",
+            }}
+          >
             親の質問を選択
             <IconButton
               edge="start"

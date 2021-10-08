@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Breadcrumbs, Button, Typography } from "@material-ui/core";
+import { Box, Breadcrumbs, Button, Typography } from "@mui/material";
 import {
   ClassWithParticipantList,
   LoggedInState,
@@ -9,6 +9,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { ParticipantList } from "./ParticipantList";
+import { Share } from "@mui/icons-material";
 
 /**
  * クラス作成者向けのクラス詳細ページ
@@ -90,6 +91,7 @@ export const AdminClassPage = (props: {
                 props.classWithParticipantList.qClass.id
               );
             }}
+            startIcon={<Share />}
           >
             招待URLをシェアする
           </Button>

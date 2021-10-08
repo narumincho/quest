@@ -9,24 +9,16 @@ import {
   DialogTitle,
   TextField,
   Typography,
-  makeStyles,
-} from "@material-ui/core";
-import { Add } from "@material-ui/icons";
+} from "@mui/material";
+import { Add } from "@mui/icons-material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { stringToValidProgramName } from "../../common/validation";
 
-const useStyles = makeStyles({
-  createButton: {
-    textTransform: "none",
-  },
-});
-
 export const ProgramNewPage = (props: {
   readonly appState: AppState;
 }): React.ReactElement => {
-  const classes = useStyles();
   const [projectName, setProjectName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
@@ -88,7 +80,7 @@ export const ProgramNewPage = (props: {
             disabled={!isFirst && projectNameResult._ === "Error"}
             variant="contained"
             color="primary"
-            className={classes.createButton}
+            sx={{ textTransform: "none" }}
             startIcon={<Add />}
             data-cy="create"
           >

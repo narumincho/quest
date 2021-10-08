@@ -9,7 +9,7 @@ import {
   DialogTitle,
   TextField,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";

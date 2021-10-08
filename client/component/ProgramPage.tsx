@@ -1,18 +1,12 @@
 import * as React from "react";
 import * as d from "../../data";
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
+import { Box, Breadcrumbs, Button, Typography } from "@mui/material";
 import {
   LoggedInState,
   QuestionTreeListWithLoadingState,
 } from "../state/loggedInState";
 import { AccountCard } from "./AccountCard";
-import { Add } from "@material-ui/icons";
+import { Add } from "@mui/icons-material";
 import { AppState } from "../state";
 import { ClassCard } from "./ClassCard";
 import { Link } from "./Link";
@@ -171,20 +165,11 @@ export const QuestionList = (props: {
   );
 };
 
-const useStyle = makeStyles({
-  list: {
-    padding: 8,
-    display: "grid",
-    gap: 8,
-  },
-});
-
 const ClassList = (props: {
   readonly classList: ReadonlyArray<d.AdminClass>;
   readonly a: AppState;
   readonly programId: d.ProgramId;
 }): React.ReactElement => {
-  const classes = useStyle();
   if (props.classList.length === 0) {
     return (
       <Box padding={1}>
@@ -193,7 +178,13 @@ const ClassList = (props: {
     );
   }
   return (
-    <Box className={classes.list}>
+    <Box
+      sx={{
+        padding: 1,
+        display: "grid",
+        gap: 1,
+      }}
+    >
       {props.classList.map((qClass) => (
         <ClassCard appState={props.a} class={qClass} key={qClass.id} />
       ))}

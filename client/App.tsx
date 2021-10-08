@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d from "../data";
 import { AppState, useAppState } from "./state";
-import { Box, Breadcrumbs, Typography } from "@material-ui/core";
+import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { AdminClassPage } from "./component/AdminClassPage";
 import { AdminStudentAnswerPage } from "./component/AdminStudentAnswerPage";
 import { AdminStudentPage } from "./component/AdminStudentPage";

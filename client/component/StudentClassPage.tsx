@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Breadcrumbs, Typography } from "@material-ui/core";
+import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";

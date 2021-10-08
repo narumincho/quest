@@ -7,17 +7,10 @@ import {
   AppBar as MAppBar,
   Toolbar,
   Typography,
-  makeStyles,
-} from "@material-ui/core";
+} from "@mui/material";
 import { AppState } from "../state";
-import { ArrowBack } from "@material-ui/icons";
+import { ArrowBack } from "@mui/icons-material";
 import { Link } from "./Link";
-
-const useStyles = makeStyles({
-  title: {
-    flexGrow: 1,
-  },
-});
 
 /**
  * 画面上部に 大抵いつも表示される AppBar. 戻るボタンと, ログインしているアカウントを確認できる
@@ -28,9 +21,8 @@ export const AppBar = (props: {
   /** 戻るボタンを隠すか */
   readonly isHideBack: boolean;
 }): React.ReactElement => {
-  const classes = useStyles();
   return (
-    <MAppBar position="sticky">
+    <MAppBar enableColorOnDark position="sticky">
       <Toolbar>
         {props.isHideBack ? (
           <></>
@@ -39,7 +31,7 @@ export const AppBar = (props: {
             <ArrowBack />
           </IconButton>
         )}
-        <Typography variant="h6" className={classes.title}>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
           クエスト
         </Typography>
         {props.appState.logInState.tag === "LoggedIn" ? (
