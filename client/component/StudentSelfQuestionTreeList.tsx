@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Typography, makeStyles } from "@material-ui/core";
-import { ChevronRight, Done, Edit } from "@material-ui/icons";
+import { Box, Typography } from "@mui/material";
+import { ChevronRight, Done, Edit } from "@mui/icons-material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
@@ -30,25 +30,18 @@ export const StudentSelfQuestionTreeList = (props: {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  item: {
-    borderLeft: `solid 1px ${theme.palette.divider}`,
-  },
-  label: {
-    display: "flex",
-    gap: 8,
-  },
-}));
-
 export const StudentSelfQuestionTree = (props: {
   readonly tree: d.StudentSelfQuestionTree;
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
-  const classes = useStyles();
   return (
-    <Box className={classes.item}>
+    <Box
+      sx={{
+        borderLeft: (theme) => `solid 1px ${theme.palette.divider}`,
+      }}
+    >
       <Link
         appState={props.appState}
         location={d.Location.StudentAnswer({
@@ -57,7 +50,12 @@ export const StudentSelfQuestionTree = (props: {
           answerStudentId: props.loggedInState.account.id,
         })}
       >
-        <Box className={classes.label}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+          }}
+        >
           <Icon answer={props.tree.answer} />
           <Typography>{props.tree.questionText}</Typography>
         </Box>

@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Button, Paper, Typography, makeStyles } from "@material-ui/core";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import {
   JoinedClass,
   LoggedInState,
   ProgramWithClassList,
 } from "../state/loggedInState";
-import { Add } from "@material-ui/icons";
+import { Add } from "@mui/icons-material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
@@ -45,19 +45,10 @@ export const TopPage = (props: Props): React.ReactElement => {
   );
 };
 
-const useCreatedProgramListStyles = makeStyles({
-  container: {
-    display: "grid",
-    gap: 8,
-    padding: 8,
-  },
-});
-
 export const CreatedProgramList = (props: {
   readonly appState: AppState;
   readonly createdProgramList: ReadonlyMap<d.ProgramId, ProgramWithClassList>;
 }): React.ReactElement => {
-  const classes = useCreatedProgramListStyles();
   if (props.createdProgramList.size === 0) {
     return (
       <Box padding={1} paddingTop={4}>
@@ -66,7 +57,7 @@ export const CreatedProgramList = (props: {
     );
   }
   return (
-    <Box className={classes.container}>
+    <Box sx={{ display: "grid", gap: 1, padding: 1 }}>
       {[...props.createdProgramList].map(([programId]) => (
         <ProgramCard
           key={programId}
@@ -79,19 +70,10 @@ export const CreatedProgramList = (props: {
   );
 };
 
-const useJoinedClassListStyles = makeStyles({
-  container: {
-    display: "grid",
-    gap: 8,
-    padding: 8,
-  },
-});
-
 const JoinedClassList = (props: {
   readonly appState: AppState;
   readonly joinedClassList: ReadonlyArray<JoinedClass>;
 }): React.ReactElement => {
-  const classes = useJoinedClassListStyles();
   if (props.joinedClassList.length === 0) {
     return (
       <Box padding={1} paddingTop={4}>
@@ -100,7 +82,7 @@ const JoinedClassList = (props: {
     );
   }
   return (
-    <Box className={classes.container}>
+    <Box sx={{ display: "grid", gap: 1, padding: 1 }}>
       {props.joinedClassList.map((classAndRole) => (
         <ClassStudentOrGuestCard
           key={classAndRole.class.id}
@@ -112,26 +94,23 @@ const JoinedClassList = (props: {
   );
 };
 
-const useClassStudentOrGuestCardStyles = makeStyles({
-  card: {
-    display: "grid",
-    alignItems: "center",
-    gridAutoFlow: "column",
-    padding: 16,
-  },
-});
-
 const ClassStudentOrGuestCard = (props: {
   readonly participantClass: d.ParticipantClass;
   readonly appState: AppState;
 }): React.ReactElement => {
-  const classes = useClassStudentOrGuestCardStyles();
   return (
     <Link
       appState={props.appState}
       location={d.Location.Class(props.participantClass.id)}
     >
-      <Paper className={classes.card}>
+      <Paper
+        sx={{
+          display: "grid",
+          alignItems: "center",
+          gridAutoFlow: "column",
+          padding: 2,
+        }}
+      >
         <Typography>
           {props.participantClass.name}
           {props.participantClass.role === "Guest" ? "(ゲスト)" : "(生徒)"}

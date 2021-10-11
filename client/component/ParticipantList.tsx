@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Avatar, Box, Typography, makeStyles } from "@material-ui/core";
+import { Avatar, Box, Typography } from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { imageUrl } from "../../common/url";
@@ -47,21 +47,18 @@ export const ParticipantList = (props: {
   );
 };
 
-const useParticipantListStyles = makeStyles({
-  item: {
-    display: "flex",
-    alignItems: "center",
-    padding: 8,
-    gap: 8,
-  },
-});
-
 const ParticipantItem = (props: {
   readonly participant: d.Participant;
 }): React.ReactElement => {
-  const classes = useParticipantListStyles();
   return (
-    <Box className={classes.item}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        padding: 1,
+        gap: 1,
+      }}
+    >
       <Avatar
         alt={props.participant.account.name}
         src={imageUrl(props.participant.account.iconHash).toString()}

@@ -1,15 +1,10 @@
 import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
-import {
-  Avatar,
-  Box,
-  Breadcrumbs,
-  Button,
-  Typography,
-} from "@material-ui/core";
+import { Avatar, Box, Breadcrumbs, Button, Typography } from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { Logout } from "@mui/icons-material";
 import { PageContainer } from "./PageContainer";
 
 export const SettingPage = (props: {
@@ -44,7 +39,12 @@ export const SettingPage = (props: {
           {props.account.name}
         </Box>
         <Box padding={1}>
-          <Button fullWidth variant="contained" onClick={props.appState.logout}>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={props.appState.logout}
+            startIcon={<Logout />}
+          >
             ログアウトする
           </Button>
         </Box>

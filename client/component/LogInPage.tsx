@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Box, Button, Typography } from "@material-ui/core";
+import { Box, Button, Typography } from "@mui/material";
 import { AppState } from "../state";
 import { LineLoginButton } from "./LineLoginButton";
 import { PageContainer } from "./PageContainer";

@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as d from "../../data";
 import * as q from "../state/question";
-import { Box, Typography, makeStyles } from "@material-ui/core";
+import { Box, Typography } from "@mui/material";
 import { AppState } from "../state";
-import { ChevronRight } from "@material-ui/icons";
+import { ChevronRight } from "@mui/icons-material";
 import { Link } from "./Link";
 
 export const QuestionTreeList = (props: {
@@ -25,23 +25,17 @@ export const QuestionTreeList = (props: {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  item: {
-    borderLeft: `solid 1px ${theme.palette.divider}`,
-  },
-  label: {
-    display: "flex",
-  },
-}));
-
 export const QuestionTree = (props: {
   readonly questionTree: q.QuestionTree;
   readonly appState: AppState;
   readonly programId: d.ProgramId;
 }): React.ReactElement => {
-  const classes = useStyles();
   return (
-    <Box className={classes.item}>
+    <Box
+      sx={{
+        borderLeft: (theme) => `solid 1px ${theme.palette.divider}`,
+      }}
+    >
       <Link
         appState={props.appState}
         location={d.Location.AdminQuestion({
@@ -49,7 +43,7 @@ export const QuestionTree = (props: {
           programId: props.programId,
         })}
       >
-        <Box className={classes.label}>
+        <Box sx={{ display: "flex" }}>
           <ChevronRight />
           <Typography>{props.questionTree.text}</Typography>
         </Box>

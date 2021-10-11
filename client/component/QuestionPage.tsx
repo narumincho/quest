@@ -1,33 +1,13 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Add, Edit } from "@material-ui/icons";
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Fab,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
+import { Add, Edit } from "@mui/icons-material";
+import { Box, Breadcrumbs, Button, Fab, Typography } from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
-
-const useStyle = makeStyles({
-  childCardList: {
-    padding: 8,
-    display: "grid",
-    gap: 8,
-  },
-  fab: {
-    position: "fixed",
-    bottom: 16,
-    right: 16,
-  },
-});
 
 export const QuestionPage = (props: {
   readonly appState: AppState;
@@ -45,7 +25,6 @@ export const QuestionPage = (props: {
 
   const question = props.appState.question(props.questionId);
   const children = props.appState.questionChildren(props.questionId);
-  const classes = useStyle();
 
   if (question === undefined) {
     return (
@@ -102,7 +81,13 @@ export const QuestionPage = (props: {
         <Box padding={1}>
           <Typography variant="h5">{question.name}</Typography>
         </Box>
-        <Box className={classes.childCardList}>
+        <Box
+          sx={{
+            padding: 1,
+            display: "grid",
+            gap: 1,
+          }}
+        >
           子:
           {children.map((child) => (
             <QuestionCard
@@ -150,7 +135,11 @@ export const QuestionPage = (props: {
           color="primary"
           variant="extended"
           aria-label="add"
-          className={classes.fab}
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+          }}
         >
           <Edit />
           質問を編集する

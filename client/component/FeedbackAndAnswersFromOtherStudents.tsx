@@ -8,12 +8,11 @@ import {
   Tab,
   Tabs,
   TextField,
-  makeStyles,
-} from "@material-ui/core";
+} from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
-import { Send } from "@material-ui/icons";
+import { Send } from "@mui/icons-material";
 import { imageUrl } from "../../common/url";
 
 export const FeedbackAndAnswersFromOtherStudents = (props: {
@@ -155,23 +154,11 @@ const FeedbackListWithInput = (props: {
   );
 };
 
-const useStyles = makeStyles({
-  list: {
-    display: "grid",
-    gap: 8,
-    padding: 8,
-  },
-  item: {
-    padding: 8,
-  },
-});
-
 const FeedbackList = (props: {
   readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
   readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
 }): React.ReactElement => {
-  const classes = useStyles();
   if (props.feedbackList === undefined) {
     return <div>コメント取得中...</div>;
   }
@@ -182,13 +169,19 @@ const FeedbackList = (props: {
     props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
     [];
   return (
-    <Box className={classes.list}>
+    <Box
+      sx={{
+        display: "grid",
+        gap: 1,
+        padding: 1,
+      }}
+    >
       {props.feedbackList.map((feedback, index) => {
         const account: d.Account | undefined = participantList.find(
           (participant) => participant.account.id === feedback.accountId
         )?.account;
         return (
-          <Paper key={index} className={classes.item}>
+          <Paper key={index} sx={{ padding: 1 }}>
             {account === undefined ? (
               <></>
             ) : (
@@ -218,7 +211,6 @@ const AnswerList = (props: {
   readonly loggedInState: LoggedInState;
   readonly extractStudentId: d.AccountId;
 }): React.ReactElement => {
-  const classes = useStyles();
   if (props.answersFromOtherStudents === undefined) {
     return <div>他の人の回答取得中...</div>;
   }
@@ -232,7 +224,13 @@ const AnswerList = (props: {
     props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
     [];
   return (
-    <Box className={classes.list}>
+    <Box
+      sx={{
+        display: "grid",
+        gap: 1,
+        padding: 1,
+      }}
+    >
       {filteredList.map((answer) => {
         const account: d.Account | undefined = participantList.find(
           (participant) => participant.account.id === answer.studentId
@@ -247,7 +245,7 @@ const AnswerList = (props: {
             })}
             appState={props.appState}
           >
-            <Paper className={classes.item}>
+            <Paper sx={{ padding: 1 }}>
               {account === undefined ? (
                 <></>
               ) : (

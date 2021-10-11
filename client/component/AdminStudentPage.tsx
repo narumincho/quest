@@ -1,12 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import {
-  Avatar,
-  Box,
-  Breadcrumbs,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
+import { Avatar, Box, Breadcrumbs, Typography } from "@mui/material";
 import {
   LoggedInState,
   QuestionTree,
@@ -16,7 +10,7 @@ import {
   getStudentConfirmedAnswer,
 } from "../state/loggedInState";
 import { AppState } from "../state";
-import { ChevronRight } from "@material-ui/icons";
+import { ChevronRight } from "@mui/icons-material";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
 import { imageUrl } from "../../common/url";
@@ -183,15 +177,6 @@ const QuestionTreeList = (props: {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  item: {
-    borderLeft: `solid 1px ${theme.palette.divider}`,
-  },
-  label: {
-    display: "flex",
-  },
-}));
-
 export const QuestionTreeLoaded = (props: {
   readonly questionTree: QuestionTree;
   readonly appState: AppState;
@@ -199,7 +184,6 @@ export const QuestionTreeLoaded = (props: {
   readonly classId: d.ClassId;
   readonly studentAccountId: d.AccountId;
 }): React.ReactElement => {
-  const classes = useStyles();
   const confirmedAnswer = getStudentConfirmedAnswer(
     props.loggedInState,
     props.classId,
@@ -207,9 +191,13 @@ export const QuestionTreeLoaded = (props: {
     props.questionTree.id
   );
   return (
-    <Box className={classes.item}>
+    <Box
+      sx={{
+        borderLeft: (theme) => `solid 1px ${theme.palette.divider}`,
+      }}
+    >
       {confirmedAnswer === undefined ? (
-        <Box className={classes.label}>
+        <Box sx={{ display: "flex" }}>
           <ChevronRight />
           <Typography>{props.questionTree.text}</Typography>
         </Box>
@@ -222,7 +210,7 @@ export const QuestionTreeLoaded = (props: {
             classId: props.classId,
           })}
         >
-          <Box className={classes.label}>
+          <Box sx={{ display: "flex" }}>
             <ChevronRight />
             <Typography>{props.questionTree.text}</Typography>
           </Box>

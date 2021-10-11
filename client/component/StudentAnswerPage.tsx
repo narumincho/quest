@@ -9,8 +9,8 @@ import {
   DialogTitle,
   TextField,
   Typography,
-} from "@material-ui/core";
-import { Publish, Save } from "@material-ui/icons";
+} from "@mui/material";
+import { Publish, Save } from "@mui/icons-material";
 import { AppState } from "../state";
 import { FeedbackAndAnswersFromOtherStudents } from "./FeedbackAndAnswersFromOtherStudents";
 import { Link } from "./Link";

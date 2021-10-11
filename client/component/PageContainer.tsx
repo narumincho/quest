@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AppBar } from "./AppBar";
 import { AppState } from "../state";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 
 /**
  * `AppBar` を内包した, ページのコンテナーコンポーネント
