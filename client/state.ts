@@ -29,15 +29,12 @@ import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
-import { useAccountMap } from "./state/account";
 
 export type AppState = {
   /** ログイン状態 */
   readonly logInState: LogInState;
   /** 現在のページの場所 */
   readonly location: d.Location;
-  /** アカウントの情報を得る */
-  readonly account: (id: d.AccountId) => d.Account | undefined;
   /** 質問を取得する */
   readonly question: (id: d.QuestionId) => d.Question | undefined;
   /** 質問を作成中かどうか */
@@ -141,7 +138,6 @@ export const useAppState = (): AppState => {
   const { enqueueSnackbar } = useSnackbar();
   const [logInState, setLogInState] = useState<LogInState>({ tag: "Loading" });
   const [location, setLocation] = useState<d.Location>(d.Location.Top);
-  const useAccountMapResult = useAccountMap();
   const [isCreatingQuestion, setIsCreatingQuestion] = useState<boolean>(false);
 
   useEffect(() => {
@@ -218,7 +214,6 @@ export const useAppState = (): AppState => {
       loggedIn(response.okValue, accountTokenAndLocation.accountToken)
     );
     setLocation(accountTokenAndLocation.location);
-    useAccountMapResult.set(response.okValue.account);
   };
 
   const getAccountToken = (): d.AccountToken | undefined => {
@@ -402,7 +397,6 @@ export const useAppState = (): AppState => {
         variant: "success",
       });
       indexedDb.deleteAccountToken();
-      useAccountMapResult.deleteAll();
       setLogInState({ tag: "NoLogin" });
     },
     location,
@@ -489,7 +483,6 @@ export const useAppState = (): AppState => {
           changeLocation(d.Location.Class(response.okValue.id));
         });
     },
-    account: useAccountMapResult.getById,
     requestGetQuestionListInProgram: (programId) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {

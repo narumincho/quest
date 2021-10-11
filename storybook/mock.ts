@@ -27,13 +27,6 @@ export const mockAppState: AppState = {
   addNotification: action("通知を追加しようとした"),
   back: action("戻ろうとした"),
   createProgram: action("プログラムを作ろうとした"),
-  account: (id) => {
-    return {
-      id,
-      iconHash: "fakeIconHash" as d.ImageHashValue,
-      name: "サンプルアカウント名",
-    };
-  },
   isCreatingQuestion: false,
   createQuestion: action("質問を作成しようとした"),
   requestGetQuestionListInProgram: action(
@@ -311,6 +304,7 @@ export const mockLoggedInState: LoggedInState = {
       },
     ],
   ]),
+  accountMap: new Map(),
 };
 
 export const mockKadaiQuestionId = d.QuestionId.fromString("kadai");
