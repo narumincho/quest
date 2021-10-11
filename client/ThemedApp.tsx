@@ -1,10 +1,15 @@
 import * as React from "react";
-import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import {
+  CssBaseline,
+  PaletteMode,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
 import { App } from "./App";
 import { SnackbarProvider } from "notistack";
 
 export const ThemedApp = (): React.ReactElement => {
-  const [darkOrLight, setDarkOrLight] = React.useState<"dark" | "light">(
+  const [paletteMode, setPaletteMode] = React.useState<PaletteMode>(
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
 
@@ -13,16 +18,16 @@ export const ThemedApp = (): React.ReactElement => {
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", (e) => {
         if (e.matches) {
-          setDarkOrLight("dark");
+          setPaletteMode("dark");
         } else {
-          setDarkOrLight("light");
+          setPaletteMode("light");
         }
       });
   }, []);
 
   const theme = createTheme({
     palette: {
-      mode: darkOrLight,
+      mode: paletteMode,
     },
   });
 
