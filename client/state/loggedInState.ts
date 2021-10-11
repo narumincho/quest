@@ -17,6 +17,7 @@ export type LoggedInState = {
   readonly createdProgramMap: ReadonlyMap<d.ProgramId, ProgramWithClassList>;
   readonly joinedClassMap: ReadonlyMap<d.ClassId, JoinedClass>;
   readonly questionMap: ReadonlyMap<d.ProgramId, QuestionListState>;
+  readonly accountMap: ReadonlyMap<d.AccountId, d.Account>;
 };
 
 /** 作成したプログラムと作成したクラス */
@@ -144,6 +145,9 @@ export const initLoggedInState = (option: {
       ])
     ),
     questionMap: new Map(),
+    accountMap: new Map<d.AccountId, d.Account>([
+      [option.accountData.account.id, option.accountData.account],
+    ]),
   };
 };
 

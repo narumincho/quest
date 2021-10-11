@@ -68,6 +68,7 @@ export const ProgramPage = (props: {
           <AccountCard
             appState={props.appState}
             accountId={program.createAccountId}
+            loggedInState={props.loggedInState}
           />
         </Box>
         <Box padding={1}>
