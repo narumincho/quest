@@ -4,6 +4,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Paper,
   Tab,
   Tabs,
@@ -29,9 +30,12 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
     React.useState<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>(
       undefined
     );
-  const [feedbackList, setFeedbackList] = React.useState<
+  const [commentList, setCommentList] = React.useState<
     ReadonlyArray<d.Feedback> | undefined
   >(undefined);
+  const [isSubmittingComment, setIsSubmittingComment] =
+    React.useState<boolean>(false);
+  const [commentEditText, setCommentEditText] = React.useState<string>("");
 
   React.useEffect(() => {
     props.appSate
@@ -52,22 +56,27 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
         answerStudentId: props.answerStudentId,
       })
       .then((response) => {
-        setFeedbackList(response);
+        setCommentList(response);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.classId, props.questionId, props.answerStudentId]);
 
-  const submitFeedback = (message: string): void => {
+  const submitFeedback = (): void => {
+    setIsSubmittingComment(true);
     props.appSate
       .addFeedback({
         accountToken: props.loggedInState.accountToken,
         classId: props.classId,
         questionId: props.questionId,
         answerStudentId: props.answerStudentId,
-        message,
+        message: commentEditText,
       })
       .then((response) => {
-        setFeedbackList(response);
+        if (response !== undefined) {
+          setCommentEditText("");
+          setCommentList(response);
+        }
+        setIsSubmittingComment(false);
       });
   };
 
@@ -88,10 +97,13 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
       <Box padding={1}>
         {selectedTab === "feedback" ? (
           <FeedbackListWithInput
-            feedbackList={feedbackList}
+            feedbackList={commentList}
             onSubmitFeedback={submitFeedback}
             classId={props.classId}
             loggedInState={props.loggedInState}
+            commentEditText={commentEditText}
+            onChangeCommentEditText={setCommentEditText}
+            isSubmittingComment={isSubmittingComment}
           />
         ) : (
           <AnswerList
@@ -110,17 +122,19 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
 
 const FeedbackListWithInput = (props: {
   readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
-  readonly onSubmitFeedback: (message: string) => void;
+  readonly onSubmitFeedback: () => void;
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
+  readonly commentEditText: string;
+  readonly onChangeCommentEditText: (comment: string) => void;
+  readonly isSubmittingComment: boolean;
 }): React.ReactElement => {
-  const [feedbackEditText, setFeedbackEditText] = React.useState<string>("");
   const onChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
-    setFeedbackEditText(event.target.value);
+    props.onChangeCommentEditText(event.target.value);
   };
-  const isNotEmpty = feedbackEditText.trim().length === 0;
+  const isNotEmpty = props.commentEditText.trim().length === 0;
   return (
     <div>
       <TextField
@@ -128,20 +142,21 @@ const FeedbackListWithInput = (props: {
         required
         fullWidth
         label="この回答に対するコメント"
-        value={feedbackEditText}
+        value={props.commentEditText}
         onChange={onChange}
         variant="outlined"
+        disabled={props.isSubmittingComment}
       />
       <Button
         fullWidth
         onClick={(): void => {
-          props.onSubmitFeedback(feedbackEditText);
+          props.onSubmitFeedback();
         }}
         size="large"
-        disabled={isNotEmpty}
+        disabled={isNotEmpty || props.isSubmittingComment}
         variant="contained"
         color="secondary"
-        startIcon={<Send />}
+        startIcon={props.isSubmittingComment ? <CircularProgress /> : <Send />}
       >
         送信
       </Button>
