@@ -351,7 +351,7 @@ export const apiFunc: {
           : []
     );
   },
-  addFeedback: async (parameter) => {
+  addComment: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
     const isStudentOrClassCreator = getIsStudentOrClassCreator(
       account.id,
@@ -381,7 +381,7 @@ export const apiFunc: {
       questionId: parameter.questionId,
     });
   },
-  getFeedback: async (parameter) => {
+  getComment: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
     const isStudentOrClassCreator = getIsStudentOrClassCreator(
       account.id,

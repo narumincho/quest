@@ -16,7 +16,7 @@ import { LoggedInState } from "../state/loggedInState";
 import { Send } from "@mui/icons-material";
 import { imageUrl } from "../../common/url";
 
-export const FeedbackAndAnswersFromOtherStudents = (props: {
+export const CommentAndAnswersFromOtherStudents = (props: {
   readonly appSate: AppState;
   readonly classId: d.ClassId;
   readonly questionId: d.QuestionId;
@@ -24,8 +24,8 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
   readonly answerStudentId: d.AccountId;
 }): React.ReactElement => {
   const [selectedTab, setSelectedTab] = React.useState<
-    "feedback" | "answersFromOtherStudents"
-  >("feedback");
+    "comment" | "answersFromOtherStudents"
+  >("comment");
   const [answersFromOtherStudents, setAnswersFromOtherStudents] =
     React.useState<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>(
       undefined
@@ -49,7 +49,7 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
       });
 
     props.appSate
-      .requestFeedback({
+      .requestComment({
         accountToken: props.loggedInState.accountToken,
         classId: props.classId,
         questionId: props.questionId,
@@ -64,7 +64,7 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
   const submitFeedback = (): void => {
     setIsSubmittingComment(true);
     props.appSate
-      .addFeedback({
+      .addComment({
         accountToken: props.loggedInState.accountToken,
         classId: props.classId,
         questionId: props.questionId,
@@ -84,9 +84,9 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
     <Box padding={1}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
-          value={selectedTab === "feedback" ? 0 : 1}
+          value={selectedTab === "comment" ? 0 : 1}
           onChange={(_, v) => {
-            setSelectedTab(v === 0 ? "feedback" : "answersFromOtherStudents");
+            setSelectedTab(v === 0 ? "comment" : "answersFromOtherStudents");
           }}
           variant="fullWidth"
         >
@@ -95,7 +95,7 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
         </Tabs>
       </Box>
       <Box padding={1}>
-        {selectedTab === "feedback" ? (
+        {selectedTab === "comment" ? (
           <FeedbackListWithInput
             feedbackList={commentList}
             onSubmitFeedback={submitFeedback}
@@ -160,8 +160,8 @@ const FeedbackListWithInput = (props: {
       >
         送信
       </Button>
-      <FeedbackList
-        feedbackList={props.feedbackList}
+      <CommentList
+        commentList={props.feedbackList}
         classId={props.classId}
         loggedInState={props.loggedInState}
       />
@@ -169,15 +169,15 @@ const FeedbackListWithInput = (props: {
   );
 };
 
-const FeedbackList = (props: {
-  readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
+const CommentList = (props: {
+  readonly commentList: ReadonlyArray<d.Feedback> | undefined;
   readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
 }): React.ReactElement => {
-  if (props.feedbackList === undefined) {
+  if (props.commentList === undefined) {
     return <div>コメント取得中...</div>;
   }
-  if (props.feedbackList.length === 0) {
+  if (props.commentList.length === 0) {
     return <div>コメントはまだありません</div>;
   }
   const participantList: ReadonlyArray<d.Participant> =
@@ -191,9 +191,9 @@ const FeedbackList = (props: {
         padding: 1,
       }}
     >
-      {props.feedbackList.map((feedback, index) => {
+      {props.commentList.map((comment, index) => {
         const account: d.Account | undefined = participantList.find(
-          (participant) => participant.account.id === feedback.accountId
+          (participant) => participant.account.id === comment.accountId
         )?.account;
         return (
           <Paper key={index} sx={{ padding: 1 }}>
@@ -208,7 +208,7 @@ const FeedbackList = (props: {
                 {account.name}
               </Box>
             )}
-            {feedback.message}
+            {comment.message}
           </Paper>
         );
       })}

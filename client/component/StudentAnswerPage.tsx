@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Publish, Save } from "@mui/icons-material";
 import { AppState } from "../state";
-import { FeedbackAndAnswersFromOtherStudents } from "./FeedbackAndAnswersFromOtherStudents";
+import { CommentAndAnswersFromOtherStudents } from "./CommentAndAnswersFromOtherStudents";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
@@ -208,7 +208,7 @@ const StudentSelfEditQuestionPageLoaded = (props: {
       </Box>
       {props.question.answer._ === "Some" &&
       props.question.answer.value.isConfirm ? (
-        <FeedbackAndAnswersFromOtherStudents
+        <CommentAndAnswersFromOtherStudents
           appSate={props.appState}
           classId={props.classId}
           questionId={props.question.questionId}
@@ -306,7 +306,7 @@ const PageLoadedOtherStudentView = (props: {
 
       {props.question.answer._ === "Some" &&
       props.question.answer.value.isConfirm ? (
-        <FeedbackAndAnswersFromOtherStudents
+        <CommentAndAnswersFromOtherStudents
           appSate={props.appState}
           classId={props.classId}
           questionId={props.question.questionId}

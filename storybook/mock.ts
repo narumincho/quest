@@ -93,8 +93,8 @@ export const mockAppState: AppState = {
       },
     ]);
   },
-  requestFeedback: (e) => {
-    action("requestFeedback")(e);
+  requestComment: (e) => {
+    action("requestComment")(e);
     return Promise.resolve<ReadonlyArray<d.Feedback>>([
       {
         accountId: mockAccount3.id,
@@ -114,8 +114,8 @@ export const mockAppState: AppState = {
       },
     ]);
   },
-  addFeedback: (e) => {
-    action("requestFeedback")(e);
+  addComment: (e) => {
+    action("addComment")(e);
     return Promise.resolve<ReadonlyArray<d.Feedback>>([
       {
         accountId: mockAccount3.id,
