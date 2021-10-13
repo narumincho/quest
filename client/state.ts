@@ -295,9 +295,6 @@ export const useAppState = (): AppState => {
           );
           return;
         }
-        enqueueSnackbar("クラスの参加者取得に成功しました", {
-          variant: "success",
-        });
         console.log("取得した", response.okValue);
         setLogInState(
           updateLoggedInState((beforeLogInState) =>
@@ -330,9 +327,6 @@ export const useAppState = (): AppState => {
           );
           return;
         }
-        enqueueSnackbar("クラスの質問と回答状況の取得に成功しました", {
-          variant: "success",
-        });
         setLogInState(
           updateLoggedInState((beforeLogInState) =>
             setStudentQuestionTree(beforeLogInState, classId, response.okValue)
@@ -530,9 +524,6 @@ export const useAppState = (): AppState => {
             );
             return;
           }
-          enqueueSnackbar(`プログラムに属している質問の取得に成功しました`, {
-            variant: "success",
-          });
           setLogInState(
             updateLoggedInState((beforeLogInState) =>
               setQuestionListState(beforeLogInState, {
@@ -714,9 +705,6 @@ export const useAppState = (): AppState => {
             );
             return;
           }
-          enqueueSnackbar(`生徒の回答の取得に成功しました`, {
-            variant: "success",
-          });
           setLogInState(
             updateLoggedInState((beforeLoggedInState) =>
               setConfirmedAnswerList(

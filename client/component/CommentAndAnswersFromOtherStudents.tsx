@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
 import {
-  Avatar,
   Box,
   Button,
   CircularProgress,
@@ -10,25 +9,28 @@ import {
   Tabs,
   TextField,
 } from "@mui/material";
+import { AccountCard } from "./AccountCard";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { Send } from "@mui/icons-material";
-import { imageUrl } from "../../common/url";
 
 export const CommentAndAnswersFromOtherStudents = (props: {
-  readonly appSate: AppState;
+  readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly questionId: d.QuestionId;
   readonly loggedInState: LoggedInState;
   readonly answerStudentId: d.AccountId;
+  readonly answersFromOtherStudents:
+    | ReadonlyArray<d.AnswersFromOtherStudent>
+    | undefined;
 }): React.ReactElement => {
   const [selectedTab, setSelectedTab] = React.useState<
     "comment" | "answersFromOtherStudents"
   >("comment");
   const [answersFromOtherStudents, setAnswersFromOtherStudents] =
     React.useState<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>(
-      undefined
+      props.answersFromOtherStudents
     );
   const [commentList, setCommentList] = React.useState<
     ReadonlyArray<d.Feedback> | undefined
@@ -38,17 +40,19 @@ export const CommentAndAnswersFromOtherStudents = (props: {
   const [commentEditText, setCommentEditText] = React.useState<string>("");
 
   React.useEffect(() => {
-    props.appSate
-      .requestAnswersFromOtherStudents({
-        accountToken: props.loggedInState.accountToken,
-        classId: props.classId,
-        questionId: props.questionId,
-      })
-      .then((response) => {
-        setAnswersFromOtherStudents(response);
-      });
+    if (props.answersFromOtherStudents === undefined) {
+      props.appState
+        .requestAnswersFromOtherStudents({
+          accountToken: props.loggedInState.accountToken,
+          classId: props.classId,
+          questionId: props.questionId,
+        })
+        .then((response) => {
+          setAnswersFromOtherStudents(response);
+        });
+    }
 
-    props.appSate
+    props.appState
       .requestComment({
         accountToken: props.loggedInState.accountToken,
         classId: props.classId,
@@ -63,7 +67,7 @@ export const CommentAndAnswersFromOtherStudents = (props: {
 
   const submitFeedback = (): void => {
     setIsSubmittingComment(true);
-    props.appSate
+    props.appState
       .addComment({
         accountToken: props.loggedInState.accountToken,
         classId: props.classId,
@@ -110,7 +114,7 @@ export const CommentAndAnswersFromOtherStudents = (props: {
             answersFromOtherStudents={answersFromOtherStudents}
             classId={props.classId}
             questionId={props.questionId}
-            appState={props.appSate}
+            appState={props.appState}
             loggedInState={props.loggedInState}
             extractStudentId={props.answerStudentId}
           />
@@ -200,13 +204,10 @@ const CommentList = (props: {
             {account === undefined ? (
               <></>
             ) : (
-              <Box display="flex">
-                <Avatar
-                  alt={account.name}
-                  src={imageUrl(account.iconHash).toString()}
-                />
-                {account.name}
-              </Box>
+              <AccountCard
+                accountId={account.id}
+                loggedInState={props.loggedInState}
+              />
             )}
             {comment.message}
           </Paper>
@@ -264,13 +265,10 @@ const AnswerList = (props: {
               {account === undefined ? (
                 <></>
               ) : (
-                <Box display="flex">
-                  <Avatar
-                    alt={account.name}
-                    src={imageUrl(account.iconHash).toString()}
-                  />
-                  {account.name}
-                </Box>
+                <AccountCard
+                  accountId={account.id}
+                  loggedInState={props.loggedInState}
+                />
               )}
               {answer.answerText}
             </Paper>
