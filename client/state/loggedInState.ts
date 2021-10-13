@@ -594,3 +594,66 @@ export const setConfirmedAnswerList = (
     ),
   };
 };
+
+/**
+ * ロール関係なしにアカウントの名前とアイコン画像をキャッシュから取得する
+ */
+export const getAccountById = (
+  loggedInState: LoggedInState,
+  accountId: d.AccountId
+): d.Account | undefined => {
+  const accountMapResult = loggedInState.accountMap.get(accountId);
+  if (accountMapResult !== undefined) {
+    return accountMapResult;
+  }
+  for (const joinedClass of loggedInState.joinedClassMap.values()) {
+    const result = getAccountInParticipantList(
+      joinedClass.participantList,
+      accountId
+    );
+    if (result !== undefined) {
+      return result;
+    }
+  }
+  for (const createdProgram of loggedInState.createdProgramMap.values()) {
+    for (const createdClass of createdProgram.classList) {
+      const result = getAccountInparticipantAndConfirmedAnswerList(
+        createdClass.participantList,
+        accountId
+      );
+      if (result !== undefined) {
+        return result;
+      }
+    }
+  }
+};
+
+const getAccountInParticipantList = (
+  participantList: ReadonlyArray<d.Participant> | undefined,
+  accountId: d.AccountId
+): d.Account | undefined => {
+  if (participantList === undefined) {
+    return;
+  }
+  for (const participant of participantList) {
+    if (participant.account.id === accountId) {
+      return participant.account;
+    }
+  }
+};
+
+const getAccountInparticipantAndConfirmedAnswerList = (
+  participantAndConfirmedAnswer:
+    | ReadonlyArray<ParticipantAndConfirmedAnswer>
+    | undefined,
+  accountId: d.AccountId
+): d.Account | undefined => {
+  if (participantAndConfirmedAnswer === undefined) {
+    return;
+  }
+  for (const participant of participantAndConfirmedAnswer) {
+    if (participant.account.id === accountId) {
+      return participant.account;
+    }
+  }
+};

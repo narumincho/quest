@@ -126,10 +126,10 @@ export type AppState = {
     readonly accountToken: d.AccountToken;
   }) => Promise<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>;
   /** コメントを取得する */
-  readonly requestFeedback: (
+  readonly requestComment: (
     option: d.GetFeedbackParameter
   ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
-  readonly addFeedback: (
+  readonly addComment: (
     option: d.AddFeedbackParameter
   ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
 };
@@ -295,9 +295,6 @@ export const useAppState = (): AppState => {
           );
           return;
         }
-        enqueueSnackbar("クラスの参加者取得に成功しました", {
-          variant: "success",
-        });
         console.log("取得した", response.okValue);
         setLogInState(
           updateLoggedInState((beforeLogInState) =>
@@ -330,9 +327,6 @@ export const useAppState = (): AppState => {
           );
           return;
         }
-        enqueueSnackbar("クラスの質問と回答状況の取得に成功しました", {
-          variant: "success",
-        });
         setLogInState(
           updateLoggedInState((beforeLogInState) =>
             setStudentQuestionTree(beforeLogInState, classId, response.okValue)
@@ -530,9 +524,6 @@ export const useAppState = (): AppState => {
             );
             return;
           }
-          enqueueSnackbar(`プログラムに属している質問の取得に成功しました`, {
-            variant: "success",
-          });
           setLogInState(
             updateLoggedInState((beforeLogInState) =>
               setQuestionListState(beforeLogInState, {
@@ -714,9 +705,6 @@ export const useAppState = (): AppState => {
             );
             return;
           }
-          enqueueSnackbar(`生徒の回答の取得に成功しました`, {
-            variant: "success",
-          });
           setLogInState(
             updateLoggedInState((beforeLoggedInState) =>
               setConfirmedAnswerList(
@@ -741,8 +729,8 @@ export const useAppState = (): AppState => {
       }
       return response.okValue;
     },
-    requestFeedback: async (parameter) => {
-      const response = await api.getFeedback(parameter);
+    requestComment: async (parameter) => {
+      const response = await api.getComment(parameter);
       if (response._ === "Error") {
         enqueueSnackbar(`コメントの取得に失敗しました`, {
           variant: "error",
@@ -751,8 +739,8 @@ export const useAppState = (): AppState => {
       }
       return response.okValue;
     },
-    addFeedback: async (parameter) => {
-      const response = await api.addFeedback(parameter);
+    addComment: async (parameter) => {
+      const response = await api.addComment(parameter);
       if (response._ === "Error") {
         enqueueSnackbar(`コメントの送信に失敗しました`, {
           variant: "error",

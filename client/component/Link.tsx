@@ -12,7 +12,6 @@ export const Link: React.FC<{
     <MuiLink
       sx={{
         color: (theme) => {
-          console.log("link color", theme);
           return theme.palette.mode === "dark" ? "#99e1ff" : undefined;
         },
       }}

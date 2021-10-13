@@ -168,7 +168,7 @@ export const getAnswersFromOtherStudents: ApiCodec<
 /**
  * コメントを送信する
  */
-export const addFeedback: ApiCodec<
+export const addComment: ApiCodec<
   d.AddFeedbackParameter,
   ReadonlyArray<d.Feedback>
 > = {
@@ -179,7 +179,7 @@ export const addFeedback: ApiCodec<
 /**
  * コメントを取得する
  */
-export const getFeedback: ApiCodec<
+export const getComment: ApiCodec<
   d.GetFeedbackParameter,
   ReadonlyArray<d.Feedback>
 > = {

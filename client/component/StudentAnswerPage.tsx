@@ -11,8 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import { Publish, Save } from "@mui/icons-material";
+import { AccountCard } from "./AccountCard";
 import { AppState } from "../state";
-import { FeedbackAndAnswersFromOtherStudents } from "./FeedbackAndAnswersFromOtherStudents";
+import { CommentAndAnswersFromOtherStudents } from "./CommentAndAnswersFromOtherStudents";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
@@ -63,7 +64,8 @@ export const StudentAnswerPage = (props: {
   }
   return (
     <PageLoadedOtherStudentView
-      question={question}
+      questionId={question.questionId}
+      questionText={question.questionText}
       appState={props.appState}
       classId={props.answerIdData.classId}
       answerStudentId={props.answerIdData.answerStudentId}
@@ -208,12 +210,13 @@ const StudentSelfEditQuestionPageLoaded = (props: {
       </Box>
       {props.question.answer._ === "Some" &&
       props.question.answer.value.isConfirm ? (
-        <FeedbackAndAnswersFromOtherStudents
-          appSate={props.appState}
+        <CommentAndAnswersFromOtherStudents
+          appState={props.appState}
           classId={props.classId}
           questionId={props.question.questionId}
           loggedInState={props.loggedInState}
           answerStudentId={props.loggedInAccountId}
+          answersFromOtherStudents={undefined}
         />
       ) : (
         <></>
@@ -268,13 +271,34 @@ const ConfirmSaveButton = (props: {
 };
 
 const PageLoadedOtherStudentView = (props: {
-  readonly question: d.StudentSelfQuestionTree;
+  readonly questionId: d.QuestionId;
+  readonly questionText: string;
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
   readonly answerStudentId: d.AccountId;
 }): React.ReactElement => {
+  const [answersFromOtherStudents, setAnswersFromOtherStudents] =
+    React.useState<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>(
+      undefined
+    );
+  React.useEffect(() => {
+    props.appState
+      .requestAnswersFromOtherStudents({
+        accountToken: props.loggedInState.accountToken,
+        classId: props.classId,
+        questionId: props.questionId,
+      })
+      .then((response) => {
+        setAnswersFromOtherStudents(response);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.classId, props.questionId, props.answerStudentId]);
+
   const qClass = props.appState.getClassAndRole(props.classId);
+  const question = answersFromOtherStudents?.find(
+    (answer) => answer.studentId === props.answerStudentId
+  );
 
   return (
     <PageContainer appState={props.appState}>
@@ -296,26 +320,26 @@ const PageLoadedOtherStudentView = (props: {
         </Breadcrumbs>
       </Box>
       <Box padding={1}>
-        <Typography variant="h4">{props.question.questionText}</Typography>
+        <Typography variant="h4">{props.questionText}</Typography>
       </Box>
-      {props.question.answer._ === "Some" ? (
-        <Box padding={1}>[調整中...]</Box>
-      ) : (
-        <></>
-      )}
-
-      {props.question.answer._ === "Some" &&
-      props.question.answer.value.isConfirm ? (
-        <FeedbackAndAnswersFromOtherStudents
-          appSate={props.appState}
-          classId={props.classId}
-          questionId={props.question.questionId}
+      <Box>
+        <AccountCard
           loggedInState={props.loggedInState}
-          answerStudentId={props.answerStudentId}
+          accountId={props.answerStudentId}
         />
-      ) : (
-        <></>
-      )}
+      </Box>
+      <Box padding={1}>
+        {question === undefined ? "読込中..." : question.answerText}
+      </Box>
+
+      <CommentAndAnswersFromOtherStudents
+        appState={props.appState}
+        classId={props.classId}
+        questionId={props.questionId}
+        loggedInState={props.loggedInState}
+        answerStudentId={props.answerStudentId}
+        answersFromOtherStudents={answersFromOtherStudents}
+      />
     </PageContainer>
   );
 };

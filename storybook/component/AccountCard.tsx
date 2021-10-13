@@ -10,9 +10,5 @@ const meta: Meta = {
 export default meta;
 
 export const Default: Story<never> = () => (
-  <AccountCard
-    accountId={mockAccountId}
-    appState={mockAppState}
-    loggedInState={mockLoggedInState}
-  />
+  <AccountCard accountId={mockAccountId} loggedInState={mockLoggedInState} />
 );

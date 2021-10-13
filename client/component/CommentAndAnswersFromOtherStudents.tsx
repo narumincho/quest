@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
 import {
-  Avatar,
   Box,
   Button,
   CircularProgress,
@@ -10,25 +9,28 @@ import {
   Tabs,
   TextField,
 } from "@mui/material";
+import { AccountCard } from "./AccountCard";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { Send } from "@mui/icons-material";
-import { imageUrl } from "../../common/url";
 
-export const FeedbackAndAnswersFromOtherStudents = (props: {
-  readonly appSate: AppState;
+export const CommentAndAnswersFromOtherStudents = (props: {
+  readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly questionId: d.QuestionId;
   readonly loggedInState: LoggedInState;
   readonly answerStudentId: d.AccountId;
+  readonly answersFromOtherStudents:
+    | ReadonlyArray<d.AnswersFromOtherStudent>
+    | undefined;
 }): React.ReactElement => {
   const [selectedTab, setSelectedTab] = React.useState<
-    "feedback" | "answersFromOtherStudents"
-  >("feedback");
+    "comment" | "answersFromOtherStudents"
+  >("comment");
   const [answersFromOtherStudents, setAnswersFromOtherStudents] =
     React.useState<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>(
-      undefined
+      props.answersFromOtherStudents
     );
   const [commentList, setCommentList] = React.useState<
     ReadonlyArray<d.Feedback> | undefined
@@ -38,18 +40,20 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
   const [commentEditText, setCommentEditText] = React.useState<string>("");
 
   React.useEffect(() => {
-    props.appSate
-      .requestAnswersFromOtherStudents({
-        accountToken: props.loggedInState.accountToken,
-        classId: props.classId,
-        questionId: props.questionId,
-      })
-      .then((response) => {
-        setAnswersFromOtherStudents(response);
-      });
+    if (props.answersFromOtherStudents === undefined) {
+      props.appState
+        .requestAnswersFromOtherStudents({
+          accountToken: props.loggedInState.accountToken,
+          classId: props.classId,
+          questionId: props.questionId,
+        })
+        .then((response) => {
+          setAnswersFromOtherStudents(response);
+        });
+    }
 
-    props.appSate
-      .requestFeedback({
+    props.appState
+      .requestComment({
         accountToken: props.loggedInState.accountToken,
         classId: props.classId,
         questionId: props.questionId,
@@ -63,8 +67,8 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
 
   const submitFeedback = (): void => {
     setIsSubmittingComment(true);
-    props.appSate
-      .addFeedback({
+    props.appState
+      .addComment({
         accountToken: props.loggedInState.accountToken,
         classId: props.classId,
         questionId: props.questionId,
@@ -84,9 +88,9 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
     <Box padding={1}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
-          value={selectedTab === "feedback" ? 0 : 1}
+          value={selectedTab === "comment" ? 0 : 1}
           onChange={(_, v) => {
-            setSelectedTab(v === 0 ? "feedback" : "answersFromOtherStudents");
+            setSelectedTab(v === 0 ? "comment" : "answersFromOtherStudents");
           }}
           variant="fullWidth"
         >
@@ -95,7 +99,7 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
         </Tabs>
       </Box>
       <Box padding={1}>
-        {selectedTab === "feedback" ? (
+        {selectedTab === "comment" ? (
           <FeedbackListWithInput
             feedbackList={commentList}
             onSubmitFeedback={submitFeedback}
@@ -110,7 +114,7 @@ export const FeedbackAndAnswersFromOtherStudents = (props: {
             answersFromOtherStudents={answersFromOtherStudents}
             classId={props.classId}
             questionId={props.questionId}
-            appState={props.appSate}
+            appState={props.appState}
             loggedInState={props.loggedInState}
             extractStudentId={props.answerStudentId}
           />
@@ -160,8 +164,8 @@ const FeedbackListWithInput = (props: {
       >
         送信
       </Button>
-      <FeedbackList
-        feedbackList={props.feedbackList}
+      <CommentList
+        commentList={props.feedbackList}
         classId={props.classId}
         loggedInState={props.loggedInState}
       />
@@ -169,15 +173,15 @@ const FeedbackListWithInput = (props: {
   );
 };
 
-const FeedbackList = (props: {
-  readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
+const CommentList = (props: {
+  readonly commentList: ReadonlyArray<d.Feedback> | undefined;
   readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
 }): React.ReactElement => {
-  if (props.feedbackList === undefined) {
+  if (props.commentList === undefined) {
     return <div>コメント取得中...</div>;
   }
-  if (props.feedbackList.length === 0) {
+  if (props.commentList.length === 0) {
     return <div>コメントはまだありません</div>;
   }
   const participantList: ReadonlyArray<d.Participant> =
@@ -191,24 +195,21 @@ const FeedbackList = (props: {
         padding: 1,
       }}
     >
-      {props.feedbackList.map((feedback, index) => {
+      {props.commentList.map((comment, index) => {
         const account: d.Account | undefined = participantList.find(
-          (participant) => participant.account.id === feedback.accountId
+          (participant) => participant.account.id === comment.accountId
         )?.account;
         return (
           <Paper key={index} sx={{ padding: 1 }}>
             {account === undefined ? (
               <></>
             ) : (
-              <Box display="flex">
-                <Avatar
-                  alt={account.name}
-                  src={imageUrl(account.iconHash).toString()}
-                />
-                {account.name}
-              </Box>
+              <AccountCard
+                accountId={account.id}
+                loggedInState={props.loggedInState}
+              />
             )}
-            {feedback.message}
+            {comment.message}
           </Paper>
         );
       })}
@@ -264,13 +265,10 @@ const AnswerList = (props: {
               {account === undefined ? (
                 <></>
               ) : (
-                <Box display="flex">
-                  <Avatar
-                    alt={account.name}
-                    src={imageUrl(account.iconHash).toString()}
-                  />
-                  {account.name}
-                </Box>
+                <AccountCard
+                  accountId={account.id}
+                  loggedInState={props.loggedInState}
+                />
               )}
               {answer.answerText}
             </Paper>
