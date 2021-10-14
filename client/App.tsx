@@ -11,6 +11,7 @@ import { Link } from "./component/Link";
 import { LoadingPage } from "./component/LoadingPage";
 import { LogInPage } from "./component/LogInPage";
 import { LoggedInState } from "./state/loggedInState";
+import { NotificationPage } from "./component/NotificationPage";
 import { PageContainer } from "./component/PageContainer";
 import { ParticipantClassPage } from "./component/ParticipantClassPage";
 import { ProgramNewPage } from "./component/ProgramNewPage";
@@ -155,6 +156,8 @@ const LoggedIn = (props: {
           }
         />
       );
+    case "Notification":
+      return <NotificationPage appState={props.appState} />;
   }
 };
 
