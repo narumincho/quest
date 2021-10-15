@@ -111,6 +111,8 @@ const MessageOrButton = (props: {
       variant="contained"
       disabled={props.isRequestingJoin}
       onClick={props.requestJoin}
+      fullWidth
+      sx={{ textTransform: "none" }}
     >
       {props.isRequestingJoin
         ? props.classNameAndClassId.name + "に参加中……"
