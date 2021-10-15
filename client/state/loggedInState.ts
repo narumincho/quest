@@ -7,6 +7,7 @@ import {
   getQuestionThatCanBeParentList as questionMapGetQuestionThatCanBeParentList,
 } from "./question";
 import { mapSet, mapUpdate, mapUpdateAllValue } from "../../common/map";
+import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestionTree";
 
 export type { QuestionTree };
 
@@ -249,7 +250,10 @@ export const addCreatedOrEditedQuestion = (
   };
 };
 
-export const getQuestionById = (
+/**
+ * プログラム作成者向けの 質問を `loggedInState` から取り出す
+ */
+export const getQuestionForProgramCreator = (
   loggedInState: LoggedInState,
   questionId: d.QuestionId
 ): d.Question | undefined => {
@@ -279,7 +283,7 @@ export const getQuestionDirectChildren = (
   loggedInState: LoggedInState,
   questionId: d.QuestionId
 ): ReadonlyArray<d.QuestionId> => {
-  const question = getQuestionById(loggedInState, questionId);
+  const question = getQuestionForProgramCreator(loggedInState, questionId);
   if (question === undefined) {
     return [];
   }
@@ -294,7 +298,7 @@ export const getParentQuestionList = (
   loggedInState: LoggedInState,
   questionId: d.QuestionId
 ): ReadonlyArray<d.Question> => {
-  const question = getQuestionById(loggedInState, questionId);
+  const question = getQuestionForProgramCreator(loggedInState, questionId);
   if (question === undefined) {
     return [];
   }
@@ -656,4 +660,61 @@ const getAccountInparticipantAndConfirmedAnswerList = (
       return participant.account;
     }
   }
+};
+
+/**
+ * クラスの作成者か生徒かに関わらず, 質問文を`loggedInState`から取得する
+ */
+export const getQuestionText = (
+  loggedInState: LoggedInState,
+  questionId: d.QuestionId
+) => {
+  const questionForProgramCreator = getQuestionForProgramCreator(
+    loggedInState,
+    questionId
+  );
+  if (questionForProgramCreator !== undefined) {
+    return questionForProgramCreator.name;
+  }
+  // 生徒の場合
+  for (const qClass of loggedInState.joinedClassMap.values()) {
+    const questionTreeList = qClass.questionTreeList;
+    if (questionTreeList !== undefined) {
+      const resultTree = studentSelfQuestionTreeListFind(
+        questionTreeList,
+        questionId
+      );
+      if (resultTree !== undefined) {
+        return resultTree.questionText;
+      }
+    }
+  }
+};
+
+/**
+ * クラスIDと 質問ID から, 自分の回答を取得する
+ * @param loggedInState
+ * @param classId
+ */
+export const getStudentSelfQuestionTree = (
+  loggedInState: LoggedInState,
+  classId: d.ClassId,
+  questionId: d.QuestionId
+): d.StudentSelfQuestionTree | undefined => {
+  const joinedClass = loggedInState.joinedClassMap.get(classId);
+  if (joinedClass === undefined) {
+    return undefined;
+  }
+  const questionTreeList = joinedClass.questionTreeList;
+  if (questionTreeList === undefined) {
+    return undefined;
+  }
+  const resultTree = studentSelfQuestionTreeListFind(
+    questionTreeList,
+    questionId
+  );
+  if (resultTree === undefined) {
+    return undefined;
+  }
+  return resultTree;
 };

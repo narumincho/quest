@@ -48,7 +48,7 @@ export const getQuestionById = (
   if (logInState.tag !== "LoggedIn") {
     return undefined;
   }
-  return ls.getQuestionById(logInState.loggedInState, questionId);
+  return ls.getQuestionForProgramCreator(logInState.loggedInState, questionId);
 };
 
 /** 質問の直接的な子を取得する */
@@ -112,21 +112,6 @@ export const getClassAndRole = (
     return { tag: "none" };
   }
   return ls.getClassAndRole(logInState.loggedInState, classId);
-};
-
-/** 生徒として参加したクラスの質問と回答状況をキャッシュから取得する */
-export const getStudentQuestionTree = (
-  logInState: LogInState,
-  classId: d.ClassId
-): ReadonlyArray<d.StudentSelfQuestionTree> | undefined => {
-  if (logInState.tag !== "LoggedIn") {
-    return undefined;
-  }
-  const joinedClass = logInState.loggedInState.joinedClassMap.get(classId);
-  if (joinedClass === undefined) {
-    return undefined;
-  }
-  return joinedClass.questionTreeList;
 };
 
 export const updateLoggedInState =

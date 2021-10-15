@@ -68,7 +68,6 @@ export const mockAppState: AppState = {
   joinClass: action("joinClass"),
   requestParticipantListInClass: action("requestParticipantListInClass"),
   requestStudentQuestionTreeInClass: action("getStudentQuestionTreeInClass"),
-  getStudentQuestionTree: () => mockStudentSelfQuestionTreeList,
   answerQuestion: action("answerQuestion"),
   requestStudentConfirmedAnswerList: action(
     "requestStudentConfirmedAnswerList"
