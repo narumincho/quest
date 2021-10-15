@@ -1,7 +1,7 @@
+import * as React from "react";
 import { Meta, Story } from "@storybook/react";
+import { mockAppState, mockLoggedInState } from "../mock";
 import { AppBar } from "../../client/component/AppBar";
-import React from "react";
-import { mockAppState } from "../mock";
 
 const meta: Meta = {
   title: "AppBar",
@@ -9,6 +9,22 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<{ isHideBack: boolean }> = (props) => (
+export const NoLogIn: Story<{ readonly isHideBack: boolean }> = (props) => (
   <AppBar isHideBack={props.isHideBack} appState={mockAppState} />
 );
+NoLogIn.args = {
+  isHideBack: false,
+};
+
+export const LoggedIn: Story<{ readonly isHideBack: boolean }> = (props) => (
+  <AppBar
+    isHideBack={props.isHideBack}
+    appState={{
+      ...mockAppState,
+      logInState: { tag: "LoggedIn", loggedInState: mockLoggedInState },
+    }}
+  />
+);
+LoggedIn.args = {
+  isHideBack: false,
+};

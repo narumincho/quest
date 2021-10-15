@@ -4,6 +4,7 @@ import * as d from "../../data";
 import { ArrowBack, Notifications } from "@mui/icons-material";
 import {
   Avatar,
+  Box,
   IconButton,
   AppBar as MAppBar,
   Toolbar,
@@ -35,9 +36,17 @@ export const AppBar = (props: {
           クエスト
         </Typography>
         {props.appState.logInState.tag === "LoggedIn" ? (
-          <>
+          <Box display="flex" alignItems="center" gap={2}>
             <Link location={d.Location.Notification} appState={props.appState}>
-              <Notifications />
+              <Notifications
+                sx={{
+                  color: "#ddd",
+                  width: 48,
+                  height: 48,
+                  display: "grid",
+                  padding: 1,
+                }}
+              />
             </Link>
             <Link location={d.Location.Setting} appState={props.appState}>
               <Avatar
@@ -49,7 +58,7 @@ export const AppBar = (props: {
                   .toString()}
               />
             </Link>
-          </>
+          </Box>
         ) : (
           <></>
         )}

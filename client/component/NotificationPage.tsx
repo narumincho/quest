@@ -73,6 +73,13 @@ const NotificationContent = (props: {
         </Box>
       );
   }
+  if (props.notificationList.length === 0) {
+    return (
+      <Box padding={1}>
+        <Typography>通知はまだ, 1つもありません</Typography>
+      </Box>
+    );
+  }
   return (
     <Box display="grid" padding={1} gap={1}>
       {props.notificationList.map((item) => (
