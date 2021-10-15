@@ -682,6 +682,7 @@ export const getNotificationListByAccount = async (
   return snapshot.docs.map<d.Notification>((doc) => {
     const data = doc.data();
     return {
+      id: doc.id,
       done: data.done,
       event: data.event,
     };
