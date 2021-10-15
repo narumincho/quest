@@ -33,7 +33,7 @@ export const CommentAndAnswersFromOtherStudents = (props: {
       props.answersFromOtherStudents
     );
   const [commentList, setCommentList] = React.useState<
-    ReadonlyArray<d.Feedback> | undefined
+    ReadonlyArray<d.Comment> | undefined
   >(undefined);
   const [isSubmittingComment, setIsSubmittingComment] =
     React.useState<boolean>(false);
@@ -125,7 +125,7 @@ export const CommentAndAnswersFromOtherStudents = (props: {
 };
 
 const FeedbackListWithInput = (props: {
-  readonly feedbackList: ReadonlyArray<d.Feedback> | undefined;
+  readonly feedbackList: ReadonlyArray<d.Comment> | undefined;
   readonly onSubmitFeedback: () => void;
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
@@ -174,7 +174,7 @@ const FeedbackListWithInput = (props: {
 };
 
 const CommentList = (props: {
-  readonly commentList: ReadonlyArray<d.Feedback> | undefined;
+  readonly commentList: ReadonlyArray<d.Comment> | undefined;
   readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
 }): React.ReactElement => {

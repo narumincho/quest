@@ -169,22 +169,22 @@ export const getAnswersFromOtherStudents: ApiCodec<
  * コメントを送信する
  */
 export const addComment: ApiCodec<
-  d.AddFeedbackParameter,
-  ReadonlyArray<d.Feedback>
+  d.AddCommentParameter,
+  ReadonlyArray<d.Comment>
 > = {
-  request: d.AddFeedbackParameter.codec,
-  response: d.List.codec(d.Feedback.codec),
+  request: d.AddCommentParameter.codec,
+  response: d.List.codec(d.Comment.codec),
 };
 
 /**
  * コメントを取得する
  */
 export const getComment: ApiCodec<
-  d.GetFeedbackParameter,
-  ReadonlyArray<d.Feedback>
+  d.GetCommentParameter,
+  ReadonlyArray<d.Comment>
 > = {
-  request: d.GetFeedbackParameter.codec,
-  response: d.List.codec(d.Feedback.codec),
+  request: d.GetCommentParameter.codec,
+  response: d.List.codec(d.Comment.codec),
 };
 
 /**

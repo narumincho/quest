@@ -21,7 +21,6 @@ import {
   getQuestionDirectChildren,
   getQuestionThatCanBeParentList,
   getQuestionTreeListWithLoadingStateInProgram,
-  getStudentQuestionTree,
   loggedIn,
   updateLoggedInState,
 } from "./state/logInState";
@@ -102,10 +101,6 @@ export type AppState = {
   readonly requestParticipantListInClass: (classId: d.ClassId) => void;
   /** クラスの質問と自分の答えた回答を取得する */
   readonly requestStudentQuestionTreeInClass: (classId: d.ClassId) => void;
-  /** 生徒として参加したクラスの質問と回答状況をキャッシュから取得する */
-  readonly getStudentQuestionTree: (
-    classId: d.ClassId
-  ) => ReadonlyArray<d.StudentSelfQuestionTree> | undefined;
   /** 生徒が質問に回答する */
   readonly answerQuestion: (option: {
     readonly answerText: string;
@@ -127,11 +122,11 @@ export type AppState = {
   }) => Promise<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>;
   /** コメントを取得する */
   readonly requestComment: (
-    option: d.GetFeedbackParameter
-  ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
+    option: d.GetCommentParameter
+  ) => Promise<ReadonlyArray<d.Comment> | undefined>;
   readonly addComment: (
-    option: d.AddFeedbackParameter
-  ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
+    option: d.AddCommentParameter
+  ) => Promise<ReadonlyArray<d.Comment> | undefined>;
   readonly getNotificationList: (
     accountToken: d.AccountToken
   ) => Promise<ReadonlyArray<d.Notification> | undefined>;
@@ -688,8 +683,6 @@ export const useAppState = (): AppState => {
     },
     requestParticipantListInClass,
     requestStudentQuestionTreeInClass: getStudentQuestionTreeInClass,
-    getStudentQuestionTree: (classId: d.ClassId) =>
-      getStudentQuestionTree(logInState, classId),
     answerQuestion,
     requestStudentConfirmedAnswerList: (option) => {
       api

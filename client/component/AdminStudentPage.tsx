@@ -204,9 +204,9 @@ export const QuestionTreeLoaded = (props: {
       ) : (
         <Link
           appState={props.appState}
-          location={d.Location.AdminStudentAnswer({
+          location={d.Location.StudentAnswer({
             questionId: props.questionTree.id,
-            studentAccountId: props.studentAccountId,
+            answerStudentId: props.studentAccountId,
             classId: props.classId,
           })}
         >

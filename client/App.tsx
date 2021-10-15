@@ -3,7 +3,6 @@ import * as d from "../data";
 import { AppState, useAppState } from "./state";
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { AdminClassPage } from "./component/AdminClassPage";
-import { AdminStudentAnswerPage } from "./component/AdminStudentAnswerPage";
 import { AdminStudentPage } from "./component/AdminStudentPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
 import { ClassNewPage } from "./component/ClassNewPage";
@@ -144,16 +143,6 @@ const LoggedIn = (props: {
           loggedInState={props.loggedInState}
           accountId={location.accountIdAndClassId.accountId}
           classId={location.accountIdAndClassId.classId}
-        />
-      );
-    case "AdminStudentAnswer":
-      return (
-        <AdminStudentAnswerPage
-          appState={props.appState}
-          loggedInState={props.loggedInState}
-          adminStudentAnswerPageParameter={
-            location.adminStudentAnswerPageParameter
-          }
         />
       );
     case "Notification":

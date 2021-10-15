@@ -10,51 +10,42 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import {
+  LoggedInState,
+  getQuestionText,
+  getStudentSelfQuestionTree,
+} from "../state/loggedInState";
 import { Publish, Save } from "@mui/icons-material";
 import { AccountCard } from "./AccountCard";
 import { AppState } from "../state";
 import { CommentAndAnswersFromOtherStudents } from "./CommentAndAnswersFromOtherStudents";
 import { Link } from "./Link";
-import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { stringToValidAnswerText } from "../../common/validation";
-import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestionTree";
 
 export const StudentAnswerPage = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
   readonly answerIdData: d.AnswerIdData;
 }): React.ReactElement => {
-  const questionTreeList = props.appState.getStudentQuestionTree(
-    props.answerIdData.classId
-  );
-
-  if (questionTreeList === undefined) {
-    return (
-      <NotFoundQuestion
-        appState={props.appState}
-        classId={props.answerIdData.classId}
-      />
-    );
-  }
-  const question = studentSelfQuestionTreeListFind(
-    questionTreeList,
-    props.answerIdData.questionId
-  );
-
-  if (question === undefined) {
-    return (
-      <NotFoundQuestion
-        appState={props.appState}
-        classId={props.answerIdData.classId}
-      />
-    );
-  }
-
   if (props.loggedInState.account.id === props.answerIdData.answerStudentId) {
+    const studentSelfQuestionTree = getStudentSelfQuestionTree(
+      props.loggedInState,
+      props.answerIdData.classId,
+      props.answerIdData.questionId
+    );
+    if (studentSelfQuestionTree === undefined) {
+      return (
+        <NotFoundQuestion
+          appState={props.appState}
+          classId={props.answerIdData.classId}
+        />
+      );
+    }
+
     return (
       <StudentSelfEditQuestionPageLoaded
-        question={question}
+        question={studentSelfQuestionTree}
         appState={props.appState}
         classId={props.answerIdData.classId}
         loggedInState={props.loggedInState}
@@ -62,10 +53,24 @@ export const StudentAnswerPage = (props: {
       />
     );
   }
+
+  const questionText = getQuestionText(
+    props.loggedInState,
+    props.answerIdData.questionId
+  );
+  if (questionText === undefined) {
+    return (
+      <NotFoundQuestion
+        appState={props.appState}
+        classId={props.answerIdData.classId}
+      />
+    );
+  }
+
   return (
     <PageLoadedOtherStudentView
-      questionId={question.questionId}
-      questionText={question.questionText}
+      questionId={props.answerIdData.questionId}
+      questionText={questionText}
       appState={props.appState}
       classId={props.answerIdData.classId}
       answerStudentId={props.answerIdData.answerStudentId}
@@ -98,6 +103,7 @@ const NotFoundQuestion = (props: {
           <div></div>
         </Breadcrumbs>
       </Box>
+      <Box padding={1}>質問が見つかりませんでした</Box>
     </PageContainer>
   );
 };

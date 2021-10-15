@@ -115,26 +115,6 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
         ]),
         hash: new Map(),
       };
-    case "AdminStudentAnswer":
-      return {
-        resourceName: adminStudentAnswerPath,
-        resourceId: undefined,
-        searchParams: new Map<string, string>([
-          [
-            adminStudentAnswerClassId,
-            location.adminStudentAnswerPageParameter.classId,
-          ],
-          [
-            adminStudentAnswerStudentAccountId,
-            location.adminStudentAnswerPageParameter.studentAccountId,
-          ],
-          [
-            adminStudentAnswerQuestionId,
-            location.adminStudentAnswerPageParameter.questionId,
-          ],
-        ]),
-        hash: new Map(),
-      };
     case "Notification":
       return {
         resourceName: notificationPath,
@@ -283,29 +263,6 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
           d.Location.AdminStudent({
             classId: d.ClassId.fromString(classId),
             accountId: d.AccountId.fromString(accountId),
-          })
-        );
-      }
-      return d.UrlData.Normal(defaultLocation);
-    }
-    case adminStudentAnswerPath: {
-      const classId = structuredUrl.searchParams.get(adminStudentAnswerClassId);
-      const studentAccountId = structuredUrl.searchParams.get(
-        adminStudentAnswerStudentAccountId
-      );
-      const questionId = structuredUrl.searchParams.get(
-        adminStudentAnswerQuestionId
-      );
-      if (
-        typeof classId === "string" &&
-        typeof studentAccountId === "string" &&
-        typeof questionId === "string"
-      ) {
-        return d.UrlData.Normal(
-          d.Location.AdminStudentAnswer({
-            classId: d.ClassId.fromString(classId),
-            studentAccountId: d.AccountId.fromString(studentAccountId),
-            questionId: d.QuestionId.fromString(questionId),
           })
         );
       }
