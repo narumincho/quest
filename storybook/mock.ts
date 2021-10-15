@@ -128,6 +128,56 @@ export const mockAppState: AppState = {
       },
     ]);
   },
+  getNotificationList: (e) => {
+    action("getNotificationList")(e);
+    return Promise.resolve<ReadonlyArray<d.Notification>>([
+      {
+        done: false,
+        event: d.NotificationEvent.NewCommentToMyAnswer({
+          answerStudentId: mockAccount.id,
+          classId: mockClassId,
+          questionId: mockKadaiQuestionId,
+        }),
+        id: d.NotificationId.fromString("notificationA"),
+      },
+      {
+        done: true,
+        event: d.NotificationEvent.NewCommentToMyAnswer({
+          answerStudentId: mockAccount2.id,
+          classId: mockClassId,
+          questionId: mockKadaiQuestionId,
+        }),
+        id: d.NotificationId.fromString("notificationB"),
+      },
+      {
+        done: true,
+        event: d.NotificationEvent.ConfirmAnswerInCreatedClass({
+          answerStudentId: mockAccount2.id,
+          classId: mockClassId,
+          questionId: mockKadaiQuestionId,
+        }),
+        id: d.NotificationId.fromString("notificationC"),
+      },
+      {
+        done: false,
+        event: d.NotificationEvent.NewCommentInCreatedClass({
+          answerStudentId: mockAccount3.id,
+          classId: mockClassId,
+          questionId: dream,
+        }),
+        id: d.NotificationId.fromString("notificationD"),
+      },
+      {
+        done: true,
+        event: d.NotificationEvent.NewCommentInCreatedClass({
+          answerStudentId: mockAccount2.id,
+          classId: mockClassId,
+          questionId: dream,
+        }),
+        id: d.NotificationId.fromString("notificationE"),
+      },
+    ]);
+  },
 };
 
 export const mockAccount: d.Account = {
@@ -146,16 +196,18 @@ export const mockAccount3: d.Account = {
   name: "大将",
 };
 
-export const mockAccountId = "mockAccountId" as d.AccountId;
-export const mockAccountToken = "mockAccountToken" as d.AccountToken;
+export const mockAccountId = d.AccountId.fromString("mockAccountId");
+export const mockAccountToken = d.AccountToken.fromString("mockAccountToken");
 
-export const mockProgramIdA = "mockProgramA" as d.ProgramId;
-export const mockProgramIdB = "mockProgramB" as d.ProgramId;
-export const mockProgramIdLong = "mockProgramLong" as d.ProgramId;
-export const mockClassId = "mockClassId" as d.ClassId;
+export const mockProgramIdA = d.ProgramId.fromString("mockProgramA");
+export const mockProgramIdB = d.ProgramId.fromString("mockProgramB");
+export const mockProgramIdLong = d.ProgramId.fromString("mockProgramLong");
+export const mockClassId = d.ClassId.fromString("mockClassId");
 
 export const mockClassInvitationToken =
-  "5dc8e350896ab32e0db92d3edf8c6a9f59877d5175879843ccf546abcaec70e5" as d.StudentClassInvitationToken;
+  d.StudentClassInvitationToken.fromString(
+    "5dc8e350896ab32e0db92d3edf8c6a9f59877d5175879843ccf546abcaec70e5"
+  );
 
 export const mockClass: d.AdminClass = {
   id: mockClassId,
@@ -170,13 +222,13 @@ export const mockClassWithParticipantListLoadingParticipant: ClassWithParticipan
     participantList: undefined,
   };
 
-const korekara = "korekara" as d.QuestionId;
-const zinsei = "zinsei" as d.QuestionId;
-export const muzintou = "muzintou" as d.QuestionId;
-const dream = "draem" as d.QuestionId;
-const happy = "happy" as d.QuestionId;
-const saketai = "saketai" as d.QuestionId;
-const yuhan = "yuhan" as d.QuestionId;
+const korekara = d.QuestionId.fromString("korekara");
+const zinsei = d.QuestionId.fromString("zinsei");
+export const muzintou = d.QuestionId.fromString("muzintou");
+const dream = d.QuestionId.fromString("draem");
+const happy = d.QuestionId.fromString("happy");
+const saketai = d.QuestionId.fromString("saketai");
+const yuhan = d.QuestionId.fromString("yuhan");
 
 const questionList: ReadonlyArray<d.Question> = [
   {
@@ -198,13 +250,13 @@ const questionList: ReadonlyArray<d.Question> = [
     programId: mockProgramIdA,
   },
   {
-    id: "takara" as d.QuestionId,
+    id: d.QuestionId.fromString("takara"),
     name: "今も持っている宝はありますか?",
     parent: d.Option.Some(muzintou),
     programId: mockProgramIdA,
   },
   {
-    id: "nanisugosu" as d.QuestionId,
+    id: d.QuestionId.fromString("nanisugosu"),
     name: "時間が余っているときに, 何をして過ごしていますか?",
     parent: d.Option.Some(muzintou),
     programId: mockProgramIdA,
@@ -216,7 +268,7 @@ const questionList: ReadonlyArray<d.Question> = [
     programId: mockProgramIdA,
   },
   {
-    id: "syougakuseiyume" as d.QuestionId,
+    id: d.QuestionId.fromString("syougakuseiyume"),
     name: "小学生のときの将来の夢は何ですか",
     parent: d.Option.Some(dream),
     programId: mockProgramIdA,
@@ -228,25 +280,25 @@ const questionList: ReadonlyArray<d.Question> = [
     programId: mockProgramIdA,
   },
   {
-    id: "shougakuseitanosikatta" as d.QuestionId,
+    id: d.QuestionId.fromString("shougakuseitanosikatta"),
     name: "小学生のとき 1番 楽しかったことは何ですか?",
     parent: d.Option.Some(happy),
     programId: mockProgramIdA,
   },
   {
-    id: "tyougakuseitanosikatta" as d.QuestionId,
+    id: d.QuestionId.fromString("tyougakuseitanosikatta"),
     name: "中学生のとき 1番 楽しかったことは何ですか?",
     parent: d.Option.Some(happy),
     programId: mockProgramIdA,
   },
   {
-    id: "kouokouseitanosikatta" as d.QuestionId,
+    id: d.QuestionId.fromString("kouokouseitanosikatta"),
     name: "高校生のとき 1番 楽しかったことは何ですか?",
     parent: d.Option.Some(happy),
     programId: mockProgramIdA,
   },
   {
-    id: "daigakuseitanosikatta" as d.QuestionId,
+    id: d.QuestionId.fromString("daigakuseitanosikatta"),
     name: "大学生のとき 1番 楽しかったことは何ですか?",
     parent: d.Option.Some(happy),
     programId: mockProgramIdA,
@@ -258,7 +310,7 @@ const questionList: ReadonlyArray<d.Question> = [
     programId: mockProgramIdA,
   },
   {
-    id: "iyadatta" as d.QuestionId,
+    id: d.QuestionId.fromString("iyadatta"),
     name: "今まで嫌だったことは何ですか?",
     parent: d.Option.Some(saketai),
     programId: mockProgramIdA,

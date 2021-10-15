@@ -157,7 +157,12 @@ const LoggedIn = (props: {
         />
       );
     case "Notification":
-      return <NotificationPage appState={props.appState} />;
+      return (
+        <NotificationPage
+          appState={props.appState}
+          loggedInState={props.loggedInState}
+        />
+      );
   }
 };
 

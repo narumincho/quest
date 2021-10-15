@@ -186,7 +186,7 @@ readonly event: NotificationEvent;
 /**
  * 既読かどうか
  */
-readonly done: Bool };
+readonly done: Bool; readonly id: NotificationId };
 
 
 /**
@@ -955,10 +955,11 @@ readonly codec: Codec<Notification>;
 /**
  * 型を合わせる上で便利なヘルパー関数
  */
-readonly helper: (a: Notification) => Notification } = { typePartId: "4f5d8b0c864b435780eb4114e04d3e12" as TypePartId, helper: (notification: Notification): Notification => notification, codec: { encode: (value: Notification): ReadonlyArray<number> => (NotificationEvent.codec.encode(value.event).concat(Bool.codec.encode(value.done))), decode: (index: number, binary: Uint8Array): { readonly result: Notification; readonly nextIndex: number } => {
+readonly helper: (a: Notification) => Notification } = { typePartId: "4f5d8b0c864b435780eb4114e04d3e12" as TypePartId, helper: (notification: Notification): Notification => notification, codec: { encode: (value: Notification): ReadonlyArray<number> => (NotificationEvent.codec.encode(value.event).concat(Bool.codec.encode(value.done)).concat(NotificationId.codec.encode(value.id))), decode: (index: number, binary: Uint8Array): { readonly result: Notification; readonly nextIndex: number } => {
   const eventAndNextIndex: { readonly result: NotificationEvent; readonly nextIndex: number } = NotificationEvent.codec.decode(index, binary);
   const doneAndNextIndex: { readonly result: Bool; readonly nextIndex: number } = Bool.codec.decode(eventAndNextIndex.nextIndex, binary);
-  return { result: { event: eventAndNextIndex.result, done: doneAndNextIndex.result }, nextIndex: doneAndNextIndex.nextIndex };
+  const idAndNextIndex: { readonly result: NotificationId; readonly nextIndex: number } = NotificationId.codec.decode(doneAndNextIndex.nextIndex, binary);
+  return { result: { event: eventAndNextIndex.result, done: doneAndNextIndex.result, id: idAndNextIndex.result }, nextIndex: idAndNextIndex.nextIndex };
 } } };
 
 
