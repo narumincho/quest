@@ -135,6 +135,13 @@ const locationToStructuredUrl = (location: d.Location): StructuredUrl => {
         ]),
         hash: new Map(),
       };
+    case "Notification":
+      return {
+        resourceName: notificationPath,
+        resourceId: undefined,
+        searchParams: new Map(),
+        hash: new Map(),
+      };
   }
 };
 
@@ -304,6 +311,9 @@ const structuredUrlToLocation = (structuredUrl: StructuredUrl): d.UrlData => {
       }
       return d.UrlData.Normal(defaultLocation);
     }
+    case notificationPath: {
+      return d.UrlData.Normal(d.Location.Notification);
+    }
   }
   return d.UrlData.Normal(defaultLocation);
 };
@@ -342,6 +352,8 @@ const adminStudentAnswerPath = "admin-student-answer";
 const adminStudentAnswerClassId = "classId";
 const adminStudentAnswerStudentAccountId = "student-accountId";
 const adminStudentAnswerQuestionId = "questionId";
+
+const notificationPath = "notification";
 
 const lineLoginCallbackPath = "lineLoginCallback";
 

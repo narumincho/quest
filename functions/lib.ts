@@ -266,33 +266,45 @@ export const apiFunc: {
       questionTreeToStudentSelfQuestionTree(tree, answerList)
     );
   },
-  answerQuestion: async ({
-    accountToken,
-    classId,
-    isConfirm,
-    questionId,
-    answerText,
-  }) => {
-    const account = await validateAndGetAccount(accountToken);
-    const isStudent = firebaseInterface.isStudent(account.id, classId);
+  answerQuestion: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    const isStudent = firebaseInterface.isStudent(
+      account.id,
+      parameter.classId
+    );
     if (!isStudent) {
       throw new Error("生徒以外は質問に答えることはできません");
     }
-    const qClass = await firebaseInterface.getClassByClassId(classId);
+    const qClass = await firebaseInterface.getClassByClassId(parameter.classId);
     if (qClass === undefined) {
       throw new Error("クラスが存在しません");
     }
     await firebaseInterface.setAnswer({
       accountId: account.id,
-      classId,
-      isConfirm,
-      questionId,
-      text: answerText,
+      classId: parameter.classId,
+      isConfirm: parameter.isConfirm,
+      questionId: parameter.questionId,
+      text: parameter.answerText,
     });
+
+    if (parameter.isConfirm) {
+      firebaseInterface.addNotification({
+        accountId: qClass.createAccountId,
+        event: d.NotificationEvent.ConfirmAnswerInCreatedClass({
+          answerStudentId: account.id,
+          classId: parameter.classId,
+          questionId: parameter.questionId,
+        }),
+        id: d.NotificationId.fromString(createRandomId()),
+      });
+    }
 
     const [questionList, answerList] = await Promise.all([
       firebaseInterface.getQuestionListByProgramId(qClass.programId),
-      firebaseInterface.getAnswerListByStudentIdAndClassId(account.id, classId),
+      firebaseInterface.getAnswerListByStudentIdAndClassId(
+        account.id,
+        parameter.classId
+      ),
     ]);
 
     return getQuestionTree(qClass.programId, questionList).map((tree) =>
@@ -353,11 +365,11 @@ export const apiFunc: {
   },
   addComment: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
-    const isStudentOrClassCreator = getIsStudentOrClassCreator(
+    const isStudentOrClassCreatorResult = await getIsStudentOrClassCreator(
       account.id,
       parameter.classId
     );
-    if (!isStudentOrClassCreator) {
+    if (isStudentOrClassCreatorResult.result === "none") {
       throw new Error("生徒か管理者以外はコメントに追加できません");
     }
     const answerStudentIsValidStudent = await firebaseInterface.isStudent(
@@ -367,7 +379,7 @@ export const apiFunc: {
     if (!answerStudentIsValidStudent) {
       throw new Error("クラスに属していない生徒に対してコメントはできない");
     }
-    await firebaseInterface.addFeedback({
+    await firebaseInterface.addComment({
       feedbackId: d.FeedbackId.fromString(createRandomId()),
       answerStudentId: parameter.answerStudentId,
       classId: parameter.classId,
@@ -375,7 +387,28 @@ export const apiFunc: {
       message: parameter.message,
       questionId: parameter.questionId,
     });
-    return firebaseInterface.getFeedbackInAnswer({
+
+    if (parameter.answerStudentId !== account.id) {
+      firebaseInterface.addNotification({
+        accountId: isStudentOrClassCreatorResult.createAccountId,
+        event: d.NotificationEvent.NewCommentInCreatedClass({
+          answerStudentId: parameter.answerStudentId,
+          classId: parameter.classId,
+          questionId: parameter.questionId,
+        }),
+        id: d.NotificationId.fromString(createRandomId()),
+      });
+      firebaseInterface.addNotification({
+        accountId: parameter.answerStudentId,
+        event: d.NotificationEvent.NewCommentToMyAnswer({
+          answerStudentId: parameter.answerStudentId,
+          classId: parameter.classId,
+          questionId: parameter.questionId,
+        }),
+        id: d.NotificationId.fromString(createRandomId()),
+      });
+    }
+    return firebaseInterface.getCommentInAnswer({
       accountId: parameter.answerStudentId,
       classId: parameter.classId,
       questionId: parameter.questionId,
@@ -383,18 +416,26 @@ export const apiFunc: {
   },
   getComment: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
-    const isStudentOrClassCreator = getIsStudentOrClassCreator(
-      account.id,
-      parameter.classId
-    );
-    if (!isStudentOrClassCreator) {
+    if (
+      (await getIsStudentOrClassCreator(account.id, parameter.classId))
+        .result === "none"
+    ) {
       throw new Error("生徒か管理者以外はコメントを取得できません");
     }
-    return firebaseInterface.getFeedbackInAnswer({
+    return firebaseInterface.getCommentInAnswer({
       accountId: parameter.answerStudentId,
       classId: parameter.classId,
       questionId: parameter.questionId,
     });
+  },
+  getNotificationList: async (accountToken) => {
+    const account = await validateAndGetAccount(accountToken);
+    return firebaseInterface.getNotificationListByAccount(account.id);
+  },
+  notificationSetDone: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    await firebaseInterface.setNotificationDone(parameter.notificationId);
+    return firebaseInterface.getNotificationListByAccount(account.id);
   },
 };
 
@@ -629,13 +670,24 @@ const validateAndGetProgram = async (
 export const getIsStudentOrClassCreator = async (
   accountId: d.AccountId,
   classId: d.ClassId
-): Promise<boolean> => {
+): Promise<{
+  readonly result: "student" | "creator" | "none";
+  readonly createAccountId: d.AccountId;
+}> => {
   const qClass = await firebaseInterface.getClassByClassId(classId);
   if (qClass === undefined) {
     throw new Error("クラスが存在しません");
   }
   if (qClass.createAccountId === accountId) {
-    return true;
+    return {
+      result: "creator",
+      createAccountId: qClass.createAccountId,
+    };
   }
-  return firebaseInterface.isStudent(accountId, classId);
+  return {
+    result: (await firebaseInterface.isStudent(accountId, classId))
+      ? "student"
+      : "none",
+    createAccountId: qClass.createAccountId,
+  };
 };

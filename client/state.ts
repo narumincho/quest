@@ -132,6 +132,9 @@ export type AppState = {
   readonly addComment: (
     option: d.AddFeedbackParameter
   ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
+  readonly getNotificationList: (
+    accountToken: d.AccountToken
+  ) => Promise<ReadonlyArray<d.Notification> | undefined>;
 };
 
 export const useAppState = (): AppState => {
@@ -748,6 +751,13 @@ export const useAppState = (): AppState => {
         return undefined;
       }
       return response.okValue;
+    },
+    getNotificationList: async (accountToken) => {
+      const response = await api.getNotificationList(accountToken);
+      if (response._ === "Ok") {
+        return response.okValue;
+      }
+      return undefined;
     },
   };
 };

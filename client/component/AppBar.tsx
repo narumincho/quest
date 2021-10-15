@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
+import { ArrowBack, Notifications } from "@mui/icons-material";
 import {
   Avatar,
   IconButton,
@@ -9,7 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 import { AppState } from "../state";
-import { ArrowBack } from "@mui/icons-material";
 import { Link } from "./Link";
 
 /**
@@ -35,16 +35,21 @@ export const AppBar = (props: {
           クエスト
         </Typography>
         {props.appState.logInState.tag === "LoggedIn" ? (
-          <Link location={d.Location.Setting} appState={props.appState}>
-            <Avatar
-              alt={props.appState.logInState.loggedInState.account.name}
-              src={commonUrl
-                .imageUrl(
-                  props.appState.logInState.loggedInState.account.iconHash
-                )
-                .toString()}
-            />
-          </Link>
+          <>
+            <Link location={d.Location.Notification} appState={props.appState}>
+              <Notifications />
+            </Link>
+            <Link location={d.Location.Setting} appState={props.appState}>
+              <Avatar
+                alt={props.appState.logInState.loggedInState.account.name}
+                src={commonUrl
+                  .imageUrl(
+                    props.appState.logInState.loggedInState.account.iconHash
+                  )
+                  .toString()}
+              />
+            </Link>
+          </>
         ) : (
           <></>
         )}

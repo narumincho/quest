@@ -195,12 +195,12 @@ const CommentList = (props: {
         padding: 1,
       }}
     >
-      {props.commentList.map((comment, index) => {
+      {props.commentList.map((comment) => {
         const account: d.Account | undefined = participantList.find(
           (participant) => participant.account.id === comment.accountId
         )?.account;
         return (
-          <Paper key={index} sx={{ padding: 1 }}>
+          <Paper key={comment.id} sx={{ padding: 1 }}>
             {account === undefined ? (
               <></>
             ) : (

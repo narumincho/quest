@@ -186,3 +186,25 @@ export const getComment: ApiCodec<
   request: d.GetFeedbackParameter.codec,
   response: d.List.codec(d.Feedback.codec),
 };
+
+/**
+ * 通知を取得する
+ */
+export const getNotificationList: ApiCodec<
+  d.AccountToken,
+  ReadonlyArray<d.Notification>
+> = {
+  request: d.AccountToken.codec,
+  response: d.List.codec(d.Notification.codec),
+};
+
+/**
+ * 通知を既読にする
+ */
+export const notificationSetDone: ApiCodec<
+  d.NotificationSetDoneParameter,
+  ReadonlyArray<d.Notification>
+> = {
+  request: d.NotificationSetDoneParameter.codec,
+  response: d.List.codec(d.Notification.codec),
+};
