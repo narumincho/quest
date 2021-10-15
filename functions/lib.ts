@@ -396,6 +396,15 @@ export const apiFunc: {
       questionId: parameter.questionId,
     });
   },
+  getNotificationList: async (accountToken) => {
+    const account = await validateAndGetAccount(accountToken);
+    return firebaseInterface.getNotificationListByAccount(account.id);
+  },
+  notificationSetDone: async (parameter) => {
+    const account = await validateAndGetAccount(parameter.accountToken);
+    await firebaseInterface.setNotificationDone(parameter.notificationId);
+    return firebaseInterface.getNotificationListByAccount(account.id);
+  },
 };
 
 const questionTreeToStudentSelfQuestionTree = (

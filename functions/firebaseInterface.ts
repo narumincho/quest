@@ -76,6 +76,11 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     value: FeedbackDocument;
     subCollections: Record<never, never>;
   };
+  notification: {
+    key: d.NotificationId;
+    value: NotificationDocument;
+    subCollections: Record<never, never>;
+  };
 }>;
 
 type AnswerDocument = {
@@ -95,6 +100,12 @@ type FeedbackDocument = {
   readonly answerAccountId: d.AccountId;
   readonly feedbackAccountId: d.AccountId;
   readonly createTime: admin.firestore.Timestamp;
+};
+
+type NotificationDocument = {
+  readonly event: d.NotificationEvent;
+  readonly accountId: d.AccountId;
+  readonly done: boolean;
 };
 
 const cloudStorageBucket = app.storage().bucket();
@@ -633,9 +644,46 @@ export const getFeedbackInAnswer = async (option: {
   return result.docs.map((doc): d.Feedback => {
     const data = doc.data();
     return {
+      id: doc.id,
       accountId: data.feedbackAccountId,
       message: data.message,
       createDateTime: firestoreTimestampToDateTime(data.createTime),
+    };
+  });
+};
+
+export const addNotification = async (option: {
+  readonly event: d.NotificationEvent;
+  readonly accountId: d.AccountId;
+  readonly id: d.NotificationId;
+}): Promise<void> => {
+  await firestore.collection("notification").doc(option.id).create({
+    accountId: option.accountId,
+    event: option.event,
+    done: false,
+  });
+};
+
+export const setNotificationDone = async (
+  notificationId: d.NotificationId
+): Promise<void> => {
+  await firestore.collection("notification").doc(notificationId).update({
+    done: true,
+  });
+};
+
+export const getNotificationListByAccount = async (
+  accountId: d.AccountId
+): Promise<ReadonlyArray<d.Notification>> => {
+  const snapshot = await firestore
+    .collection("notification")
+    .where("accountId", "==", accountId)
+    .get();
+  return snapshot.docs.map<d.Notification>((doc) => {
+    const data = doc.data();
+    return {
+      done: data.done,
+      event: data.event,
     };
   });
 };

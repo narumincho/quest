@@ -169,6 +169,27 @@ export type AccountIdAndClassId = { readonly accountId: AccountId; readonly clas
 
 
 /**
+ * @typePartId 47bbe818062456a8c3aa11c8f59c364c
+ */
+export type NotificationEvent = { readonly _: "NewCommentToMyAnswer"; readonly answerIdData: AnswerIdData } | { readonly _: "NewCommentInCreatedClass"; readonly answerIdData: AnswerIdData } | { readonly _: "ConfirmAnswerInCreatedClass"; readonly answerIdData: AnswerIdData };
+
+
+/**
+ * 通知 1つ1つ
+ * @typePartId 4f5d8b0c864b435780eb4114e04d3e12
+ */
+export type Notification = { 
+/**
+ * イベントの種類と内容
+ */
+readonly event: NotificationEvent; 
+/**
+ * 既読かどうか
+ */
+readonly done: Bool };
+
+
+/**
  * 質問
  * @typePartId 5024e10d28f2dfac877b924e1c7aaed0
  */
@@ -291,6 +312,19 @@ readonly parent: Option<QuestionId>;
  * 質問文
  */
 readonly questionText: String };
+
+
+/**
+ * @typePartId 74ad6c4ddcd42dc5052becec9c3978fa
+ */
+export type NotificationId = string & { readonly _notificationId: never };
+
+
+/**
+ * 通知を既読にするAPIのパラメータ
+ * @typePartId 7b28884b3f24d567783144c03079420a
+ */
+export type NotificationSetDoneParameter = { readonly accountToken: AccountToken; readonly notificationId: NotificationId };
 
 
 /**
@@ -853,6 +887,82 @@ readonly helper: (a: AccountIdAndClassId) => AccountIdAndClassId } = { typePartI
 
 
 /**
+ * @typePartId 47bbe818062456a8c3aa11c8f59c364c
+ */
+export const NotificationEvent: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<NotificationEvent>; 
+/**
+ * 自分の回答に対してあらたなコメントがついた
+ */
+readonly NewCommentToMyAnswer: (a: AnswerIdData) => NotificationEvent; 
+/**
+ * 自分のクラスの生徒の回答に, あらたなコメントがついた
+ */
+readonly NewCommentInCreatedClass: (a: AnswerIdData) => NotificationEvent; 
+/**
+ * 自分のクラスの生徒にあたらたに確定した回答が追加された
+ */
+readonly ConfirmAnswerInCreatedClass: (a: AnswerIdData) => NotificationEvent } = { NewCommentToMyAnswer: (answerIdData: AnswerIdData): NotificationEvent => ({ _: "NewCommentToMyAnswer", answerIdData }), NewCommentInCreatedClass: (answerIdData: AnswerIdData): NotificationEvent => ({ _: "NewCommentInCreatedClass", answerIdData }), ConfirmAnswerInCreatedClass: (answerIdData: AnswerIdData): NotificationEvent => ({ _: "ConfirmAnswerInCreatedClass", answerIdData }), typePartId: "47bbe818062456a8c3aa11c8f59c364c" as TypePartId, codec: { encode: (value: NotificationEvent): ReadonlyArray<number> => {
+  switch (value._) {
+    case "NewCommentToMyAnswer": {
+      return [0].concat(AnswerIdData.codec.encode(value.answerIdData));
+    }
+    case "NewCommentInCreatedClass": {
+      return [1].concat(AnswerIdData.codec.encode(value.answerIdData));
+    }
+    case "ConfirmAnswerInCreatedClass": {
+      return [2].concat(AnswerIdData.codec.encode(value.answerIdData));
+    }
+  }
+}, decode: (index: number, binary: Uint8Array): { readonly result: NotificationEvent; readonly nextIndex: number } => {
+  const patternIndex: { readonly result: number; readonly nextIndex: number } = Int32.codec.decode(index, binary);
+  if (patternIndex.result === 0) {
+    const result: { readonly result: AnswerIdData; readonly nextIndex: number } = AnswerIdData.codec.decode(patternIndex.nextIndex, binary);
+    return { result: NotificationEvent.NewCommentToMyAnswer(result.result), nextIndex: result.nextIndex };
+  }
+  if (patternIndex.result === 1) {
+    const result: { readonly result: AnswerIdData; readonly nextIndex: number } = AnswerIdData.codec.decode(patternIndex.nextIndex, binary);
+    return { result: NotificationEvent.NewCommentInCreatedClass(result.result), nextIndex: result.nextIndex };
+  }
+  if (patternIndex.result === 2) {
+    const result: { readonly result: AnswerIdData; readonly nextIndex: number } = AnswerIdData.codec.decode(patternIndex.nextIndex, binary);
+    return { result: NotificationEvent.ConfirmAnswerInCreatedClass(result.result), nextIndex: result.nextIndex };
+  }
+  throw new Error("存在しないパターンを指定された 型を更新してください");
+} } };
+
+
+/**
+ * 通知 1つ1つ
+ * @typePartId 4f5d8b0c864b435780eb4114e04d3e12
+ */
+export const Notification: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<Notification>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: Notification) => Notification } = { typePartId: "4f5d8b0c864b435780eb4114e04d3e12" as TypePartId, helper: (notification: Notification): Notification => notification, codec: { encode: (value: Notification): ReadonlyArray<number> => (NotificationEvent.codec.encode(value.event).concat(Bool.codec.encode(value.done))), decode: (index: number, binary: Uint8Array): { readonly result: Notification; readonly nextIndex: number } => {
+  const eventAndNextIndex: { readonly result: NotificationEvent; readonly nextIndex: number } = NotificationEvent.codec.decode(index, binary);
+  const doneAndNextIndex: { readonly result: Bool; readonly nextIndex: number } = Bool.codec.decode(eventAndNextIndex.nextIndex, binary);
+  return { result: { event: eventAndNextIndex.result, done: doneAndNextIndex.result }, nextIndex: doneAndNextIndex.nextIndex };
+} } };
+
+
+/**
  * 質問
  * @typePartId 5024e10d28f2dfac877b924e1c7aaed0
  */
@@ -1041,6 +1151,47 @@ readonly helper: (a: CreateQuestionParamter) => CreateQuestionParamter } = { typ
   const parentAndNextIndex: { readonly result: Option<QuestionId>; readonly nextIndex: number } = Option.codec(QuestionId.codec).decode(programIdAndNextIndex.nextIndex, binary);
   const questionTextAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(parentAndNextIndex.nextIndex, binary);
   return { result: { accountToken: accountTokenAndNextIndex.result, programId: programIdAndNextIndex.result, parent: parentAndNextIndex.result, questionText: questionTextAndNextIndex.result }, nextIndex: questionTextAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * @typePartId 74ad6c4ddcd42dc5052becec9c3978fa
+ */
+export const NotificationId: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<NotificationId>; 
+/**
+ * 文字列から変換する
+ */
+readonly fromString: (a: string) => NotificationId } = { typePartId: "74ad6c4ddcd42dc5052becec9c3978fa" as TypePartId, codec: { encode: (value: NotificationId): ReadonlyArray<number> => (encodeId(value)), decode: (index: number, binary: Uint8Array): { readonly result: NotificationId; readonly nextIndex: number } => (decodeId(index, binary) as { readonly result: NotificationId; readonly nextIndex: number }) }, fromString: (str: string): NotificationId => (str as NotificationId) };
+
+
+/**
+ * 通知を既読にするAPIのパラメータ
+ * @typePartId 7b28884b3f24d567783144c03079420a
+ */
+export const NotificationSetDoneParameter: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<NotificationSetDoneParameter>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: NotificationSetDoneParameter) => NotificationSetDoneParameter } = { typePartId: "7b28884b3f24d567783144c03079420a" as TypePartId, helper: (notificationSetDoneParameter: NotificationSetDoneParameter): NotificationSetDoneParameter => notificationSetDoneParameter, codec: { encode: (value: NotificationSetDoneParameter): ReadonlyArray<number> => (AccountToken.codec.encode(value.accountToken).concat(NotificationId.codec.encode(value.notificationId))), decode: (index: number, binary: Uint8Array): { readonly result: NotificationSetDoneParameter; readonly nextIndex: number } => {
+  const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
+  const notificationIdAndNextIndex: { readonly result: NotificationId; readonly nextIndex: number } = NotificationId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
+  return { result: { accountToken: accountTokenAndNextIndex.result, notificationId: notificationIdAndNextIndex.result }, nextIndex: notificationIdAndNextIndex.nextIndex };
 } } };
 
 
