@@ -127,11 +127,11 @@ export type AppState = {
   }) => Promise<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>;
   /** コメントを取得する */
   readonly requestComment: (
-    option: d.GetFeedbackParameter
-  ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
+    option: d.GetCommentParameter
+  ) => Promise<ReadonlyArray<d.Comment> | undefined>;
   readonly addComment: (
-    option: d.AddFeedbackParameter
-  ) => Promise<ReadonlyArray<d.Feedback> | undefined>;
+    option: d.AddCommentParameter
+  ) => Promise<ReadonlyArray<d.Comment> | undefined>;
   readonly getNotificationList: (
     accountToken: d.AccountToken
   ) => Promise<ReadonlyArray<d.Notification> | undefined>;

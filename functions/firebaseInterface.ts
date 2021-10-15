@@ -72,7 +72,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     subCollections: Record<never, never>;
   };
   feedback: {
-    key: d.FeedbackId;
+    key: d.CommentId;
     value: FeedbackDocument;
     subCollections: Record<never, never>;
   };
@@ -613,14 +613,14 @@ const answerQueryDocumentSnapshotToAnswerItemList = (
 };
 
 export const addComment = async (option: {
-  feedbackId: d.FeedbackId;
+  commentId: d.CommentId;
   classId: d.ClassId;
   answerStudentId: d.AccountId;
   feedbackAccountId: d.AccountId;
   questionId: d.QuestionId;
   message: string;
 }): Promise<void> => {
-  await firestore.collection("feedback").doc(option.feedbackId).create({
+  await firestore.collection("feedback").doc(option.commentId).create({
     classId: option.classId,
     answerAccountId: option.answerStudentId,
     createTime: admin.firestore.FieldValue.serverTimestamp(),
@@ -634,14 +634,14 @@ export const getCommentInAnswer = async (option: {
   questionId: d.QuestionId;
   classId: d.ClassId;
   accountId: d.AccountId;
-}): Promise<ReadonlyArray<d.Feedback>> => {
+}): Promise<ReadonlyArray<d.Comment>> => {
   const result = await firestore
     .collection("feedback")
     .where("questionId", "==", option.questionId)
     .where("classId", "==", option.classId)
     .where("answerAccountId", "==", option.accountId)
     .get();
-  return result.docs.map((doc): d.Feedback => {
+  return result.docs.map((doc): d.Comment => {
     const data = doc.data();
     return {
       id: doc.id,

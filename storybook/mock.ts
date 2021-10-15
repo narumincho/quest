@@ -94,21 +94,21 @@ export const mockAppState: AppState = {
   },
   requestComment: (e) => {
     action("requestComment")(e);
-    return Promise.resolve<ReadonlyArray<d.Feedback>>([
+    return Promise.resolve<ReadonlyArray<d.Comment>>([
       {
-        id: d.FeedbackId.fromString("commentA"),
+        id: d.CommentId.fromString("commentA"),
         accountId: mockAccount3.id,
         message: "サンプルコメント",
         createDateTime: { day: 0, millisecond: 0 },
       },
       {
-        id: d.FeedbackId.fromString("commentB"),
+        id: d.CommentId.fromString("commentB"),
         accountId: mockAccount2.id,
         message: "良いね",
         createDateTime: { day: 0, millisecond: 0 },
       },
       {
-        id: d.FeedbackId.fromString("commentC"),
+        id: d.CommentId.fromString("commentC"),
         accountId: mockAccount.id,
         message:
           "ここをこうするとこうなるから, こうやってこうしてみると良いんじゃないか?",
@@ -118,9 +118,9 @@ export const mockAppState: AppState = {
   },
   addComment: (e) => {
     action("addComment")(e);
-    return Promise.resolve<ReadonlyArray<d.Feedback>>([
+    return Promise.resolve<ReadonlyArray<d.Comment>>([
       {
-        id: d.FeedbackId.fromString("commentD"),
+        id: d.CommentId.fromString("commentD"),
         accountId: mockAccount3.id,
         message: "コメントが追加されたあとのコメント",
         createDateTime: { day: 0, millisecond: 0 },

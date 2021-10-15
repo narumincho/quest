@@ -98,6 +98,7 @@ const NotFoundQuestion = (props: {
           <div></div>
         </Breadcrumbs>
       </Box>
+      <Box padding={1}>質問が見つかりませんでした</Box>
     </PageContainer>
   );
 };

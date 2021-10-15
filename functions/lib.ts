@@ -380,7 +380,7 @@ export const apiFunc: {
       throw new Error("クラスに属していない生徒に対してコメントはできない");
     }
     await firebaseInterface.addComment({
-      feedbackId: d.FeedbackId.fromString(createRandomId()),
+      commentId: d.CommentId.fromString(createRandomId()),
       answerStudentId: parameter.answerStudentId,
       classId: parameter.classId,
       feedbackAccountId: account.id,
