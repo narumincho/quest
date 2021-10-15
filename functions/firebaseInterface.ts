@@ -612,7 +612,7 @@ const answerQueryDocumentSnapshotToAnswerItemList = (
   });
 };
 
-export const addFeedback = async (option: {
+export const addComment = async (option: {
   feedbackId: d.FeedbackId;
   classId: d.ClassId;
   answerStudentId: d.AccountId;
@@ -630,7 +630,7 @@ export const addFeedback = async (option: {
   });
 };
 
-export const getFeedbackInAnswer = async (option: {
+export const getCommentInAnswer = async (option: {
   questionId: d.QuestionId;
   classId: d.ClassId;
   accountId: d.AccountId;
