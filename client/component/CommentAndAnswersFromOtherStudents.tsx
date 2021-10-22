@@ -14,6 +14,7 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { Send } from "@mui/icons-material";
+import { dateTimeToMillisecondsSinceUnixEpoch } from "../../common/dateTime";
 
 export const CommentAndAnswersFromOtherStudents = (props: {
   readonly appState: AppState;
@@ -184,9 +185,6 @@ const CommentList = (props: {
   if (props.commentList.length === 0) {
     return <div>コメントはまだありません</div>;
   }
-  const participantList: ReadonlyArray<d.Participant> =
-    props.loggedInState.joinedClassMap.get(props.classId)?.participantList ??
-    [];
   return (
     <Box
       sx={{
@@ -195,24 +193,23 @@ const CommentList = (props: {
         padding: 1,
       }}
     >
-      {props.commentList.map((comment) => {
-        const account: d.Account | undefined = participantList.find(
-          (participant) => participant.account.id === comment.accountId
-        )?.account;
-        return (
-          <Paper key={comment.id} sx={{ padding: 1 }}>
-            {account === undefined ? (
-              <></>
-            ) : (
+      {[...props.commentList]
+        .sort(
+          (a, b) =>
+            dateTimeToMillisecondsSinceUnixEpoch(b.createDateTime) -
+            dateTimeToMillisecondsSinceUnixEpoch(a.createDateTime)
+        )
+        .map((comment) => {
+          return (
+            <Paper key={comment.id} sx={{ padding: 1 }}>
               <AccountCard
-                accountId={account.id}
+                accountId={comment.accountId}
                 loggedInState={props.loggedInState}
               />
-            )}
-            {comment.message}
-          </Paper>
-        );
-      })}
+              {comment.message}
+            </Paper>
+          );
+        })}
     </Box>
   );
 };
