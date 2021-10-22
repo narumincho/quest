@@ -137,6 +137,7 @@ export const mockAppState: AppState = {
           questionId: mockKadaiQuestionId,
         }),
         id: d.NotificationId.fromString("notificationA"),
+        createTime: { day: 0, millisecond: 0 },
       },
       {
         done: true,
@@ -146,6 +147,7 @@ export const mockAppState: AppState = {
           questionId: mockKadaiQuestionId,
         }),
         id: d.NotificationId.fromString("notificationB"),
+        createTime: { day: 0, millisecond: 1 },
       },
       {
         done: true,
@@ -155,6 +157,7 @@ export const mockAppState: AppState = {
           questionId: mockKadaiQuestionId,
         }),
         id: d.NotificationId.fromString("notificationC"),
+        createTime: { day: 0, millisecond: 3 },
       },
       {
         done: false,
@@ -164,6 +167,7 @@ export const mockAppState: AppState = {
           questionId: dream,
         }),
         id: d.NotificationId.fromString("notificationD"),
+        createTime: { day: 0, millisecond: 10 },
       },
       {
         done: true,
@@ -173,6 +177,7 @@ export const mockAppState: AppState = {
           questionId: dream,
         }),
         id: d.NotificationId.fromString("notificationE"),
+        createTime: { day: 0, millisecond: 12 },
       },
     ]);
   },

@@ -106,6 +106,7 @@ type NotificationDocument = {
   readonly event: d.NotificationEvent;
   readonly accountId: d.AccountId;
   readonly done: boolean;
+  readonly createTime: admin.firestore.Timestamp;
 };
 
 const cloudStorageBucket = app.storage().bucket();
@@ -661,6 +662,7 @@ export const addNotification = async (option: {
     accountId: option.accountId,
     event: option.event,
     done: false,
+    createTime: admin.firestore.FieldValue.serverTimestamp(),
   });
 };
 
@@ -685,6 +687,7 @@ export const getNotificationListByAccount = async (
       id: doc.id,
       done: data.done,
       event: data.event,
+      createTime: firestoreTimestampToDateTime(data.createTime),
     };
   });
 };
