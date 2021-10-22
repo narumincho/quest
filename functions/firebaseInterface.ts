@@ -1,16 +1,18 @@
-import * as admin from "firebase-admin";
 import * as d from "../data";
 import * as functions from "firebase-functions";
 import type * as stream from "stream";
 import type * as typedFirestore from "typed-admin-firestore";
+import { FieldValue, Timestamp, getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { imagePng } from "./mimeType";
+import { initializeApp } from "firebase-admin/app";
 
-const app = admin.initializeApp();
-const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
+const app = initializeApp();
+const firestore = getFirestore(app) as unknown as typedFirestore.Firestore<{
   loginState: {
     key: string;
     value: {
-      createTime: admin.firestore.Timestamp;
+      createTime: Timestamp;
       location: d.Location;
     };
     subCollections: Record<never, never>;
@@ -21,7 +23,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
       name: string;
       lineId: string;
       iconHash: d.ImageHashValue;
-      createTime: admin.firestore.Timestamp;
+      createTime: Timestamp;
       accountTokenHash: string;
     };
     subCollections: Record<never, never>;
@@ -31,7 +33,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
     value: {
       name: string;
       createAccountId: d.AccountId;
-      createTime: admin.firestore.Timestamp;
+      createTime: Timestamp;
     };
     subCollections: Record<never, never>;
   };
@@ -41,7 +43,7 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
       name: string;
       parent: d.QuestionId | null;
       programId: d.ProgramId;
-      createTime: admin.firestore.Timestamp;
+      createTime: Timestamp;
     };
     subCollections: Record<never, never>;
   };
@@ -52,14 +54,14 @@ const firestore = app.firestore() as unknown as typedFirestore.Firestore<{
       programId: d.ProgramId;
       invitationToken: d.StudentClassInvitationToken;
       createAccountId: d.AccountId;
-      createTime: admin.firestore.Timestamp;
+      createTime: Timestamp;
     };
     subCollections: Record<never, never>;
   };
   classJoinData: {
     key: `${d.AccountId}_${d.ClassId}`;
     value: {
-      joinTime: admin.firestore.Timestamp;
+      joinTime: Timestamp;
       role: d.ClassParticipantRole;
       accountId: d.AccountId;
       classId: d.ClassId;
@@ -88,8 +90,8 @@ type AnswerDocument = {
   readonly questionId: d.QuestionId;
   readonly classId: d.ClassId;
   readonly accountId: d.AccountId;
-  readonly createTime: admin.firestore.Timestamp;
-  readonly updateTime: admin.firestore.Timestamp;
+  readonly createTime: Timestamp;
+  readonly updateTime: Timestamp;
   readonly isConfirm: boolean;
 };
 
@@ -99,24 +101,24 @@ type FeedbackDocument = {
   readonly classId: d.ClassId;
   readonly answerAccountId: d.AccountId;
   readonly feedbackAccountId: d.AccountId;
-  readonly createTime: admin.firestore.Timestamp;
+  readonly createTime: Timestamp;
 };
 
 type NotificationDocument = {
   readonly event: d.NotificationEvent;
   readonly accountId: d.AccountId;
   readonly done: boolean;
-  readonly createTime: admin.firestore.Timestamp;
+  readonly createTime: Timestamp;
 };
 
-const cloudStorageBucket = app.storage().bucket();
+const cloudStorageBucket = getStorage(app).bucket();
 
 export const createLogInState = async (
   state: string,
   location: d.Location
 ): Promise<void> => {
   await firestore.collection("loginState").doc(state).create({
-    createTime: admin.firestore.Timestamp.now(),
+    createTime: Timestamp.now(),
     location,
   });
 };
@@ -145,7 +147,7 @@ export const createAccount = async (accountCrateData: {
     name: accountCrateData.name,
     lineId: accountCrateData.lineId,
     iconHash: accountCrateData.iconHash,
-    createTime: admin.firestore.Timestamp.now(),
+    createTime: Timestamp.now(),
     accountTokenHash: accountCrateData.accountTokenHash,
   });
 };
@@ -209,7 +211,7 @@ export const createProgram = async (data: {
   await firestore.collection("program").doc(data.id).create({
     name: data.name,
     createAccountId: data.createAccountId,
-    createTime: admin.firestore.FieldValue.serverTimestamp(),
+    createTime: FieldValue.serverTimestamp(),
   });
 };
 
@@ -256,7 +258,7 @@ export const createQuestion = async (question: d.Question): Promise<void> => {
       name: question.name,
       parent: question.parent._ === "Some" ? question.parent.value : null,
       programId: question.programId,
-      createTime: admin.firestore.FieldValue.serverTimestamp(),
+      createTime: FieldValue.serverTimestamp(),
     });
 };
 
@@ -320,7 +322,7 @@ export const createClass = async (
     programId: qClass.programId,
     invitationToken: qClass.studentInvitationToken,
     createAccountId,
-    createTime: admin.firestore.FieldValue.serverTimestamp(),
+    createTime: FieldValue.serverTimestamp(),
   });
 };
 
@@ -439,7 +441,7 @@ export const getJoinClassData = async (
 ): Promise<
   | undefined
   | {
-      readonly joinTime: admin.firestore.Timestamp;
+      readonly joinTime: Timestamp;
       readonly role: d.ClassParticipantRole;
       readonly accountId: d.AccountId;
       readonly classId: d.ClassId;
@@ -494,7 +496,7 @@ export const joinClassAsStudent = async (
     .create({
       accountId,
       classId,
-      joinTime: admin.firestore.Timestamp.fromDate(date),
+      joinTime: Timestamp.fromDate(date),
       role: d.ClassParticipantRole.Student,
     });
 };
@@ -517,7 +519,7 @@ export const setAnswer = async (parameter: {
       questionId: parameter.questionId,
       classId: parameter.classId,
       accountId: parameter.accountId,
-      updateTime: admin.firestore.FieldValue.serverTimestamp(),
+      updateTime: FieldValue.serverTimestamp(),
       isConfirm: parameter.isConfirm,
     });
     return;
@@ -528,8 +530,8 @@ export const setAnswer = async (parameter: {
     questionId: parameter.questionId,
     classId: parameter.classId,
     accountId: parameter.accountId,
-    createTime: admin.firestore.FieldValue.serverTimestamp(),
-    updateTime: admin.firestore.FieldValue.serverTimestamp(),
+    createTime: FieldValue.serverTimestamp(),
+    updateTime: FieldValue.serverTimestamp(),
     isConfirm: parameter.isConfirm,
   });
 };
@@ -624,7 +626,7 @@ export const addComment = async (option: {
   await firestore.collection("feedback").doc(option.commentId).create({
     classId: option.classId,
     answerAccountId: option.answerStudentId,
-    createTime: admin.firestore.FieldValue.serverTimestamp(),
+    createTime: FieldValue.serverTimestamp(),
     feedbackAccountId: option.feedbackAccountId,
     questionId: option.questionId,
     message: option.message,
@@ -662,7 +664,7 @@ export const addNotification = async (option: {
     accountId: option.accountId,
     event: option.event,
     done: false,
-    createTime: admin.firestore.FieldValue.serverTimestamp(),
+    createTime: FieldValue.serverTimestamp(),
   });
 };
 
@@ -736,7 +738,7 @@ export const lineLoginSecret = (): string => {
 const millisecondInDay = 1000 * 60 * 60 * 24;
 
 export const firestoreTimestampToDateTime = (
-  firestoreTimestamp: admin.firestore.Timestamp
+  firestoreTimestamp: Timestamp
 ): d.DateTime => {
   const millisecond = firestoreTimestamp.toMillis();
   return {
