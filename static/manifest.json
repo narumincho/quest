@@ -1,0 +1,15 @@
+{
+  "name": "クエスト",
+  "short_name": "クエスト",
+  "start_url": "https://north-quest.web.app/",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "クエスト は 木構造の質問に回答しコメントしあう webアプリ",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
