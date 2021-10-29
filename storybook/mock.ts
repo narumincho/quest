@@ -181,6 +181,10 @@ export const mockAppState: AppState = {
       },
     ]);
   },
+  setNotificationDone: () => {
+    action("setNotificationDone")();
+    return Promise.resolve([]);
+  },
 };
 
 export const mockAccount: d.Account = {
