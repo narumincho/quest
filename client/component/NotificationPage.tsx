@@ -118,6 +118,8 @@ const NotificationItem = (props: {
             props.notification.event.answerIdData
           )}
           done={props.notification.done}
+          notificationId={props.notification.id}
+          accountToken={props.loggedInState.accountToken}
         >
           <Typography>自分のクラスの</Typography>
           <AccountCard
@@ -138,6 +140,8 @@ const NotificationItem = (props: {
             props.notification.event.answerIdData
           )}
           done={props.notification.done}
+          notificationId={props.notification.id}
+          accountToken={props.loggedInState.accountToken}
         >
           <Typography>自分のクラスの</Typography>
           <AccountCard
@@ -158,6 +162,8 @@ const NotificationItem = (props: {
             props.notification.event.answerIdData
           )}
           done={props.notification.done}
+          notificationId={props.notification.id}
+          accountToken={props.loggedInState.accountToken}
         >
           <Typography>自分の回答に</Typography>
           <AccountCard
@@ -178,9 +184,20 @@ const NotificationItemContainer = (props: {
   readonly appState: AppState;
   readonly location: d.Location;
   readonly done: boolean;
+  readonly notificationId: d.NotificationId;
+  readonly accountToken: d.AccountToken;
 }): React.ReactElement => {
   return (
-    <Link appState={props.appState} location={props.location}>
+    <Link
+      appState={props.appState}
+      location={props.location}
+      onClick={() => {
+        props.appState.setNotificationDone(
+          props.notificationId,
+          props.accountToken
+        );
+      }}
+    >
       <Badge
         color="secondary"
         badgeContent={props.done ? 0 : " "}
