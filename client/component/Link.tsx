@@ -7,6 +7,7 @@ import { locationToUrl } from "../../common/url";
 export const Link: React.FC<{
   readonly appState: AppState;
   readonly location: d.Location;
+  readonly onClick?: (() => void) | undefined;
 }> = (props) => {
   return (
     <MuiLink
@@ -16,9 +17,14 @@ export const Link: React.FC<{
         },
       }}
       href={locationToUrl(props.location).toString()}
-      onClick={(mouseEvent: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
-        onClick(mouseEvent, () => props.appState.jump(props.location))
-      }
+      onClick={(
+        mouseEvent: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+      ): void => {
+        if (props.onClick !== undefined) {
+          props.onClick();
+        }
+        onClick(mouseEvent, () => props.appState.jump(props.location));
+      }}
     >
       {props.children}
     </MuiLink>

@@ -8,6 +8,10 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
+import {
+  dateTimeToMillisecondsSinceUnixEpoch,
+  dateTimeToString,
+} from "../../common/dateTime";
 import { AccountCard } from "./AccountCard";
 import { AppState } from "../state";
 import { Link } from "./Link";
@@ -82,14 +86,20 @@ const NotificationContent = (props: {
   }
   return (
     <Box display="grid" padding={1} gap={1}>
-      {props.notificationList.map((item) => (
-        <NotificationItem
-          key={item.id}
-          notification={item}
-          appState={props.appState}
-          loggedInState={props.loggedInState}
-        />
-      ))}
+      {[...props.notificationList]
+        .sort(
+          (a, b) =>
+            dateTimeToMillisecondsSinceUnixEpoch(b.createTime) -
+            dateTimeToMillisecondsSinceUnixEpoch(a.createTime)
+        )
+        .map((item) => (
+          <NotificationItem
+            key={item.id}
+            notification={item}
+            appState={props.appState}
+            loggedInState={props.loggedInState}
+          />
+        ))}
     </Box>
   );
 };
@@ -108,6 +118,8 @@ const NotificationItem = (props: {
             props.notification.event.answerIdData
           )}
           done={props.notification.done}
+          notificationId={props.notification.id}
+          accountToken={props.loggedInState.accountToken}
         >
           <Typography>自分のクラスの</Typography>
           <AccountCard
@@ -115,6 +127,9 @@ const NotificationItem = (props: {
             accountId={props.notification.event.answerIdData.answerStudentId}
           />
           <Typography>が回答しました</Typography>
+          <Typography>
+            {dateTimeToString(props.notification.createTime)}
+          </Typography>
         </NotificationItemContainer>
       );
     case "NewCommentInCreatedClass":
@@ -125,6 +140,8 @@ const NotificationItem = (props: {
             props.notification.event.answerIdData
           )}
           done={props.notification.done}
+          notificationId={props.notification.id}
+          accountToken={props.loggedInState.accountToken}
         >
           <Typography>自分のクラスの</Typography>
           <AccountCard
@@ -132,6 +149,9 @@ const NotificationItem = (props: {
             accountId={props.notification.event.answerIdData.answerStudentId}
           />
           <Typography>がコメントしました</Typography>
+          <Typography>
+            {dateTimeToString(props.notification.createTime)}
+          </Typography>
         </NotificationItemContainer>
       );
     case "NewCommentToMyAnswer":
@@ -142,6 +162,8 @@ const NotificationItem = (props: {
             props.notification.event.answerIdData
           )}
           done={props.notification.done}
+          notificationId={props.notification.id}
+          accountToken={props.loggedInState.accountToken}
         >
           <Typography>自分の回答に</Typography>
           <AccountCard
@@ -149,6 +171,9 @@ const NotificationItem = (props: {
             accountId={props.notification.event.answerIdData.answerStudentId}
           />
           <Typography>からコメントがつけられました!</Typography>
+          <Typography>
+            {dateTimeToString(props.notification.createTime)}
+          </Typography>
         </NotificationItemContainer>
       );
   }
@@ -159,9 +184,20 @@ const NotificationItemContainer = (props: {
   readonly appState: AppState;
   readonly location: d.Location;
   readonly done: boolean;
+  readonly notificationId: d.NotificationId;
+  readonly accountToken: d.AccountToken;
 }): React.ReactElement => {
   return (
-    <Link appState={props.appState} location={props.location}>
+    <Link
+      appState={props.appState}
+      location={props.location}
+      onClick={() => {
+        props.appState.setNotificationDone(
+          props.notificationId,
+          props.accountToken
+        );
+      }}
+    >
       <Badge
         color="secondary"
         badgeContent={props.done ? 0 : " "}

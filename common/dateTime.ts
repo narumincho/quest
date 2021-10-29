@@ -10,3 +10,7 @@ export const dateTimeToMillisecondsSinceUnixEpoch = (
 ): number => {
   return dateTimeToDate(dateTime).getTime();
 };
+
+export const dateTimeToString = (dateTime: d.DateTime): string => {
+  return dateTimeToDate(dateTime).toLocaleString();
+};

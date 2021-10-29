@@ -130,6 +130,10 @@ export type AppState = {
   readonly getNotificationList: (
     accountToken: d.AccountToken
   ) => Promise<ReadonlyArray<d.Notification> | undefined>;
+  readonly setNotificationDone: (
+    notificationId: d.NotificationId,
+    accountToken: d.AccountToken
+  ) => Promise<ReadonlyArray<d.Notification> | undefined>;
 };
 
 export const useAppState = (): AppState => {
@@ -747,6 +751,16 @@ export const useAppState = (): AppState => {
     },
     getNotificationList: async (accountToken) => {
       const response = await api.getNotificationList(accountToken);
+      if (response._ === "Ok") {
+        return response.okValue;
+      }
+      return undefined;
+    },
+    setNotificationDone: async (notificationId, accountToken) => {
+      const response = await api.notificationSetDone({
+        accountToken,
+        notificationId,
+      });
       if (response._ === "Ok") {
         return response.okValue;
       }
