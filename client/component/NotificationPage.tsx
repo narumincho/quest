@@ -8,6 +8,10 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
+import {
+  dateTimeToMillisecondsSinceUnixEpoch,
+  dateTimeToString,
+} from "../../common/dateTime";
 import { AccountCard } from "./AccountCard";
 import { AppState } from "../state";
 import { Link } from "./Link";
@@ -82,14 +86,20 @@ const NotificationContent = (props: {
   }
   return (
     <Box display="grid" padding={1} gap={1}>
-      {props.notificationList.map((item) => (
-        <NotificationItem
-          key={item.id}
-          notification={item}
-          appState={props.appState}
-          loggedInState={props.loggedInState}
-        />
-      ))}
+      {[...props.notificationList]
+        .sort(
+          (a, b) =>
+            dateTimeToMillisecondsSinceUnixEpoch(b.createTime) -
+            dateTimeToMillisecondsSinceUnixEpoch(a.createTime)
+        )
+        .map((item) => (
+          <NotificationItem
+            key={item.id}
+            notification={item}
+            appState={props.appState}
+            loggedInState={props.loggedInState}
+          />
+        ))}
     </Box>
   );
 };
@@ -115,6 +125,9 @@ const NotificationItem = (props: {
             accountId={props.notification.event.answerIdData.answerStudentId}
           />
           <Typography>が回答しました</Typography>
+          <Typography>
+            {dateTimeToString(props.notification.createTime)}
+          </Typography>
         </NotificationItemContainer>
       );
     case "NewCommentInCreatedClass":
@@ -132,6 +145,9 @@ const NotificationItem = (props: {
             accountId={props.notification.event.answerIdData.answerStudentId}
           />
           <Typography>がコメントしました</Typography>
+          <Typography>
+            {dateTimeToString(props.notification.createTime)}
+          </Typography>
         </NotificationItemContainer>
       );
     case "NewCommentToMyAnswer":
@@ -149,6 +165,9 @@ const NotificationItem = (props: {
             accountId={props.notification.event.answerIdData.answerStudentId}
           />
           <Typography>からコメントがつけられました!</Typography>
+          <Typography>
+            {dateTimeToString(props.notification.createTime)}
+          </Typography>
         </NotificationItemContainer>
       );
   }
