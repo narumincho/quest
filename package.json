@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start-production-build": "ts-node build/start-production-build.ts",
-    "prestart": "ts-node build/start-development-build.ts",
-    "start": "firebase emulators:start --project north-quest",
+    "start": "ts-node build/start-development-build.ts & firebase emulators:start --project north-quest",
     "typeCheck": "tsc --noEmit",
     "storybook": "start-storybook --config-dir ./storybook --static-dir ./storybook/static",
     "generate-graph": "npx depcruise -X node_modules --output-type dot client/main.tsx functions/main.ts | dot -T svg > graph.svg",
