@@ -236,19 +236,19 @@ const outputPackageJsonForFunctions = async (): Promise<void> => {
 
 /** `common/origin` のファイルを出力する. modeによって出力されるオリジンが変更される. */
 const outputCommonOrigin = (mode: Mode): Promise<void> => {
-  const modeIdentifer = jsTs.identiferFromString("Mode");
+  const modeIdentifier = jsTs.identifierFromString("Mode");
   return fileSystem.outputFile(
     "./common/nowMode.ts",
     jsTs.generateCodeAsString(
       {
         exportDefinitionList: [
           jsTsData.ExportDefinition.Variable({
-            name: jsTs.identiferFromString("nowMode"),
+            name: jsTs.identifierFromString("nowMode"),
             document: "現在のビルドの動作モード",
             expr: jsTsData.TsExpr.StringLiteral(mode),
             type: jsTsData.TsType.ImportedType({
               moduleName: "./mode",
-              name: modeIdentifer,
+              name: modeIdentifier,
             }),
           }),
         ],
