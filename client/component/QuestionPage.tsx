@@ -14,6 +14,7 @@ export const QuestionPage = (props: {
   readonly loggedInState: LoggedInState;
   readonly questionId: d.QuestionId;
   readonly programId: d.ProgramId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   React.useEffect(() => {
     const question = props.appState.question(props.questionId);
@@ -28,7 +29,7 @@ export const QuestionPage = (props: {
 
   if (question === undefined) {
     return (
-      <PageContainer appState={props.appState}>
+      <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -50,7 +51,7 @@ export const QuestionPage = (props: {
   const parentList = props.appState.questionParentList(question.parent);
 
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

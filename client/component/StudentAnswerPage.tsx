@@ -40,6 +40,7 @@ export const StudentAnswerPage = (props: {
         <NotFoundQuestion
           appState={props.appState}
           classId={props.answerIdData.classId}
+          isDarkMode={props.isDarkMode}
         />
       );
     }
@@ -65,6 +66,7 @@ export const StudentAnswerPage = (props: {
       <NotFoundQuestion
         appState={props.appState}
         classId={props.answerIdData.classId}
+        isDarkMode={props.isDarkMode}
       />
     );
   }
@@ -85,10 +87,11 @@ export const StudentAnswerPage = (props: {
 const NotFoundQuestion = (props: {
   readonly appState: AppState;
   readonly classId: d.ClassId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const qClass = props.appState.getClassAndRole(props.classId);
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
@@ -147,7 +150,7 @@ const StudentSelfEditQuestionPageLoaded = (props: {
   const qClass = props.appState.getClassAndRole(props.classId);
 
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
@@ -305,7 +308,7 @@ const PageLoadedOtherStudentView = (props: {
   );
 
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>

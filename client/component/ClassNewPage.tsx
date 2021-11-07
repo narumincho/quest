@@ -43,7 +43,7 @@ export const ClassNewPage = (props: {
     props.appState.createClass({ className, programId: props.programId });
   };
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

@@ -1,19 +1,28 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { Props, TopPage } from "../../client/component/TopPage";
 import { mockAppState, mockLoggedInState } from "../mock";
+import { TopPage } from "../../client/component/TopPage";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "TopPage",
   component: TopPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const Default: Story<Props> = () => (
-  <TopPage appState={mockAppState} loggedInState={mockLoggedInState} />
+type Props = Pick<React.ComponentProps<typeof TopPage>, "isDarkMode">;
+
+export const Default: Story<Props> = (args) => (
+  <TopPage
+    appState={mockAppState}
+    loggedInState={mockLoggedInState}
+    isDarkMode={args.isDarkMode}
+  />
 );
 
-export const Empty: Story<Props> = () => (
+export const Empty: Story<Props> = (args) => (
   <TopPage
     appState={mockAppState}
     loggedInState={{
@@ -21,5 +30,6 @@ export const Empty: Story<Props> = () => (
       createdProgramMap: new Map(),
       joinedClassMap: new Map(),
     }}
+    isDarkMode={args.isDarkMode}
   />
 );

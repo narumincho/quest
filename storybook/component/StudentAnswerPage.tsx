@@ -19,7 +19,7 @@ const meta: Meta<Props> = {
 };
 export default meta;
 
-type Props = Pick<Parameters<typeof StudentAnswerPage>[0], "isDarkMode">;
+type Props = Pick<React.ComponentProps<typeof StudentAnswerPage>, "isDarkMode">;
 
 export const Default: Story<Props> = (args) => (
   <StudentAnswerPage

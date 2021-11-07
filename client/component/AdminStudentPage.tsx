@@ -20,6 +20,7 @@ export const AdminStudentPage = (props: {
   readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
   readonly accountId: d.AccountId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   React.useEffect(() => {
     props.appState.requestStudentConfirmedAnswerList({
@@ -41,7 +42,7 @@ export const AdminStudentPage = (props: {
   );
   if (program === undefined || classNameAndStudent === undefined) {
     return (
-      <PageContainer appState={props.appState}>
+      <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -59,7 +60,7 @@ export const AdminStudentPage = (props: {
     );
   }
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

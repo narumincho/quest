@@ -13,11 +13,14 @@ const meta: Meta = {
 };
 export default meta;
 
-export const Default: Story<never> = () => (
+type Props = Pick<React.ComponentProps<typeof QuestionPage>, "isDarkMode">;
+
+export const Default: Story<Props> = (args) => (
   <QuestionPage
     appState={mockAppState}
     loggedInState={mockLoggedInState}
     questionId={muzintou}
     programId={mockProgramIdA}
+    isDarkMode={args.isDarkMode}
   />
 );

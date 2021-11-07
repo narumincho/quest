@@ -12,21 +12,27 @@ import {
 } from "../mock";
 import { AdminClassPage } from "../../client/component/AdminClassPage";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "AdminClassPage",
   component: AdminClassPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const LoadingParticipantList: Story<never> = () => (
+type Props = Pick<React.ComponentProps<typeof AdminClassPage>, "isDarkMode">;
+
+export const LoadingParticipantList: Story<Props> = (args) => (
   <AdminClassPage
     appState={mockAppState}
     loggedInState={mockLoggedInState}
     classWithParticipantList={mockClassWithParticipantListLoadingParticipant}
+    isDarkMode={args.isDarkMode}
   />
 );
 
-export const ZeroParticipant: Story<never> = () => (
+export const ZeroParticipant: Story<Props> = (args) => (
   <AdminClassPage
     appState={mockAppState}
     loggedInState={mockLoggedInState}
@@ -34,10 +40,11 @@ export const ZeroParticipant: Story<never> = () => (
       qClass: mockClass,
       participantList: [],
     }}
+    isDarkMode={args.isDarkMode}
   />
 );
 
-export const LoadedParticipantList: Story<never> = () => (
+export const LoadedParticipantList: Story<Props> = (args) => (
   <AdminClassPage
     appState={mockAppState}
     loggedInState={mockLoggedInState}
@@ -49,5 +56,6 @@ export const LoadedParticipantList: Story<never> = () => (
         { account: mockAccount3, role: "guest" },
       ],
     }}
+    isDarkMode={args.isDarkMode}
   />
 );

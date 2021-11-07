@@ -23,6 +23,7 @@ type NotificationList = "loading" | "error" | ReadonlyArray<d.Notification>;
 export const NotificationPage = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [notificationList, setNotificationList] =
     React.useState<NotificationList>("loading");
@@ -41,7 +42,7 @@ export const NotificationPage = (props: {
   }, []);
 
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>

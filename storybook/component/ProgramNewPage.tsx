@@ -12,7 +12,7 @@ const meta: Meta<Props> = {
 };
 export default meta;
 
-type Props = Pick<Parameters<typeof ProgramNewPage>[0], "isDarkMode">;
+type Props = Pick<React.ComponentProps<typeof ProgramNewPage>, "isDarkMode">;
 
 export const Default: Story<Props> = (args) => (
   <ProgramNewPage appState={mockAppState} isDarkMode={args.isDarkMode} />

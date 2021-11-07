@@ -35,7 +35,7 @@ export const QuestionEditPage = (props: {
 
   if (question === undefined) {
     return (
-      <PageContainer appState={props.appState}>
+      <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -97,7 +97,7 @@ const EditQuestionLoaded = (props: {
     setEditState("requesting");
   };
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

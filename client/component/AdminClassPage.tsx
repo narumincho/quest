@@ -18,6 +18,7 @@ export const AdminClassPage = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
   readonly classWithParticipantList: ClassWithParticipantList;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   React.useEffect(
     () => {
@@ -36,7 +37,7 @@ export const AdminClassPage = (props: {
     props.classWithParticipantList.qClass.programId
   );
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

@@ -17,6 +17,7 @@ export const ProgramPage = (props: {
   readonly programId: d.ProgramId;
   readonly loggedInState: LoggedInState;
   readonly appState: AppState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const program = props.loggedInState.createdProgramMap.get(props.programId);
 
@@ -27,7 +28,7 @@ export const ProgramPage = (props: {
 
   if (program === undefined) {
     return (
-      <PageContainer appState={props.appState}>
+      <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -50,7 +51,7 @@ export const ProgramPage = (props: {
   }
 
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

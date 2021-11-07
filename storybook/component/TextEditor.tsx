@@ -18,7 +18,7 @@ const meta: Meta<Props> = {
 export default meta;
 
 type Props = Pick<
-  Parameters<typeof TextEditor>[0],
+  React.ComponentProps<typeof TextEditor>,
   "value" | "error" | "helperText" | "label" | "isDarkMode" | "multiline"
 >;
 

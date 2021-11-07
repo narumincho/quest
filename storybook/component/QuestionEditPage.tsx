@@ -17,7 +17,7 @@ const meta: Meta<Props> = {
 };
 export default meta;
 
-type Props = Pick<Parameters<typeof QuestionEditPage>[0], "isDarkMode">;
+type Props = Pick<React.ComponentProps<typeof QuestionEditPage>, "isDarkMode">;
 
 export const Default: Story<Props> = (args) => (
   <QuestionEditPage

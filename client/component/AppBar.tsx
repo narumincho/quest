@@ -21,15 +21,23 @@ export const AppBar = (props: {
   readonly appState: AppState;
   /** 戻るボタンを隠すか */
   readonly isHideBack: boolean;
+  /** ダークモードか */
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   return (
-    <MAppBar enableColorOnDark position="sticky">
+    <MAppBar
+      position="sticky"
+      sx={{
+        backgroundColor: props.isDarkMode ? "#000" : "#fff",
+        color: props.isDarkMode ? "#eee" : "#000",
+      }}
+    >
       <Toolbar>
         {props.isHideBack ? (
           <></>
         ) : (
           <IconButton onClick={props.appState.back}>
-            <ArrowBack />
+            <ArrowBack sx={{ color: props.isDarkMode ? "#eee" : "#000" }} />
           </IconButton>
         )}
         <Typography variant="h6" sx={{ flexGrow: 1 }}>

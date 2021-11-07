@@ -39,7 +39,7 @@ export const App = (props: {
     case "NoLogin":
     case "RequestingLogInUrl":
     case "JumpingPage":
-      return <LogInPage appState={appState} />;
+      return <LogInPage appState={appState} isDarkMode={props.isDarkMode} />;
     default:
       return <LoadingPage />;
   }
@@ -58,6 +58,7 @@ const LoggedIn = (props: {
         <TopPage
           appState={props.appState}
           loggedInState={props.loggedInState}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "Setting":
@@ -65,6 +66,7 @@ const LoggedIn = (props: {
         <SettingPage
           account={props.loggedInState.account}
           appState={props.appState}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "NewProgram":
@@ -80,6 +82,7 @@ const LoggedIn = (props: {
           programId={location.programId}
           loggedInState={props.loggedInState}
           appState={props.appState}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "NewQuestion":
@@ -103,6 +106,7 @@ const LoggedIn = (props: {
           programId={location.programIdAndQuestionId.programId}
           appState={props.appState}
           loggedInState={props.loggedInState}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "NewClass":
@@ -120,6 +124,7 @@ const LoggedIn = (props: {
           appState={props.appState}
           loggedInState={props.loggedInState}
           classId={location.classId}
+          isDarkMode={props.isDarkMode}
         />
       );
     }
@@ -128,6 +133,7 @@ const LoggedIn = (props: {
         <ClassInvitationPage
           appState={props.appState}
           studentClassInvitationToken={location.studentClassInvitationToken}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "EditQuestion":
@@ -156,6 +162,7 @@ const LoggedIn = (props: {
           loggedInState={props.loggedInState}
           accountId={location.accountIdAndClassId.accountId}
           classId={location.accountIdAndClassId.classId}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "Notification":
@@ -163,6 +170,7 @@ const LoggedIn = (props: {
         <NotificationPage
           appState={props.appState}
           loggedInState={props.loggedInState}
+          isDarkMode={props.isDarkMode}
         />
       );
   }
@@ -172,12 +180,13 @@ export const ClassPage = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
   readonly classId: d.ClassId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const classAndRole = props.appState.getClassAndRole(props.classId);
   switch (classAndRole.tag) {
     case "none":
       return (
-        <PageContainer appState={props.appState}>
+        <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
           <Box>このクラスは, 存在していないか, 参加または作成していません</Box>
           <Box padding={1}>
             <Box padding={1}>
@@ -200,6 +209,7 @@ export const ClassPage = (props: {
           appState={props.appState}
           loggedInState={props.loggedInState}
           classWithParticipantList={classAndRole.classWithParticipantList}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "participant":
@@ -208,6 +218,7 @@ export const ClassPage = (props: {
           appState={props.appState}
           joinedClass={classAndRole.joinedClass}
           loggedInState={props.loggedInState}
+          isDarkMode={props.isDarkMode}
         />
       );
   }

@@ -15,11 +15,16 @@ import { ProgramCard } from "./ProgramCard";
 export type Props = {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
+  readonly isDarkMode: boolean;
 };
 
 export const TopPage = (props: Props): React.ReactElement => {
   return (
-    <PageContainer isHideBack appState={props.appState}>
+    <PageContainer
+      isHideBack
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+    >
       <Box padding={1}>
         <Typography variant="h5">作成したプログラム</Typography>
       </Box>

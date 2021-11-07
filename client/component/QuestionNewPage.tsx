@@ -50,7 +50,7 @@ export const QuestionNewPage = (props: {
       ? []
       : props.appState.questionParentList(d.Option.Some(props.parent));
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

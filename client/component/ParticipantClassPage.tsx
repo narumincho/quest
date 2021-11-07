@@ -11,12 +11,14 @@ export const ParticipantClassPage = (props: {
   readonly appState: AppState;
   readonly joinedClass: JoinedClass;
   readonly loggedInState: LoggedInState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   if (props.joinedClass.class.role === "Guest") {
     return (
       <GuestClassPage
         appState={props.appState}
         participantClass={props.joinedClass.class}
+        isDarkMode={props.isDarkMode}
       />
     );
   }
@@ -27,6 +29,7 @@ export const ParticipantClassPage = (props: {
       participantList={props.joinedClass.participantList}
       questionTreeList={props.joinedClass.questionTreeList}
       loggedInState={props.loggedInState}
+      isDarkMode={props.isDarkMode}
     />
   );
 };
