@@ -11,9 +11,10 @@ import { PageContainer } from "./PageContainer";
 export const GuestClassPage = (props: {
   readonly appState: AppState;
   readonly participantClass: d.ParticipantClass;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Typography variant="h5">{props.participantClass.name}</Typography>
       </Box>

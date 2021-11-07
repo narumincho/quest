@@ -20,6 +20,7 @@ export const StudentClassPage = (props: {
     | ReadonlyArray<d.StudentSelfQuestionTree>
     | undefined;
   readonly loggedInState: LoggedInState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   React.useEffect(
     () => {
@@ -32,7 +33,7 @@ export const StudentClassPage = (props: {
     [props.participantClass.id]
   );
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>

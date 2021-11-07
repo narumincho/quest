@@ -18,14 +18,26 @@ export const PageContainer: React.FC<{
    * @default false
    */
   readonly isHideBack?: boolean;
+  /**
+   * ダークモードかどうか
+   */
+  readonly isDarkMode: boolean;
 }> = (props) => {
   return (
     <Box width="100%" height="100%">
       <AppBar
         isHideBack={props.isHideBack ?? false}
         appState={props.appState}
+        isDarkMode={props.isDarkMode}
       />
-      {props.children}
+      <Box
+        sx={{
+          backgroundColor: props.isDarkMode ? "#222" : "#eee",
+          color: props.isDarkMode ? "#eee" : "#000",
+        }}
+      >
+        {props.children}
+      </Box>
     </Box>
   );
 };

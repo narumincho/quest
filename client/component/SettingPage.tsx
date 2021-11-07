@@ -10,9 +10,10 @@ import { PageContainer } from "./PageContainer";
 export const SettingPage = (props: {
   readonly account: d.Account;
   readonly appState: AppState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

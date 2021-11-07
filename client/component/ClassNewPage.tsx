@@ -7,7 +7,6 @@ import {
   CircularProgress,
   Dialog,
   DialogTitle,
-  TextField,
   Typography,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
@@ -15,12 +14,14 @@ import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
+import { TextEditor } from "./TextEditor";
 import { stringToValidClassName } from "../../common/validation";
 
 export const ClassNewPage = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
   readonly programId: d.ProgramId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [className, setClassName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
@@ -42,7 +43,7 @@ export const ClassNewPage = (props: {
     props.appState.createClass({ className, programId: props.programId });
   };
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>
@@ -62,25 +63,21 @@ export const ClassNewPage = (props: {
           <Typography variant="h5">クラス作成</Typography>
         </Box>
         <Box padding={1}>
-          <TextField
-            required
-            fullWidth
+          <TextEditor
             label="クラス名"
             value={className}
-            onChange={(e) => {
-              setClassName(e.target.value);
-            }}
+            onChangeOrReadonlyOrDisabled={
+              isCreating ? "readonly" : setClassName
+            }
             error={!isFirst && projectNameResult._ === "Error"}
             helperText={
               !isFirst && projectNameResult._ === "Error"
                 ? projectNameResult.errorValue
-                : undefined
+                : ""
             }
-            variant="outlined"
-            InputProps={{
-              readOnly: isCreating,
-            }}
             data-cy="programNameInput"
+            isDarkMode={props.isDarkMode}
+            multiline={false}
           />
         </Box>
         <Box padding={1}>

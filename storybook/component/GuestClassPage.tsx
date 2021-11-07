@@ -3,15 +3,21 @@ import { Meta, Story } from "@storybook/react";
 import { mockAppState, mockQClassStudentOrGuest } from "../mock";
 import { GuestClassPage } from "../../client/component/GuestClassPage";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "GuestClassPage",
   component: GuestClassPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const Default: Story<never> = () => (
+type Props = Pick<React.ComponentProps<typeof GuestClassPage>, "isDarkMode">;
+
+export const Default: Story<Props> = (args) => (
   <GuestClassPage
     appState={mockAppState}
     participantClass={mockQClassStudentOrGuest}
+    isDarkMode={args.isDarkMode}
   />
 );

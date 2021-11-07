@@ -15,6 +15,7 @@ type ClassNameAndClassId = {
 export const ClassInvitationPage = (props: {
   readonly appState: AppState;
   readonly studentClassInvitationToken: d.StudentClassInvitationToken;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [classNameAndClassId, setClassNameAndClassId] = React.useState<
     ClassNameAndClassId | undefined
@@ -49,7 +50,11 @@ export const ClassInvitationPage = (props: {
   };
 
   return (
-    <PageContainer isHideBack appState={props.appState}>
+    <PageContainer
+      isHideBack
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+    >
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

@@ -7,7 +7,6 @@ import {
   CircularProgress,
   Dialog,
   DialogTitle,
-  TextField,
   Typography,
 } from "@mui/material";
 import {
@@ -21,12 +20,14 @@ import { AppState } from "../state";
 import { CommentAndAnswersFromOtherStudents } from "./CommentAndAnswersFromOtherStudents";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
+import { TextEditor } from "./TextEditor";
 import { stringToValidAnswerText } from "../../common/validation";
 
 export const StudentAnswerPage = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
   readonly answerIdData: d.AnswerIdData;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   if (props.loggedInState.account.id === props.answerIdData.answerStudentId) {
     const studentSelfQuestionTree = getStudentSelfQuestionTree(
@@ -39,6 +40,7 @@ export const StudentAnswerPage = (props: {
         <NotFoundQuestion
           appState={props.appState}
           classId={props.answerIdData.classId}
+          isDarkMode={props.isDarkMode}
         />
       );
     }
@@ -50,6 +52,7 @@ export const StudentAnswerPage = (props: {
         classId={props.answerIdData.classId}
         loggedInState={props.loggedInState}
         loggedInAccountId={props.loggedInState.account.id}
+        isDarkMode={props.isDarkMode}
       />
     );
   }
@@ -63,6 +66,7 @@ export const StudentAnswerPage = (props: {
       <NotFoundQuestion
         appState={props.appState}
         classId={props.answerIdData.classId}
+        isDarkMode={props.isDarkMode}
       />
     );
   }
@@ -75,6 +79,7 @@ export const StudentAnswerPage = (props: {
       classId={props.answerIdData.classId}
       answerStudentId={props.answerIdData.answerStudentId}
       loggedInState={props.loggedInState}
+      isDarkMode={props.isDarkMode}
     />
   );
 };
@@ -82,10 +87,11 @@ export const StudentAnswerPage = (props: {
 const NotFoundQuestion = (props: {
   readonly appState: AppState;
   readonly classId: d.ClassId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const qClass = props.appState.getClassAndRole(props.classId);
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
@@ -114,19 +120,17 @@ const StudentSelfEditQuestionPageLoaded = (props: {
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
   readonly loggedInAccountId: d.AccountId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [answerText, setAnswerText] = React.useState<string>(
     props.question.answer._ === "Some" ? props.question.answer.value.text : ""
   );
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
   const [isSaving, setIsSaving] = React.useState<boolean>(false);
-  const changeAnswerText = React.useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      setIsFirst(false);
-      setAnswerText(event.target.value);
-    },
-    []
-  );
+  const changeAnswerText = React.useCallback((newAnswerText: string) => {
+    setIsFirst(false);
+    setAnswerText(newAnswerText);
+  }, []);
 
   const validationResult = stringToValidAnswerText(answerText);
 
@@ -146,7 +150,7 @@ const StudentSelfEditQuestionPageLoaded = (props: {
   const qClass = props.appState.getClassAndRole(props.classId);
 
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
@@ -179,23 +183,18 @@ const StudentSelfEditQuestionPageLoaded = (props: {
         <></>
       )}
       <Box padding={1}>
-        <TextField
+        <TextEditor
           multiline
-          required
-          fullWidth
           label="あなたの回答"
           value={answerText}
-          onChange={changeAnswerText}
+          onChangeOrReadonlyOrDisabled={changeAnswerText}
           error={!isFirst && validationResult._ === "Error"}
           helperText={
             !isFirst && validationResult._ === "Error"
               ? validationResult.errorValue
-              : undefined
+              : ""
           }
-          variant="outlined"
-          InputProps={{
-            readOnly: false,
-          }}
+          isDarkMode={props.isDarkMode}
         />
       </Box>
       <Box padding={1}>
@@ -223,6 +222,7 @@ const StudentSelfEditQuestionPageLoaded = (props: {
           loggedInState={props.loggedInState}
           answerStudentId={props.loggedInAccountId}
           answersFromOtherStudents={undefined}
+          isDarkMode={props.isDarkMode}
         />
       ) : (
         <></>
@@ -283,6 +283,7 @@ const PageLoadedOtherStudentView = (props: {
   readonly classId: d.ClassId;
   readonly loggedInState: LoggedInState;
   readonly answerStudentId: d.AccountId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [answersFromOtherStudents, setAnswersFromOtherStudents] =
     React.useState<ReadonlyArray<d.AnswersFromOtherStudent> | undefined>(
@@ -307,7 +308,7 @@ const PageLoadedOtherStudentView = (props: {
   );
 
   return (
-    <PageContainer appState={props.appState}>
+    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
@@ -345,6 +346,7 @@ const PageLoadedOtherStudentView = (props: {
         loggedInState={props.loggedInState}
         answerStudentId={props.answerStudentId}
         answersFromOtherStudents={answersFromOtherStudents}
+        isDarkMode={props.isDarkMode}
       />
     </PageContainer>
   );

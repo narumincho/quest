@@ -11,9 +11,14 @@ import { nowMode } from "../../common/nowMode";
  */
 export const LogInPage = (props: {
   readonly appState: AppState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   return (
-    <PageContainer appState={props.appState} isHideBack>
+    <PageContainer
+      appState={props.appState}
+      isHideBack
+      isDarkMode={props.isDarkMode}
+    >
       <Box padding={1}>
         <Typography variant="body1">
           クエストを使うためにはLINEログインが必要です

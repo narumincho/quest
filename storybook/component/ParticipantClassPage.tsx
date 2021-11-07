@@ -8,13 +8,21 @@ import {
 } from "../mock";
 import { ParticipantClassPage } from "../../client/component/ParticipantClassPage";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "ParticipantClassPage",
   component: ParticipantClassPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const Guest: Story<never> = () => (
+type Props = Pick<
+  React.ComponentProps<typeof ParticipantClassPage>,
+  "isDarkMode"
+>;
+
+export const Guest: Story<Props> = (args) => (
   <ParticipantClassPage
     appState={mockAppState}
     joinedClass={{
@@ -26,10 +34,11 @@ export const Guest: Story<never> = () => (
       questionTreeList: undefined,
     }}
     loggedInState={mockLoggedInState}
+    isDarkMode={args.isDarkMode}
   />
 );
 
-export const Student: Story<never> = () => (
+export const Student: Story<Props> = (args) => (
   <ParticipantClassPage
     appState={mockAppState}
     joinedClass={{
@@ -41,5 +50,6 @@ export const Student: Story<never> = () => (
       questionTreeList: undefined,
     }}
     loggedInState={mockLoggedInState}
+    isDarkMode={args.isDarkMode}
   />
 );

@@ -1,19 +1,12 @@
 import * as React from "react";
 import * as d from "../../data";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Paper,
-  Tab,
-  Tabs,
-  TextField,
-} from "@mui/material";
+import { Box, Button, CircularProgress, Paper, Tab, Tabs } from "@mui/material";
 import { AccountCard } from "./AccountCard";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { Send } from "@mui/icons-material";
+import { TextEditor } from "./TextEditor";
 import { dateTimeToMillisecondsSinceUnixEpoch } from "../../common/dateTime";
 
 export const CommentAndAnswersFromOtherStudents = (props: {
@@ -25,6 +18,7 @@ export const CommentAndAnswersFromOtherStudents = (props: {
   readonly answersFromOtherStudents:
     | ReadonlyArray<d.AnswersFromOtherStudent>
     | undefined;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [selectedTab, setSelectedTab] = React.useState<
     "comment" | "answersFromOtherStudents"
@@ -109,6 +103,7 @@ export const CommentAndAnswersFromOtherStudents = (props: {
             commentEditText={commentEditText}
             onChangeCommentEditText={setCommentEditText}
             isSubmittingComment={isSubmittingComment}
+            isDarkMode={props.isDarkMode}
           />
         ) : (
           <AnswerList
@@ -133,24 +128,21 @@ const FeedbackListWithInput = (props: {
   readonly commentEditText: string;
   readonly onChangeCommentEditText: (comment: string) => void;
   readonly isSubmittingComment: boolean;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
-  const onChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void => {
-    props.onChangeCommentEditText(event.target.value);
-  };
   const isNotEmpty = props.commentEditText.trim().length === 0;
   return (
     <div>
-      <TextField
+      <TextEditor
         multiline
-        required
-        fullWidth
         label="この回答に対するコメント"
         value={props.commentEditText}
-        onChange={onChange}
-        variant="outlined"
-        disabled={props.isSubmittingComment}
+        onChangeOrReadonlyOrDisabled={
+          props.isSubmittingComment ? "disabled" : props.onChangeCommentEditText
+        }
+        helperText=""
+        error={false}
+        isDarkMode={props.isDarkMode}
       />
       <Button
         fullWidth
