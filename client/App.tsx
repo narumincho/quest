@@ -22,7 +22,9 @@ import { SettingPage } from "./component/SettingPage";
 import { StudentAnswerPage } from "./component/StudentAnswerPage";
 import { TopPage } from "./component/TopPage";
 
-export const App = (): React.ReactElement => {
+export const App = (props: {
+  readonly isDarkMode: boolean;
+}): React.ReactElement => {
   const appState = useAppState();
 
   switch (appState.logInState.tag) {
@@ -31,6 +33,7 @@ export const App = (): React.ReactElement => {
         <LoggedIn
           loggedInState={appState.logInState.loggedInState}
           appState={appState}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "NoLogin":
@@ -46,6 +49,7 @@ App.displayName = "QuestApp";
 const LoggedIn = (props: {
   readonly loggedInState: LoggedInState;
   readonly appState: AppState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const location = props.appState.location;
   switch (location._) {
@@ -64,7 +68,12 @@ const LoggedIn = (props: {
         />
       );
     case "NewProgram":
-      return <ProgramNewPage appState={props.appState} />;
+      return (
+        <ProgramNewPage
+          appState={props.appState}
+          isDarkMode={props.isDarkMode}
+        />
+      );
     case "Program":
       return (
         <ProgramPage
@@ -84,6 +93,7 @@ const LoggedIn = (props: {
               ? location.newQuestionParameter.parent.value
               : undefined
           }
+          isDarkMode={props.isDarkMode}
         />
       );
     case "AdminQuestion":
@@ -101,6 +111,7 @@ const LoggedIn = (props: {
           appState={props.appState}
           loggedInState={props.loggedInState}
           programId={location.programId}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "Class": {
@@ -126,6 +137,7 @@ const LoggedIn = (props: {
           loggedInState={props.loggedInState}
           questionId={location.programIdAndQuestionId.questionId}
           programId={location.programIdAndQuestionId.programId}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "StudentAnswer":
@@ -134,6 +146,7 @@ const LoggedIn = (props: {
           appState={props.appState}
           loggedInState={props.loggedInState}
           answerIdData={location.answerIdData}
+          isDarkMode={props.isDarkMode}
         />
       );
     case "AdminStudent":

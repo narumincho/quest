@@ -7,17 +7,18 @@ import {
   CircularProgress,
   Dialog,
   DialogTitle,
-  TextField,
   Typography,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
+import { TextEditor } from "./TextEditor";
 import { stringToValidProgramName } from "../../common/validation";
 
 export const ProgramNewPage = (props: {
   readonly appState: AppState;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [projectName, setProjectName] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
@@ -51,25 +52,21 @@ export const ProgramNewPage = (props: {
           <Typography variant="h5">プログラム作成</Typography>
         </Box>
         <Box padding={1}>
-          <TextField
-            required
-            fullWidth
+          <TextEditor
             label="プログラム名"
             value={projectName}
-            onChange={(e) => {
-              setProjectName(e.target.value);
-            }}
+            onChangeOrReadonlyOrDisabled={
+              isCreating ? "readonly" : setProjectName
+            }
             error={!isFirst && projectNameResult._ === "Error"}
             helperText={
               !isFirst && projectNameResult._ === "Error"
                 ? projectNameResult.errorValue
-                : undefined
+                : ""
             }
-            variant="outlined"
-            InputProps={{
-              readOnly: isCreating,
-            }}
             data-cy="programNameInput"
+            multiline={false}
+            isDarkMode={props.isDarkMode}
           />
         </Box>
         <Box padding={1}>

@@ -7,7 +7,6 @@ import {
   CircularProgress,
   Dialog,
   DialogTitle,
-  TextField,
   Typography,
 } from "@mui/material";
 import { AppState } from "../state";
@@ -16,6 +15,7 @@ import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
+import { TextEditor } from "./TextEditor";
 import { stringToValidQuestionText } from "../../common/validation";
 
 export const QuestionNewPage = (props: {
@@ -23,6 +23,7 @@ export const QuestionNewPage = (props: {
   readonly loggedInState: LoggedInState;
   readonly programId: d.ProgramId;
   readonly parent: d.QuestionId | undefined;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [text, setText] = React.useState<string>("");
   const [isFirst, setIsFirst] = React.useState<boolean>(true);
@@ -81,25 +82,16 @@ export const QuestionNewPage = (props: {
           <Typography variant="h5">質問作成</Typography>
         </Box>
         <Box padding={1}>
-          <TextField
+          <TextEditor
             multiline
-            required
-            fullWidth
             label="質問文"
             value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-            }}
+            onChangeOrReadonlyOrDisabled={isCreating ? "readonly" : setText}
             error={!isFirst && textResult._ === "Error"}
             helperText={
-              !isFirst && textResult._ === "Error"
-                ? textResult.errorValue
-                : undefined
+              !isFirst && textResult._ === "Error" ? textResult.errorValue : ""
             }
-            variant="outlined"
-            InputProps={{
-              readOnly: isCreating,
-            }}
+            isDarkMode={props.isDarkMode}
           />
         </Box>
         <Box padding={1}>

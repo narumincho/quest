@@ -8,17 +8,23 @@ import {
 } from "../mock";
 import { QuestionEditPage } from "../../client/component/QuestionEditPage";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "QuestionEditPage",
   component: QuestionEditPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const Default: Story<never> = () => (
+type Props = Pick<Parameters<typeof QuestionEditPage>[0], "isDarkMode">;
+
+export const Default: Story<Props> = (args) => (
   <QuestionEditPage
     appState={mockAppState}
     loggedInState={mockLoggedInState}
     questionId={muzintou}
     programId={mockProgramIdA}
+    isDarkMode={args.isDarkMode}
   />
 );

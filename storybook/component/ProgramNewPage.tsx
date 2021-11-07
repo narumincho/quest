@@ -3,12 +3,17 @@ import { Meta, Story } from "@storybook/react";
 import { ProgramNewPage } from "../../client/component/ProgramNewPage";
 import { mockAppState } from "../mock";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "ProgramNewPage",
   component: ProgramNewPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const Default: Story<never> = () => (
-  <ProgramNewPage appState={mockAppState} />
+type Props = Pick<Parameters<typeof ProgramNewPage>[0], "isDarkMode">;
+
+export const Default: Story<Props> = (args) => (
+  <ProgramNewPage appState={mockAppState} isDarkMode={args.isDarkMode} />
 );

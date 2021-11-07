@@ -10,13 +10,18 @@ import {
 } from "../mock";
 import { StudentAnswerPage } from "../../client/component/StudentAnswerPage";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "StudentAnswerPage",
   component: StudentAnswerPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const Default: Story<never> = () => (
+type Props = Pick<Parameters<typeof StudentAnswerPage>[0], "isDarkMode">;
+
+export const Default: Story<Props> = (args) => (
   <StudentAnswerPage
     appState={mockAppState}
     answerIdData={{
@@ -25,10 +30,11 @@ export const Default: Story<never> = () => (
       questionId: mockKadaiQuestionId,
     }}
     loggedInState={mockLoggedInState}
+    isDarkMode={args.isDarkMode}
   />
 );
 
-export const WithAnswer: Story<never> = () => (
+export const WithAnswer: Story<Props> = (args) => (
   <StudentAnswerPage
     appState={mockAppState}
     answerIdData={{
@@ -37,5 +43,6 @@ export const WithAnswer: Story<never> = () => (
       questionId: mockManabiQuestionId,
     }}
     loggedInState={mockLoggedInState}
+    isDarkMode={args.isDarkMode}
   />
 );

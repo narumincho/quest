@@ -13,7 +13,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  TextField,
   Typography,
 } from "@mui/material";
 import { AppState } from "../state";
@@ -22,6 +21,7 @@ import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { QuestionButton } from "./QuestionCard";
+import { TextEditor } from "./TextEditor";
 import { stringToValidQuestionText } from "../../common/validation";
 
 export const QuestionEditPage = (props: {
@@ -29,6 +29,7 @@ export const QuestionEditPage = (props: {
   readonly loggedInState: LoggedInState;
   readonly questionId: d.QuestionId;
   readonly programId: d.ProgramId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const question = props.appState.question(props.questionId);
 
@@ -59,6 +60,7 @@ export const QuestionEditPage = (props: {
       loggedInState={props.loggedInState}
       question={question}
       programId={props.programId}
+      isDarkMode={props.isDarkMode}
     />
   );
 };
@@ -70,6 +72,7 @@ const EditQuestionLoaded = (props: {
   readonly loggedInState: LoggedInState;
   readonly question: d.Question;
   readonly programId: d.ProgramId;
+  readonly isDarkMode: boolean;
 }): React.ReactElement => {
   const [text, setText] = React.useState<string>(props.question.name);
   const [parentQuestionId, setParentQuestionId] = React.useState<
@@ -126,23 +129,16 @@ const EditQuestionLoaded = (props: {
           <Typography variant="h5">質問の編集</Typography>
         </Box>
         <Box padding={1}>
-          <TextField
+          <TextEditor
             multiline
-            required
-            fullWidth
             label="質問文"
             value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-            }}
-            error={textResult._ === "Error"}
-            helperText={
-              textResult._ === "Error" ? textResult.errorValue : undefined
+            onChangeOrReadonlyOrDisabled={
+              editState === "none" ? setText : "readonly"
             }
-            variant="outlined"
-            InputProps={{
-              readOnly: editState !== "none",
-            }}
+            error={textResult._ === "Error"}
+            helperText={textResult._ === "Error" ? textResult.errorValue : ""}
+            isDarkMode={props.isDarkMode}
           />
         </Box>
 

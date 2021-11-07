@@ -8,26 +8,33 @@ import {
 } from "../mock";
 import { QuestionNewPage } from "../../client/component/QuestionNewPage";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "QuestionNewPage",
   component: QuestionNewPage,
+  args: {
+    isDarkMode: false,
+  },
 };
 export default meta;
 
-export const Default: Story<never> = () => (
+type Props = Pick<Parameters<typeof QuestionNewPage>[0], "isDarkMode">;
+
+export const Default: Story<Props> = (args) => (
   <QuestionNewPage
     appState={mockAppState}
     loggedInState={mockLoggedInState}
     programId={mockProgramIdA}
     parent={undefined}
+    isDarkMode={args.isDarkMode}
   />
 );
 
-export const WithParent: Story<never> = () => (
+export const WithParent: Story<Props> = (args) => (
   <QuestionNewPage
     appState={mockAppState}
     loggedInState={mockLoggedInState}
     programId={mockProgramIdA}
     parent={muzintou}
+    isDarkMode={args.isDarkMode}
   />
 );

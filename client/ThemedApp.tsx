@@ -22,7 +22,7 @@ export const ThemedApp = (): React.ReactElement => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SnackbarProvider maxSnack={3}>
-        <App />
+        <App isDarkMode={isDarkMode} />
       </SnackbarProvider>
     </ThemeProvider>
   );
