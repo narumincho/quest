@@ -15,7 +15,11 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { LoggedInState, getParentQuestionList } from "../state/loggedInState";
+import {
+  LoggedInState,
+  getParentQuestionList,
+  getQuestionForProgramCreator,
+} from "../state/loggedInState";
 import { AppState } from "../state";
 import { Close } from "@mui/icons-material";
 import { Link } from "./Link";
@@ -31,7 +35,10 @@ export const QuestionEditPage = (props: {
   readonly programId: d.ProgramId;
   readonly isDarkMode: boolean;
 }): React.ReactElement => {
-  const question = props.appState.question(props.questionId);
+  const question = getQuestionForProgramCreator(
+    props.loggedInState,
+    props.questionId
+  );
 
   if (question === undefined) {
     return (
@@ -150,6 +157,7 @@ const EditQuestionLoaded = (props: {
           {parentQuestionId._ === "Some" ? (
             <QuestionButton
               appState={props.appState}
+              loggedInState={props.loggedInState}
               questionId={parentQuestionId.value}
               programId={props.programId}
               onClick={() => {

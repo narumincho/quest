@@ -32,9 +32,6 @@ export const mockAppState: AppState = {
   requestGetQuestionListInProgram: action(
     "プログラムに属している質問を習得しようとした"
   ),
-  question: (id): d.Question | undefined => {
-    return questionMap.get(id);
-  },
   questionChildren: (id: d.QuestionId): ReadonlyArray<d.QuestionId> =>
     questionChildren(id, questionMap),
   getQuestionTreeListWithLoadingStateInProgram: (

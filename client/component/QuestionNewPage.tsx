@@ -111,6 +111,7 @@ export const QuestionNewPage = (props: {
               appState={props.appState}
               questionId={props.parent}
               programId={props.programId}
+              loggedInState={props.loggedInState}
             />
           )}
         </Box>

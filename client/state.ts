@@ -16,8 +16,6 @@ import {
 import {
   LogInState,
   getClassAndRole,
-  getParentQuestionList,
-  getQuestionById,
   getQuestionDirectChildren,
   getQuestionThatCanBeParentList,
   getQuestionTreeListWithLoadingStateInProgram,
@@ -34,8 +32,6 @@ export type AppState = {
   readonly logInState: LogInState;
   /** 現在のページの場所 */
   readonly location: d.Location;
-  /** 質問を取得する */
-  readonly question: (id: d.QuestionId) => d.Question | undefined;
   /** 質問を作成中かどうか */
   readonly isCreatingQuestion: boolean;
   /** 質問の子を取得する */
@@ -578,8 +574,6 @@ export const useAppState = (): AppState => {
           );
         });
     },
-    question: (questionId: d.QuestionId) =>
-      getQuestionById(logInState, questionId),
     questionChildren: (questionId: d.QuestionId) =>
       getQuestionDirectChildren(logInState, questionId),
     getQuestionTreeListWithLoadingStateInProgram: (programId: d.ProgramId) =>

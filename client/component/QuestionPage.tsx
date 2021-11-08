@@ -2,7 +2,11 @@ import * as React from "react";
 import * as d from "../../data";
 import { Add, Edit } from "@mui/icons-material";
 import { Box, Breadcrumbs, Button, Fab, Typography } from "@mui/material";
-import { LoggedInState, getParentQuestionList } from "../state/loggedInState";
+import {
+  LoggedInState,
+  getParentQuestionList,
+  getQuestionForProgramCreator,
+} from "../state/loggedInState";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
@@ -17,14 +21,20 @@ export const QuestionPage = (props: {
   readonly isDarkMode: boolean;
 }): React.ReactElement => {
   React.useEffect(() => {
-    const question = props.appState.question(props.questionId);
+    const question = getQuestionForProgramCreator(
+      props.loggedInState,
+      props.questionId
+    );
     if (question === undefined) {
       props.appState.requestGetQuestionListInProgram(props.programId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.questionId]);
 
-  const question = props.appState.question(props.questionId);
+  const question = getQuestionForProgramCreator(
+    props.loggedInState,
+    props.questionId
+  );
   const children = props.appState.questionChildren(props.questionId);
 
   if (question === undefined) {
@@ -99,6 +109,7 @@ export const QuestionPage = (props: {
               appState={props.appState}
               questionId={child}
               programId={props.programId}
+              loggedInState={props.loggedInState}
             />
           ))}
         </Box>

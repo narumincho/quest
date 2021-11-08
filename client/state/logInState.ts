@@ -40,17 +40,6 @@ export const loggedIn = (
   };
 };
 
-/** 質問をIDから取得する */
-export const getQuestionById = (
-  logInState: LogInState,
-  questionId: d.QuestionId
-): d.Question | undefined => {
-  if (logInState.tag !== "LoggedIn") {
-    return undefined;
-  }
-  return ls.getQuestionForProgramCreator(logInState.loggedInState, questionId);
-};
-
 /** 質問の直接的な子を取得する */
 export const getQuestionDirectChildren = (
   logInState: LogInState,
