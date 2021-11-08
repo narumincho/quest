@@ -2,9 +2,9 @@ import * as React from "react";
 import * as d from "../../data";
 import { Add, Edit } from "@mui/icons-material";
 import { Box, Breadcrumbs, Button, Fab, Typography } from "@mui/material";
+import { LoggedInState, getParentQuestionList } from "../state/loggedInState";
 import { AppState } from "../state";
 import { Link } from "./Link";
-import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
@@ -48,7 +48,10 @@ export const QuestionPage = (props: {
     );
   }
   const program = props.loggedInState.createdProgramMap.get(question.programId);
-  const parentList = props.appState.questionParentList(question.parent);
+  const parentList =
+    question.parent._ === "Some"
+      ? getParentQuestionList(props.loggedInState, question.parent.value)
+      : [];
 
   return (
     <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>

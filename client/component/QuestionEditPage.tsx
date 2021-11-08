@@ -15,10 +15,10 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import { LoggedInState, getParentQuestionList } from "../state/loggedInState";
 import { AppState } from "../state";
 import { Close } from "@mui/icons-material";
 import { Link } from "./Link";
-import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { QuestionButton } from "./QuestionCard";
 import { TextEditor } from "./TextEditor";
@@ -83,7 +83,10 @@ const EditQuestionLoaded = (props: {
   const program = props.loggedInState.createdProgramMap.get(
     props.question.programId
   );
-  const parentList = props.appState.questionParentList(props.question.parent);
+  const parentList =
+    props.question.parent._ === "Some"
+      ? getParentQuestionList(props.loggedInState, props.question.parent.value)
+      : [];
 
   const editQuestion = () => {
     if (textResult._ === "Error") {

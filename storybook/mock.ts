@@ -37,14 +37,6 @@ export const mockAppState: AppState = {
   },
   questionChildren: (id: d.QuestionId): ReadonlyArray<d.QuestionId> =>
     questionChildren(id, questionMap),
-  questionParentList: (
-    id: d.Option<d.QuestionId>
-  ): ReadonlyArray<d.Question> => {
-    if (id._ === "None") {
-      return [];
-    }
-    return getParentQuestionList(id.value, questionMap);
-  },
   getQuestionTreeListWithLoadingStateInProgram: (
     programId: d.ProgramId
   ): QuestionTreeListWithLoadingState => {

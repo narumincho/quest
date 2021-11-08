@@ -70,10 +70,6 @@ export type AppState = {
     parent: d.QuestionId | undefined,
     text: string
   ) => void;
-  /** 質問の親を取得する. 最初が近い順 */
-  readonly questionParentList: (
-    id: d.Option<d.QuestionId>
-  ) => ReadonlyArray<d.Question>;
   /** 質問の木構造を取得する */
   readonly getQuestionTreeListWithLoadingStateInProgram: (
     id: d.ProgramId
@@ -586,12 +582,6 @@ export const useAppState = (): AppState => {
       getQuestionById(logInState, questionId),
     questionChildren: (questionId: d.QuestionId) =>
       getQuestionDirectChildren(logInState, questionId),
-    questionParentList: (id) => {
-      if (id._ === "None") {
-        return [];
-      }
-      return getParentQuestionList(logInState, id.value);
-    },
     getQuestionTreeListWithLoadingStateInProgram: (programId: d.ProgramId) =>
       getQuestionTreeListWithLoadingStateInProgram(logInState, programId),
     getClassAndRole: (classId) => {
