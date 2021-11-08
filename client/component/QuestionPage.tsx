@@ -5,6 +5,7 @@ import { Box, Breadcrumbs, Button, Fab, Typography } from "@mui/material";
 import {
   LoggedInState,
   getParentQuestionList,
+  getQuestionDirectChildren,
   getQuestionForProgramCreator,
 } from "../state/loggedInState";
 import { AppState } from "../state";
@@ -35,7 +36,10 @@ export const QuestionPage = (props: {
     props.loggedInState,
     props.questionId
   );
-  const children = props.appState.questionChildren(props.questionId);
+  const children = getQuestionDirectChildren(
+    props.loggedInState,
+    props.questionId
+  );
 
   if (question === undefined) {
     return (

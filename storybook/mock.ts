@@ -6,7 +6,6 @@ import {
 } from "../client/state/loggedInState";
 import { AppState } from "../client/state";
 import { action } from "@storybook/addon-actions";
-import { questionChildren } from "../client/state/question";
 
 export const mockAppState: AppState = {
   logInState: { tag: "NoLogin" },
@@ -26,8 +25,6 @@ export const mockAppState: AppState = {
   requestGetQuestionListInProgram: action(
     "プログラムに属している質問を習得しようとした"
   ),
-  questionChildren: (id: d.QuestionId): ReadonlyArray<d.QuestionId> =>
-    questionChildren(id, questionMap),
   createClass: action("createClass"),
   shareClassInviteLink: action("shareClassInviteLink"),
   editQuestion: action("editQuestion"),

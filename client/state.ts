@@ -1,12 +1,7 @@
 import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
-import {
-  LogInState,
-  getQuestionDirectChildren,
-  loggedIn,
-  updateLoggedInState,
-} from "./state/logInState";
+import { LogInState, loggedIn, updateLoggedInState } from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
 import {
   addCreatedClass,
@@ -32,9 +27,6 @@ export type AppState = {
   readonly location: d.Location;
   /** 質問を作成中かどうか */
   readonly isCreatingQuestion: boolean;
-  /** 質問の子を取得する */
-  readonly questionChildren: (id: d.QuestionId) => ReadonlyArray<d.QuestionId>;
-
   /** ログインページを取得して移動させる */
   readonly requestLogin: () => void;
   /** テストアカウントとしてログインする */
@@ -561,8 +553,6 @@ export const useAppState = (): AppState => {
           );
         });
     },
-    questionChildren: (questionId: d.QuestionId) =>
-      getQuestionDirectChildren(logInState, questionId),
     shareClassInviteLink: (classId) => {
       const qClass = getCreatedClass(classId);
       if (qClass === undefined) {

@@ -43,28 +43,6 @@ export const loggedIn = (
   };
 };
 
-/** 質問の直接的な子を取得する */
-export const getQuestionDirectChildren = (
-  logInState: LogInState,
-  questionId: d.QuestionId
-): ReadonlyArray<d.QuestionId> => {
-  if (logInState.tag !== "LoggedIn") {
-    return [];
-  }
-  return ls.getQuestionDirectChildren(logInState.loggedInState, questionId);
-};
-
-/** 質問の親を取得する */
-export const getParentQuestionList = (
-  logInState: LogInState,
-  questionId: d.QuestionId
-): ReadonlyArray<d.Question> => {
-  if (logInState.tag !== "LoggedIn") {
-    return [];
-  }
-  return ls.getParentQuestionList(logInState.loggedInState, questionId);
-};
-
 export const updateLoggedInState =
   (func: (loggedInState: ls.LoggedInState) => ls.LoggedInState) =>
   (beforeLogInState: LogInState): LogInState => {
