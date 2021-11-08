@@ -387,32 +387,45 @@ export const apiFunc: {
       message: parameter.message,
       questionId: parameter.questionId,
     });
+    // コメントした本人には通知しない
+    const sentAccountId = new Set<d.AccountId>([account.id]);
 
+    const answerIdData: d.AnswerIdData = {
+      answerStudentId: parameter.answerStudentId,
+      classId: parameter.classId,
+      questionId: parameter.questionId,
+    };
     if (parameter.answerStudentId !== account.id) {
-      firebaseInterface.addNotification({
-        accountId: isStudentOrClassCreatorResult.createAccountId,
-        event: d.NotificationEvent.NewCommentInCreatedClass({
-          answerStudentId: parameter.answerStudentId,
-          classId: parameter.classId,
-          questionId: parameter.questionId,
-        }),
-        id: d.NotificationId.fromString(createRandomId()),
-      });
+      // 管理者に通知
+      addNewCommentInCreatedClass(
+        sentAccountId,
+        isStudentOrClassCreatorResult.createAccountId,
+        answerIdData
+      );
+      sentAccountId.add(isStudentOrClassCreatorResult.createAccountId);
+      // 回答者に通知
       firebaseInterface.addNotification({
         accountId: parameter.answerStudentId,
-        event: d.NotificationEvent.NewCommentToMyAnswer({
-          answerStudentId: parameter.answerStudentId,
-          classId: parameter.classId,
-          questionId: parameter.questionId,
-        }),
+        event: d.NotificationEvent.NewCommentToMyAnswer(answerIdData),
         id: d.NotificationId.fromString(createRandomId()),
       });
+      sentAccountId.add(parameter.answerStudentId);
     }
-    return firebaseInterface.getCommentInAnswer({
+    const commentList = await firebaseInterface.getCommentInAnswer({
       accountId: parameter.answerStudentId,
       classId: parameter.classId,
       questionId: parameter.questionId,
     });
+    // コメントした人に通知
+    for (const comment of commentList) {
+      addNewCommentInCreatedClass(
+        sentAccountId,
+        comment.accountId,
+        answerIdData
+      );
+      sentAccountId.add(comment.accountId);
+    }
+    return commentList;
   },
   getComment: async (parameter) => {
     const account = await validateAndGetAccount(parameter.accountToken);
@@ -672,6 +685,7 @@ export const getIsStudentOrClassCreator = async (
   classId: d.ClassId
 ): Promise<{
   readonly result: "student" | "creator" | "none";
+  /** クラスの作成者 */
   readonly createAccountId: d.AccountId;
 }> => {
   const qClass = await firebaseInterface.getClassByClassId(classId);
@@ -690,4 +704,19 @@ export const getIsStudentOrClassCreator = async (
       : "none",
     createAccountId: qClass.createAccountId,
   };
+};
+
+const addNewCommentInCreatedClass = async (
+  sentAccountIdSet: ReadonlySet<d.AccountId>,
+  accountId: d.AccountId,
+  answerIdData: d.AnswerIdData
+): Promise<void> => {
+  if (sentAccountIdSet.has(accountId)) {
+    return;
+  }
+  await firebaseInterface.addNotification({
+    accountId,
+    event: d.NotificationEvent.NewCommentInCreatedClass(answerIdData),
+    id: d.NotificationId.fromString(createRandomId()),
+  });
 };
