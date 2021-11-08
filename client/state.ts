@@ -5,12 +5,11 @@ import {
   LogInState,
   getQuestionDirectChildren,
   getQuestionThatCanBeParentList,
-  getQuestionTreeListWithLoadingStateInProgram,
   loggedIn,
   updateLoggedInState,
 } from "./state/logInState";
+import { VariantType, useSnackbar } from "notistack";
 import {
-  QuestionTreeListWithLoadingState,
   addCreatedClass,
   addCreatedOrEditedQuestion,
   addJoinedClass,
@@ -20,11 +19,13 @@ import {
   setQuestionListState,
   setStudentQuestionTree,
 } from "./state/loggedInState";
-import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
 
+/**
+ * アプリの状態を管理する Hook の結果. 多くのコンポーネントの Props で渡している
+ */
 export type AppState = {
   /** ログイン状態 */
   readonly logInState: LogInState;
@@ -64,10 +65,6 @@ export type AppState = {
     parent: d.QuestionId | undefined,
     text: string
   ) => void;
-  /** 質問の木構造を取得する */
-  readonly getQuestionTreeListWithLoadingStateInProgram: (
-    id: d.ProgramId
-  ) => QuestionTreeListWithLoadingState;
   /** 招待URLをシェアする */
   readonly shareClassInviteLink: (classId: d.ClassId) => void;
   /** 質問を編集する */
@@ -572,8 +569,6 @@ export const useAppState = (): AppState => {
     },
     questionChildren: (questionId: d.QuestionId) =>
       getQuestionDirectChildren(logInState, questionId),
-    getQuestionTreeListWithLoadingStateInProgram: (programId: d.ProgramId) =>
-      getQuestionTreeListWithLoadingStateInProgram(logInState, programId),
     shareClassInviteLink: (classId) => {
       const qClass = getCreatedClass(classId);
       if (qClass === undefined) {

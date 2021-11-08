@@ -1,6 +1,9 @@
 import * as d from "../../data";
 import * as ls from "./loggedInState";
 
+/**
+ * ログイン状態とログインしているときに保持するデータなど
+ */
 export type LogInState =
   | {
       /** ログインしているか, 判断中 */
@@ -60,20 +63,6 @@ export const getParentQuestionList = (
     return [];
   }
   return ls.getParentQuestionList(logInState.loggedInState, questionId);
-};
-
-/** プログラムの質問の木構造を取得する */
-export const getQuestionTreeListWithLoadingStateInProgram = (
-  logInState: LogInState,
-  programId: d.ProgramId
-): ls.QuestionTreeListWithLoadingState => {
-  if (logInState.tag !== "LoggedIn") {
-    return { tag: "Empty" };
-  }
-  return ls.getQuestionTreeListWithLoadingStateInProgram(
-    logInState.loggedInState,
-    programId
-  );
 };
 
 /** 親の質問になることができる質問を, キャッシュから取得する */

@@ -1,18 +1,12 @@
 import * as d from "../data";
 import {
-  ClassAndRole,
   ClassWithParticipantList,
   LoggedInState,
   ProgramWithClassList,
-  QuestionTreeListWithLoadingState,
 } from "../client/state/loggedInState";
-import {
-  getParentQuestionList,
-  getQuestionTree,
-  questionChildren,
-} from "../client/state/question";
 import { AppState } from "../client/state";
 import { action } from "@storybook/addon-actions";
+import { questionChildren } from "../client/state/question";
 
 export const mockAppState: AppState = {
   logInState: { tag: "NoLogin" },
@@ -34,14 +28,6 @@ export const mockAppState: AppState = {
   ),
   questionChildren: (id: d.QuestionId): ReadonlyArray<d.QuestionId> =>
     questionChildren(id, questionMap),
-  getQuestionTreeListWithLoadingStateInProgram: (
-    programId: d.ProgramId
-  ): QuestionTreeListWithLoadingState => {
-    return {
-      tag: "Loaded",
-      questionTreeList: getQuestionTree(programId, questionList),
-    };
-  },
   createClass: action("createClass"),
   shareClassInviteLink: action("shareClassInviteLink"),
   editQuestion: action("editQuestion"),

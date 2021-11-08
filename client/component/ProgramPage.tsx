@@ -4,6 +4,7 @@ import { Box, Breadcrumbs, Button, Typography } from "@mui/material";
 import {
   LoggedInState,
   QuestionTreeListWithLoadingState,
+  getQuestionTreeListWithLoadingStateInProgram,
 } from "../state/loggedInState";
 import { AccountCard } from "./AccountCard";
 import { Add } from "@mui/icons-material";
@@ -74,7 +75,8 @@ export const ProgramPage = (props: {
         <Box padding={1}>
           <Typography>質問:</Typography>
           <QuestionList
-            questionTreeListWithLoadingState={props.appState.getQuestionTreeListWithLoadingStateInProgram(
+            questionTreeListWithLoadingState={getQuestionTreeListWithLoadingStateInProgram(
+              props.loggedInState,
               props.programId
             )}
             appState={props.appState}
