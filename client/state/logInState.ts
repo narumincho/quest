@@ -92,17 +92,6 @@ export const getQuestionThatCanBeParentList = (
   );
 };
 
-/** クラスとクラスへの所属の種類を取得する */
-export const getClassAndRole = (
-  logInState: LogInState,
-  classId: d.ClassId
-): ls.ClassAndRole => {
-  if (logInState.tag !== "LoggedIn") {
-    return { tag: "none" };
-  }
-  return ls.getClassAndRole(logInState.loggedInState, classId);
-};
-
 export const updateLoggedInState =
   (func: (loggedInState: ls.LoggedInState) => ls.LoggedInState) =>
   (beforeLogInState: LogInState): LogInState => {

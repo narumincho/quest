@@ -351,6 +351,9 @@ export const getQuestionThatCanBeParentList = (
   );
 };
 
+/**
+ * クラスへの関わり方とデータを取得する
+ */
 export const getClassAndRole = (
   loggedInState: LoggedInState,
   classId: d.ClassId

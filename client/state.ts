@@ -2,7 +2,14 @@ import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
 import {
-  ClassAndRole,
+  LogInState,
+  getQuestionDirectChildren,
+  getQuestionThatCanBeParentList,
+  getQuestionTreeListWithLoadingStateInProgram,
+  loggedIn,
+  updateLoggedInState,
+} from "./state/logInState";
+import {
   QuestionTreeListWithLoadingState,
   addCreatedClass,
   addCreatedOrEditedQuestion,
@@ -13,15 +20,6 @@ import {
   setQuestionListState,
   setStudentQuestionTree,
 } from "./state/loggedInState";
-import {
-  LogInState,
-  getClassAndRole,
-  getQuestionDirectChildren,
-  getQuestionThatCanBeParentList,
-  getQuestionTreeListWithLoadingStateInProgram,
-  loggedIn,
-  updateLoggedInState,
-} from "./state/logInState";
 import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
@@ -70,8 +68,6 @@ export type AppState = {
   readonly getQuestionTreeListWithLoadingStateInProgram: (
     id: d.ProgramId
   ) => QuestionTreeListWithLoadingState;
-  /** 作成したクラスまたは, 参加したクラスを習得する */
-  readonly getClassAndRole: (id: d.ClassId) => ClassAndRole;
   /** 招待URLをシェアする */
   readonly shareClassInviteLink: (classId: d.ClassId) => void;
   /** 質問を編集する */
@@ -578,9 +574,6 @@ export const useAppState = (): AppState => {
       getQuestionDirectChildren(logInState, questionId),
     getQuestionTreeListWithLoadingStateInProgram: (programId: d.ProgramId) =>
       getQuestionTreeListWithLoadingStateInProgram(logInState, programId),
-    getClassAndRole: (classId) => {
-      return getClassAndRole(logInState, classId);
-    },
     shareClassInviteLink: (classId) => {
       const qClass = getCreatedClass(classId);
       if (qClass === undefined) {

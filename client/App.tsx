@@ -2,6 +2,7 @@ import * as React from "react";
 import * as d from "../data";
 import { AppState, useAppState } from "./state";
 import { Box, Breadcrumbs, Typography } from "@mui/material";
+import { LoggedInState, getClassAndRole } from "./state/loggedInState";
 import { AdminClassPage } from "./component/AdminClassPage";
 import { AdminStudentPage } from "./component/AdminStudentPage";
 import { ClassInvitationPage } from "./component/ClassInvitationPage";
@@ -9,7 +10,6 @@ import { ClassNewPage } from "./component/ClassNewPage";
 import { Link } from "./component/Link";
 import { LoadingPage } from "./component/LoadingPage";
 import { LogInPage } from "./component/LogInPage";
-import { LoggedInState } from "./state/loggedInState";
 import { NotificationPage } from "./component/NotificationPage";
 import { PageContainer } from "./component/PageContainer";
 import { ParticipantClassPage } from "./component/ParticipantClassPage";
@@ -182,7 +182,7 @@ export const ClassPage = (props: {
   readonly classId: d.ClassId;
   readonly isDarkMode: boolean;
 }): React.ReactElement => {
-  const classAndRole = props.appState.getClassAndRole(props.classId);
+  const classAndRole = getClassAndRole(props.loggedInState, props.classId);
   switch (classAndRole.tag) {
     case "none":
       return (

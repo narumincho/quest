@@ -43,12 +43,6 @@ export const mockAppState: AppState = {
     };
   },
   createClass: action("createClass"),
-  getClassAndRole: (): ClassAndRole => {
-    return {
-      tag: "admin",
-      classWithParticipantList: mockClassWithParticipantListLoadingParticipant,
-    };
-  },
   shareClassInviteLink: action("shareClassInviteLink"),
   editQuestion: action("editQuestion"),
   getQuestionThatCanBeParentList: () => {
