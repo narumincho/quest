@@ -31,9 +31,6 @@ export const mockAppState: AppState = {
   createClass: action("createClass"),
   shareClassInviteLink: action("shareClassInviteLink"),
   editQuestion: action("editQuestion"),
-  getQuestionThatCanBeParentList: () => {
-    return questionList;
-  },
   joinClass: action("joinClass"),
   requestParticipantListInClass: action("requestParticipantListInClass"),
   requestStudentQuestionTreeInClass: action("getStudentQuestionTreeInClass"),

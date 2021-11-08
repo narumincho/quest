@@ -19,6 +19,7 @@ import {
   LoggedInState,
   getParentQuestionList,
   getQuestionForProgramCreator,
+  getQuestionThatCanBeParentList,
 } from "../state/loggedInState";
 import { AppState } from "../state";
 import { Close } from "@mui/icons-material";
@@ -234,29 +235,28 @@ const EditQuestionLoaded = (props: {
             >
               <ListItemText primary="--指定なし--" />
             </ListItem>
-            {props.appState
-              .getQuestionThatCanBeParentList(
-                props.question.programId,
-                props.question.id
-              )
-              .map((q) => {
-                return (
-                  <ListItem
-                    key={q.id}
-                    button
-                    onClick={() => {
-                      setEditState("none");
-                      setParentQuestionId(d.Option.Some(q.id));
-                    }}
-                    selected={
-                      parentQuestionId._ === "Some" &&
-                      parentQuestionId.value === q.id
-                    }
-                  >
-                    <ListItemText primary={q.name} />
-                  </ListItem>
-                );
-              })}
+            {getQuestionThatCanBeParentList(
+              props.loggedInState,
+              props.question.programId,
+              props.question.id
+            ).map((q) => {
+              return (
+                <ListItem
+                  key={q.id}
+                  button
+                  onClick={() => {
+                    setEditState("none");
+                    setParentQuestionId(d.Option.Some(q.id));
+                  }}
+                  selected={
+                    parentQuestionId._ === "Some" &&
+                    parentQuestionId.value === q.id
+                  }
+                >
+                  <ListItemText primary={q.name} />
+                </ListItem>
+              );
+            })}
           </List>
         </DialogContent>
       </Dialog>

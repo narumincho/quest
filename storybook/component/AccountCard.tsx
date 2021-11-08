@@ -1,14 +1,19 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { mockAccountId, mockAppState, mockLoggedInState } from "../mock";
+import { mockAccountId, mockLoggedInState } from "../mock";
 import { AccountCard } from "../../client/component/AccountCard";
 
-const meta: Meta = {
+const meta: Meta<Props> = {
   title: "AccountCard",
   component: AccountCard,
+  args: {
+    accountId: mockAccountId,
+  },
 };
 export default meta;
 
-export const Default: Story<never> = () => (
-  <AccountCard accountId={mockAccountId} loggedInState={mockLoggedInState} />
+type Props = Pick<React.ComponentProps<typeof AccountCard>, "accountId">;
+
+export const Default: Story<Props> = (args) => (
+  <AccountCard accountId={args.accountId} loggedInState={mockLoggedInState} />
 );

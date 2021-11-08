@@ -65,22 +65,6 @@ export const getParentQuestionList = (
   return ls.getParentQuestionList(logInState.loggedInState, questionId);
 };
 
-/** 親の質問になることができる質問を, キャッシュから取得する */
-export const getQuestionThatCanBeParentList = (
-  logInState: LogInState,
-  programId: d.ProgramId,
-  questionId: d.QuestionId
-): ReadonlyArray<d.Question> => {
-  if (logInState.tag !== "LoggedIn") {
-    return [];
-  }
-  return ls.getQuestionThatCanBeParentList(
-    logInState.loggedInState,
-    programId,
-    questionId
-  );
-};
-
 export const updateLoggedInState =
   (func: (loggedInState: ls.LoggedInState) => ls.LoggedInState) =>
   (beforeLogInState: LogInState): LogInState => {

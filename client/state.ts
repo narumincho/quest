@@ -4,7 +4,6 @@ import * as indexedDb from "./indexedDb";
 import {
   LogInState,
   getQuestionDirectChildren,
-  getQuestionThatCanBeParentList,
   loggedIn,
   updateLoggedInState,
 } from "./state/logInState";
@@ -73,11 +72,6 @@ export type AppState = {
     name: string,
     parentId: d.Option<d.QuestionId>
   ) => void;
-  /** 親の質問になることができる質問を, キャッシュから取得する */
-  readonly getQuestionThatCanBeParentList: (
-    programId: d.ProgramId,
-    questionId: d.QuestionId
-  ) => ReadonlyArray<d.Question>;
   /** クラスに参加する */
   readonly joinClass: (
     classInvitationToken: d.StudentClassInvitationToken
@@ -622,10 +616,6 @@ export const useAppState = (): AppState => {
           );
         });
     },
-    getQuestionThatCanBeParentList: (
-      programId: d.ProgramId,
-      questionId: d.QuestionId
-    ) => getQuestionThatCanBeParentList(logInState, programId, questionId),
     joinClass: (classInvitationToken) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {
