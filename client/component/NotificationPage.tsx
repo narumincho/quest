@@ -12,7 +12,7 @@ import {
   dateTimeToMillisecondsSinceUnixEpoch,
   dateTimeToString,
 } from "../../common/dateTime";
-import { AccountCard } from "./AccountCard";
+import { AccountCardFromData } from "./AccountCard";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
@@ -110,69 +110,58 @@ const NotificationItem = (props: {
   readonly appState: AppState;
   readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
-  switch (props.notification.event._) {
-    case "ConfirmAnswerInCreatedClass":
+  const event = props.notification.event;
+  switch (event._) {
+    case "NewComment":
       return (
         <NotificationItemContainer
           appState={props.appState}
-          location={d.Location.StudentAnswer(
-            props.notification.event.answerIdData
-          )}
+          location={d.Location.StudentAnswer({
+            answerStudentId: event.commentMain.answerStudent.id,
+            classId: event.commentMain.class.id,
+            questionId: event.commentMain.question.id,
+          })}
           done={props.notification.done}
           notificationId={props.notification.id}
           accountToken={props.loggedInState.accountToken}
         >
-          <Typography>自分のクラスの</Typography>
-          <AccountCard
-            loggedInState={props.loggedInState}
-            accountId={props.notification.event.answerIdData.answerStudentId}
-          />
-          <Typography>が回答しました</Typography>
           <Typography>
+            クラス 「{event.commentMain.class.name}」 の質問「
+            {event.commentMain.question.name}」対して
+          </Typography>
+          <AccountCardFromData account={event.commentMain.answerStudent} />
+          <Typography>が回答した回答に対して</Typography>
+          <AccountCardFromData account={event.commentMain.account} />
+          <Typography>
+            が「{event.commentMain.message}」とコメントしました
+          </Typography>
+          <Typography align="right">
             {dateTimeToString(props.notification.createTime)}
           </Typography>
         </NotificationItemContainer>
       );
-    case "NewCommentInCreatedClass":
+    case "NewAnswer":
       return (
         <NotificationItemContainer
           appState={props.appState}
-          location={d.Location.StudentAnswer(
-            props.notification.event.answerIdData
-          )}
+          location={d.Location.StudentAnswer({
+            answerStudentId: event.answerMain.answerStudent.id,
+            classId: event.answerMain.class.id,
+            questionId: event.answerMain.question.id,
+          })}
           done={props.notification.done}
           notificationId={props.notification.id}
           accountToken={props.loggedInState.accountToken}
         >
-          <Typography>自分のクラスの</Typography>
-          <AccountCard
-            loggedInState={props.loggedInState}
-            accountId={props.notification.event.answerIdData.answerStudentId}
-          />
-          <Typography>がコメントしました</Typography>
           <Typography>
-            {dateTimeToString(props.notification.createTime)}
+            クラス 「{event.answerMain.class.name}」 の質問「
+            {event.answerMain.question.name}」対して
           </Typography>
-        </NotificationItemContainer>
-      );
-    case "NewCommentToMyAnswer":
-      return (
-        <NotificationItemContainer
-          appState={props.appState}
-          location={d.Location.StudentAnswer(
-            props.notification.event.answerIdData
-          )}
-          done={props.notification.done}
-          notificationId={props.notification.id}
-          accountToken={props.loggedInState.accountToken}
-        >
-          <Typography>自分の回答に</Typography>
-          <AccountCard
-            loggedInState={props.loggedInState}
-            accountId={props.notification.event.answerIdData.answerStudentId}
-          />
-          <Typography>からコメントがつけられました!</Typography>
+          <AccountCardFromData account={event.answerMain.answerStudent} />
           <Typography>
+            が「{event.answerMain.answerText}」と答えました
+          </Typography>
+          <Typography align="right">
             {dateTimeToString(props.notification.createTime)}
           </Typography>
         </NotificationItemContainer>

@@ -290,11 +290,14 @@ export const apiFunc: {
     if (parameter.isConfirm) {
       firebaseInterface.addNotification({
         accountId: qClass.createAccountId,
-        event: d.NotificationEvent.ConfirmAnswerInCreatedClass({
-          answerStudentId: account.id,
-          classId: parameter.classId,
-          questionId: parameter.questionId,
-        }),
+        event: {
+          tag: "NewAnswer",
+          idData: {
+            answerStudentId: account.id,
+            classId: parameter.classId,
+            questionId: parameter.questionId,
+          },
+        },
         id: d.NotificationId.fromString(createRandomId()),
       });
     }
@@ -379,8 +382,9 @@ export const apiFunc: {
     if (!answerStudentIsValidStudent) {
       throw new Error("クラスに属していない生徒に対してコメントはできない");
     }
+    const commentId = d.CommentId.fromString(createRandomId());
     await firebaseInterface.addComment({
-      commentId: d.CommentId.fromString(createRandomId()),
+      commentId,
       answerStudentId: parameter.answerStudentId,
       classId: parameter.classId,
       feedbackAccountId: account.id,
@@ -390,23 +394,18 @@ export const apiFunc: {
     // コメントした本人には通知しない
     const sentAccountId = new Set<d.AccountId>([account.id]);
 
-    const answerIdData: d.AnswerIdData = {
-      answerStudentId: parameter.answerStudentId,
-      classId: parameter.classId,
-      questionId: parameter.questionId,
-    };
     if (parameter.answerStudentId !== account.id) {
       // 管理者に通知
       addNewCommentInCreatedClass(
         sentAccountId,
         isStudentOrClassCreatorResult.createAccountId,
-        answerIdData
+        commentId
       );
       sentAccountId.add(isStudentOrClassCreatorResult.createAccountId);
       // 回答者に通知
       firebaseInterface.addNotification({
         accountId: parameter.answerStudentId,
-        event: d.NotificationEvent.NewCommentToMyAnswer(answerIdData),
+        event: { tag: "NewComment", commentId },
         id: d.NotificationId.fromString(createRandomId()),
       });
       sentAccountId.add(parameter.answerStudentId);
@@ -418,11 +417,7 @@ export const apiFunc: {
     });
     // コメントした人に通知
     for (const comment of commentList) {
-      addNewCommentInCreatedClass(
-        sentAccountId,
-        comment.accountId,
-        answerIdData
-      );
+      addNewCommentInCreatedClass(sentAccountId, comment.accountId, commentId);
       sentAccountId.add(comment.accountId);
     }
     return commentList;
@@ -709,14 +704,14 @@ export const getIsStudentOrClassCreator = async (
 const addNewCommentInCreatedClass = async (
   sentAccountIdSet: ReadonlySet<d.AccountId>,
   accountId: d.AccountId,
-  answerIdData: d.AnswerIdData
+  commentId: d.CommentId
 ): Promise<void> => {
   if (sentAccountIdSet.has(accountId)) {
     return;
   }
   await firebaseInterface.addNotification({
     accountId,
-    event: d.NotificationEvent.NewCommentInCreatedClass(answerIdData),
+    event: { tag: "NewComment", commentId },
     id: d.NotificationId.fromString(createRandomId()),
   });
 };

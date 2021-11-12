@@ -12,6 +12,12 @@ export const AccountCard = (props: {
   if (account === undefined) {
     return <Box>アカウントの情報を読込中</Box>;
   }
+  return <AccountCardFromData account={account} />;
+};
+
+export const AccountCardFromData = (props: {
+  readonly account: d.Account;
+}): React.ReactElement => {
   return (
     <Paper
       sx={{
@@ -22,10 +28,10 @@ export const AccountCard = (props: {
       }}
     >
       <Avatar
-        alt={account.name}
-        src={commonUrl.imageUrl(account.iconHash).toString()}
+        alt={props.account.name}
+        src={commonUrl.imageUrl(props.account.iconHash).toString()}
       />
-      <Typography>{account.name}</Typography>
+      <Typography>{props.account.name}</Typography>
     </Paper>
   );
 };
