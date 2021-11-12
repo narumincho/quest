@@ -95,7 +95,11 @@ const NotFoundQuestion = (props: {
 }): React.ReactElement => {
   const qClass = getClassAndRole(props.loggedInState, props.classId);
   return (
-    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+    <PageContainer
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+      leftActionType="back"
+    >
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
@@ -154,7 +158,11 @@ const StudentSelfEditQuestionPageLoaded = (props: {
   const qClass = getClassAndRole(props.loggedInState, props.classId);
 
   return (
-    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+    <PageContainer
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+      leftActionType="back"
+    >
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
@@ -312,7 +320,11 @@ const PageLoadedOtherStudentView = (props: {
   );
 
   return (
-    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+    <PageContainer
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+      leftActionType="back"
+    >
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>
