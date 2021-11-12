@@ -186,7 +186,11 @@ export const ClassPage = (props: {
   switch (classAndRole.tag) {
     case "none":
       return (
-        <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+        <PageContainer
+          appState={props.appState}
+          isDarkMode={props.isDarkMode}
+          leftActionType="back"
+        >
           <Box>このクラスは, 存在していないか, 参加または作成していません</Box>
           <Box padding={1}>
             <Box padding={1}>

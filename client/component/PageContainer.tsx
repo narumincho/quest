@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AppBar } from "./AppBar";
+import { AppBar, LeftActionType } from "./AppBar";
 import { AppState } from "../state";
 import { Box } from "@mui/material";
 
@@ -14,10 +14,9 @@ export const PageContainer: React.FC<{
    */
   readonly appState: AppState;
   /**
-   * 戻るボタンを隠すか
-   * @default false
+   * AppBar 内の 左に置くボタン
    */
-  readonly isHideBack?: boolean;
+  readonly leftActionType: LeftActionType;
   /**
    * ダークモードかどうか
    */
@@ -26,7 +25,7 @@ export const PageContainer: React.FC<{
   return (
     <Box width="100%" height="100%">
       <AppBar
-        isHideBack={props.isHideBack ?? false}
+        leftActionType={props.leftActionType}
         appState={props.appState}
         isDarkMode={props.isDarkMode}
       />

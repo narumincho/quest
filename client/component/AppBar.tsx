@@ -1,10 +1,12 @@
 import * as React from "react";
 import * as commonUrl from "../../common/url";
 import * as d from "../../data";
-import { ArrowBack, Notifications } from "@mui/icons-material";
+import { ArrowBack, Menu, Notifications } from "@mui/icons-material";
 import {
   Avatar,
+  Badge,
   Box,
+  Drawer,
   IconButton,
   AppBar as MAppBar,
   Toolbar,
@@ -12,15 +14,17 @@ import {
 } from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { getNotDoneNotificationCount } from "../state/loggedInState";
 
+export type LeftActionType = "none" | "back" | "menu";
 /**
  * 画面上部に 大抵いつも表示される AppBar. 戻るボタンと, ログインしているアカウントを確認できる
  */
 export const AppBar = (props: {
   /** アプリの状態と操作 */
   readonly appState: AppState;
-  /** 戻るボタンを隠すか */
-  readonly isHideBack: boolean;
+  /** 左に置くボタン */
+  readonly leftActionType: LeftActionType;
   /** ダークモードか */
   readonly isDarkMode: boolean;
 }): React.ReactElement => {
@@ -33,38 +37,37 @@ export const AppBar = (props: {
       }}
     >
       <Toolbar>
-        {props.isHideBack ? (
-          <></>
-        ) : (
-          <IconButton onClick={props.appState.back}>
-            <ArrowBack sx={{ color: props.isDarkMode ? "#eee" : "#000" }} />
-          </IconButton>
-        )}
+        <LeftAction
+          leftActionType={props.leftActionType}
+          isDarkMode={props.isDarkMode}
+          appState={props.appState}
+        />
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           クエスト
         </Typography>
         {props.appState.logInState.tag === "LoggedIn" ? (
-          <Box display="flex" alignItems="center" gap={2}>
+          <Box display="flex">
             <Link location={d.Location.Notification} appState={props.appState}>
-              <Notifications
-                sx={{
-                  color: props.isDarkMode ? "#eee" : "#000",
-                  width: 48,
-                  height: 48,
-                  display: "grid",
-                  padding: 1,
-                }}
-              />
-            </Link>
-            <Link location={d.Location.Setting} appState={props.appState}>
-              <Avatar
-                alt={props.appState.logInState.loggedInState.account.name}
-                src={commonUrl
-                  .imageUrl(
-                    props.appState.logInState.loggedInState.account.iconHash
-                  )
-                  .toString()}
-              />
+              <Box
+                display="grid"
+                width={48}
+                height={48}
+                alignContent="center"
+                justifyContent="center"
+              >
+                <Badge
+                  color="secondary"
+                  badgeContent={getNotDoneNotificationCount(
+                    props.appState.logInState.loggedInState
+                  )}
+                >
+                  <Notifications
+                    sx={{
+                      color: props.isDarkMode ? "#eee" : "#000",
+                    }}
+                  />
+                </Badge>
+              </Box>
             </Link>
           </Box>
         ) : (
@@ -73,4 +76,61 @@ export const AppBar = (props: {
       </Toolbar>
     </MAppBar>
   );
+};
+
+const LeftAction = (props: {
+  readonly leftActionType: LeftActionType;
+  readonly isDarkMode: boolean;
+  readonly appState: AppState;
+}): React.ReactElement => {
+  const [isOpenMenu, setIsOpenMenu] = React.useState<boolean>(false);
+  switch (props.leftActionType) {
+    case "none":
+      return <Box></Box>;
+    case "back":
+      return (
+        <IconButton onClick={props.appState.back}>
+          <ArrowBack sx={{ color: props.isDarkMode ? "#eee" : "#000" }} />
+        </IconButton>
+      );
+    case "menu":
+      return (
+        <Box>
+          <IconButton onClick={() => setIsOpenMenu(true)}>
+            <Menu sx={{ color: props.isDarkMode ? "#eee" : "#000" }} />
+          </IconButton>
+          <Drawer
+            anchor="left"
+            open={isOpenMenu}
+            onClose={() => {
+              setIsOpenMenu(false);
+            }}
+          >
+            <Box width={250} padding={1}>
+              <Typography>Quest</Typography>
+              {props.appState.logInState.tag === "LoggedIn" ? (
+                <Link location={d.Location.Setting} appState={props.appState}>
+                  <Box display="flex" alignItems="center">
+                    <Avatar
+                      alt={props.appState.logInState.loggedInState.account.name}
+                      src={commonUrl
+                        .imageUrl(
+                          props.appState.logInState.loggedInState.account
+                            .iconHash
+                        )
+                        .toString()}
+                    />
+                    <Typography>
+                      {props.appState.logInState.loggedInState.account.name}
+                    </Typography>
+                  </Box>
+                </Link>
+              ) : (
+                <></>
+              )}
+            </Box>
+          </Drawer>
+        </Box>
+      );
+  }
 };

@@ -8,30 +8,30 @@ const meta: Meta<Props> = {
   component: AppBar,
   args: {
     isDarkMode: false,
-    isHideBack: false,
+    leftActionType: "back",
   },
 };
 export default meta;
 
 type Props = Pick<
   React.ComponentProps<typeof AppBar>,
-  "isHideBack" | "isDarkMode"
+  "leftActionType" | "isDarkMode"
 >;
 
 export const NoLogIn: Story<Props> = (args) => (
   <AppBar
-    isHideBack={args.isHideBack}
+    leftActionType={args.leftActionType}
     appState={mockAppState}
     isDarkMode={args.isDarkMode}
   />
 );
 NoLogIn.args = {
-  isHideBack: false,
+  leftActionType: "none",
 };
 
 export const LoggedIn: Story<Props> = (args) => (
   <AppBar
-    isHideBack={args.isHideBack}
+    leftActionType={args.leftActionType}
     appState={{
       ...mockAppState,
       logInState: { tag: "LoggedIn", loggedInState: mockLoggedInState },
@@ -40,5 +40,5 @@ export const LoggedIn: Story<Props> = (args) => (
   />
 );
 LoggedIn.args = {
-  isHideBack: false,
+  leftActionType: "back",
 };

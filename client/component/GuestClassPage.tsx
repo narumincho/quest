@@ -14,7 +14,11 @@ export const GuestClassPage = (props: {
   readonly isDarkMode: boolean;
 }): React.ReactElement => {
   return (
-    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+    <PageContainer
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+      leftActionType="back"
+    >
       <Box padding={1}>
         <Typography variant="h5">{props.participantClass.name}</Typography>
       </Box>

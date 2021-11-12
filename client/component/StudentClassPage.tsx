@@ -33,7 +33,11 @@ export const StudentClassPage = (props: {
     [props.participantClass.id]
   );
   return (
-    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+    <PageContainer
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+      leftActionType="back"
+    >
       <Box padding={1}>
         <Breadcrumbs>
           <Link appState={props.appState} location={d.Location.Top}>

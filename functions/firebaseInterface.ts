@@ -829,6 +829,20 @@ export const getNotificationListByAccount = async (
 };
 
 /**
+ * 通知の未読数を数える
+ */
+export const getNotDoneNotificationCount = async (
+  accountId: d.AccountId
+): Promise<number> => {
+  const snapshot = await firestore
+    .collection("notification")
+    .where("accountId", "==", accountId)
+    .where("done", "==", false)
+    .get();
+  return snapshot.size;
+};
+
+/**
  * Cloud Storage for Firebase にファイルを保存する
  */
 export const savePngFile = async (

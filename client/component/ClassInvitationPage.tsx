@@ -51,7 +51,7 @@ export const ClassInvitationPage = (props: {
 
   return (
     <PageContainer
-      isHideBack
+      leftActionType="none"
       appState={props.appState}
       isDarkMode={props.isDarkMode}
     >

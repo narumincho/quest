@@ -16,7 +16,7 @@ export const LogInPage = (props: {
   return (
     <PageContainer
       appState={props.appState}
-      isHideBack
+      leftActionType="none"
       isDarkMode={props.isDarkMode}
     >
       <Box padding={1}>

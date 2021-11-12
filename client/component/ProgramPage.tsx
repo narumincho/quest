@@ -29,7 +29,11 @@ export const ProgramPage = (props: {
 
   if (program === undefined) {
     return (
-      <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+      <PageContainer
+        appState={props.appState}
+        isDarkMode={props.isDarkMode}
+        leftActionType="back"
+      >
         <Box padding={1}>
           <Box padding={1}>
             <Breadcrumbs>
@@ -52,7 +56,11 @@ export const ProgramPage = (props: {
   }
 
   return (
-    <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
+    <PageContainer
+      appState={props.appState}
+      isDarkMode={props.isDarkMode}
+      leftActionType="back"
+    >
       <Box padding={1}>
         <Box padding={1}>
           <Breadcrumbs>

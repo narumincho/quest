@@ -21,7 +21,7 @@ export type Props = {
 export const TopPage = (props: Props): React.ReactElement => {
   return (
     <PageContainer
-      isHideBack
+      leftActionType="menu"
       appState={props.appState}
       isDarkMode={props.isDarkMode}
     >
