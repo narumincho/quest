@@ -19,6 +19,8 @@ export type LoggedInState = {
   readonly joinedClassMap: ReadonlyMap<d.ClassId, JoinedClass>;
   readonly questionMap: ReadonlyMap<d.ProgramId, QuestionListState>;
   readonly accountMap: ReadonlyMap<d.AccountId, d.Account>;
+  /** 通知の未読数 (最初に取得したもの) */
+  readonly notDoneNotificationCount: number;
 };
 
 /** 作成したプログラムと作成したクラス */
@@ -149,6 +151,7 @@ export const initLoggedInState = (option: {
     accountMap: new Map<d.AccountId, d.Account>([
       [option.accountData.account.id, option.accountData.account],
     ]),
+    notDoneNotificationCount: option.accountData.notDoneNotificationCount,
   };
 };
 
@@ -723,4 +726,13 @@ export const getStudentSelfQuestionTree = (
     return undefined;
   }
   return resultTree;
+};
+
+/**
+ * 通知の未読数をキャッシュから取得する
+ */
+export const getNotDoneNotificationCount = (
+  loggedInState: LoggedInState
+): number => {
+  return loggedInState.notDoneNotificationCount;
 };

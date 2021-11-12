@@ -4,6 +4,7 @@ import * as d from "../../data";
 import { ArrowBack, Notifications } from "@mui/icons-material";
 import {
   Avatar,
+  Badge,
   Box,
   IconButton,
   AppBar as MAppBar,
@@ -12,6 +13,7 @@ import {
 } from "@mui/material";
 import { AppState } from "../state";
 import { Link } from "./Link";
+import { getNotDoneNotificationCount } from "../state/loggedInState";
 
 /**
  * 画面上部に 大抵いつも表示される AppBar. 戻るボタンと, ログインしているアカウントを確認できる
@@ -46,15 +48,26 @@ export const AppBar = (props: {
         {props.appState.logInState.tag === "LoggedIn" ? (
           <Box display="flex" alignItems="center" gap={2}>
             <Link location={d.Location.Notification} appState={props.appState}>
-              <Notifications
-                sx={{
-                  color: props.isDarkMode ? "#eee" : "#000",
-                  width: 48,
-                  height: 48,
-                  display: "grid",
-                  padding: 1,
-                }}
-              />
+              <Box
+                display="grid"
+                width={48}
+                height={48}
+                alignContent="center"
+                justifyContent="center"
+              >
+                <Badge
+                  color="secondary"
+                  badgeContent={getNotDoneNotificationCount(
+                    props.appState.logInState.loggedInState
+                  )}
+                >
+                  <Notifications
+                    sx={{
+                      color: props.isDarkMode ? "#eee" : "#000",
+                    }}
+                  />
+                </Badge>
+              </Box>
             </Link>
             <Link location={d.Location.Setting} appState={props.appState}>
               <Avatar

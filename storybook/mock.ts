@@ -355,6 +355,7 @@ export const mockLoggedInState: LoggedInState = {
     ],
   ]),
   accountMap: new Map(),
+  notDoneNotificationCount: 5,
 };
 
 export const mockKadaiQuestionId = d.QuestionId.fromString("kadai");
