@@ -25,6 +25,7 @@ export const Link: React.FC<{
         }
         onClick(mouseEvent, () => props.appState.jump(props.location));
       }}
+      underline="hover"
     >
       {props.children}
     </MuiLink>

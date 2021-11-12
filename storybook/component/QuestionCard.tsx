@@ -1,6 +1,11 @@
 import * as React from "react";
 import { Meta, Story } from "@storybook/react";
-import { mockAppState, mockProgramIdA, muzintou } from "../mock";
+import {
+  mockAppState,
+  mockLoggedInState,
+  mockProgramIdA,
+  muzintou,
+} from "../mock";
 import { QuestionCard } from "../../client/component/QuestionCard";
 
 const meta: Meta = {
@@ -14,5 +19,6 @@ export const Default: Story<never> = () => (
     questionId={muzintou}
     appState={mockAppState}
     programId={mockProgramIdA}
+    loggedInState={mockLoggedInState}
   />
 );

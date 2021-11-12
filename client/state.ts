@@ -1,9 +1,9 @@
 import * as commonUrl from "../common/url";
 import * as d from "../data";
 import * as indexedDb from "./indexedDb";
+import { LogInState, loggedIn, updateLoggedInState } from "./state/logInState";
+import { VariantType, useSnackbar } from "notistack";
 import {
-  ClassAndRole,
-  QuestionTreeListWithLoadingState,
   addCreatedClass,
   addCreatedOrEditedQuestion,
   addJoinedClass,
@@ -13,34 +13,20 @@ import {
   setQuestionListState,
   setStudentQuestionTree,
 } from "./state/loggedInState";
-import {
-  LogInState,
-  getClassAndRole,
-  getParentQuestionList,
-  getQuestionById,
-  getQuestionDirectChildren,
-  getQuestionThatCanBeParentList,
-  getQuestionTreeListWithLoadingStateInProgram,
-  loggedIn,
-  updateLoggedInState,
-} from "./state/logInState";
-import { VariantType, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { stringToValidProgramName } from "../common/validation";
 
+/**
+ * アプリの状態を管理する Hook の結果. 多くのコンポーネントの Props で渡している
+ */
 export type AppState = {
   /** ログイン状態 */
   readonly logInState: LogInState;
   /** 現在のページの場所 */
   readonly location: d.Location;
-  /** 質問を取得する */
-  readonly question: (id: d.QuestionId) => d.Question | undefined;
   /** 質問を作成中かどうか */
   readonly isCreatingQuestion: boolean;
-  /** 質問の子を取得する */
-  readonly questionChildren: (id: d.QuestionId) => ReadonlyArray<d.QuestionId>;
-
   /** ログインページを取得して移動させる */
   readonly requestLogin: () => void;
   /** テストアカウントとしてログインする */
@@ -70,16 +56,6 @@ export type AppState = {
     parent: d.QuestionId | undefined,
     text: string
   ) => void;
-  /** 質問の親を取得する. 最初が近い順 */
-  readonly questionParentList: (
-    id: d.Option<d.QuestionId>
-  ) => ReadonlyArray<d.Question>;
-  /** 質問の木構造を取得する */
-  readonly getQuestionTreeListWithLoadingStateInProgram: (
-    id: d.ProgramId
-  ) => QuestionTreeListWithLoadingState;
-  /** 作成したクラスまたは, 参加したクラスを習得する */
-  readonly getClassAndRole: (id: d.ClassId) => ClassAndRole;
   /** 招待URLをシェアする */
   readonly shareClassInviteLink: (classId: d.ClassId) => void;
   /** 質問を編集する */
@@ -88,11 +64,6 @@ export type AppState = {
     name: string,
     parentId: d.Option<d.QuestionId>
   ) => void;
-  /** 親の質問になることができる質問を, キャッシュから取得する */
-  readonly getQuestionThatCanBeParentList: (
-    programId: d.ProgramId,
-    questionId: d.QuestionId
-  ) => ReadonlyArray<d.Question>;
   /** クラスに参加する */
   readonly joinClass: (
     classInvitationToken: d.StudentClassInvitationToken
@@ -582,21 +553,6 @@ export const useAppState = (): AppState => {
           );
         });
     },
-    question: (questionId: d.QuestionId) =>
-      getQuestionById(logInState, questionId),
-    questionChildren: (questionId: d.QuestionId) =>
-      getQuestionDirectChildren(logInState, questionId),
-    questionParentList: (id) => {
-      if (id._ === "None") {
-        return [];
-      }
-      return getParentQuestionList(logInState, id.value);
-    },
-    getQuestionTreeListWithLoadingStateInProgram: (programId: d.ProgramId) =>
-      getQuestionTreeListWithLoadingStateInProgram(logInState, programId),
-    getClassAndRole: (classId) => {
-      return getClassAndRole(logInState, classId);
-    },
     shareClassInviteLink: (classId) => {
       const qClass = getCreatedClass(classId);
       if (qClass === undefined) {
@@ -650,10 +606,6 @@ export const useAppState = (): AppState => {
           );
         });
     },
-    getQuestionThatCanBeParentList: (
-      programId: d.ProgramId,
-      questionId: d.QuestionId
-    ) => getQuestionThatCanBeParentList(logInState, programId, questionId),
     joinClass: (classInvitationToken) => {
       const accountToken = getAccountToken();
       if (accountToken === undefined) {

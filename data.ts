@@ -132,6 +132,16 @@ readonly joinedClassList: List<ParticipantClass> };
 
 
 /**
+ * @typePartId 3b0c627fc0b188dc5287e7f79fc4ec0f
+ */
+export type CommentMain = { readonly id: CommentId; readonly message: String; readonly account: Account; readonly createDateTime: DateTime; readonly question: Question; readonly class: CommonClass; 
+/**
+ * 回答した生徒のアカウント情報
+ */
+readonly answerStudent: Account };
+
+
+/**
  * ソーシャルログインのコールバックURL から得られる, アカウントトークンを得るための, code と state
  * @typePartId 3f53a9bf1e76b7ba560eeda263dc99d2
  */
@@ -171,7 +181,7 @@ export type AccountIdAndClassId = { readonly accountId: AccountId; readonly clas
 /**
  * @typePartId 47bbe818062456a8c3aa11c8f59c364c
  */
-export type NotificationEvent = { readonly _: "NewCommentToMyAnswer"; readonly answerIdData: AnswerIdData } | { readonly _: "NewCommentInCreatedClass"; readonly answerIdData: AnswerIdData } | { readonly _: "ConfirmAnswerInCreatedClass"; readonly answerIdData: AnswerIdData };
+export type NotificationEvent = { readonly _: "NewComment"; readonly commentMain: CommentMain } | { readonly _: "NewAnswer"; readonly answerMain: AnswerMain };
 
 
 /**
@@ -269,6 +279,25 @@ export type AdminStudentAnswerPageParameter = { readonly classId: ClassId; reado
 
 
 /**
+ * 管理者, 参加者関係なく取得できるクラスのデータ
+ * @typePartId 598adf2b96ee2b0f47a87a1bd22ac7c1
+ */
+export type CommonClass = { readonly id: ClassId; 
+/**
+ * クラス名
+ */
+readonly name: String; 
+/**
+ * クラスを作成したアカウント
+ */
+readonly createAccountId: AccountId; 
+/**
+ * 質問を管理しているプログラム
+ */
+readonly programId: ProgramId };
+
+
+/**
  * プログラムを作るときに必要になるパラメータ
  * @typePartId 5f7128e3f1abb40e12bc8bf9f9b64159
  */
@@ -338,6 +367,12 @@ export type Account = { readonly name: String; readonly iconHash: ImageHashValue
 
 
 /**
+ * @typePartId 8220cd011a9dd0a4e88533b087d64d99
+ */
+export type AnswerMain = { readonly answerStudent: Account; readonly question: Question; readonly answerText: String; readonly class: CommonClass };
+
+
+/**
  * 質問を作成するプログラム. 複数のクラスを開催できる.
  * @typePartId 830072ccaa2d061ee3c4a4ddeffc393c
  */
@@ -385,12 +420,6 @@ export type QuestionId = string & { readonly _questionId: never };
  * @typePartId 9aa6158ecc8bb71ca25a1f02a5001604
  */
 export type AccountTokenAndProgramId = { readonly accountToken: AccountToken; readonly programId: ProgramId };
-
-
-/**
- * @typePartId a5c4ceae4af6d68040a6bd46548cbf40
- */
-export type User = { readonly name: String; readonly age: Int32 };
 
 
 /**
@@ -820,6 +849,33 @@ readonly helper: (a: AccountData) => AccountData } = { typePartId: "2d6ee02ca9b9
 
 
 /**
+ * @typePartId 3b0c627fc0b188dc5287e7f79fc4ec0f
+ */
+export const CommentMain: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<CommentMain>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: CommentMain) => CommentMain } = { typePartId: "3b0c627fc0b188dc5287e7f79fc4ec0f" as TypePartId, helper: (commentMain: CommentMain): CommentMain => commentMain, codec: { encode: (value: CommentMain): ReadonlyArray<number> => (CommentId.codec.encode(value.id).concat(String.codec.encode(value.message)).concat(Account.codec.encode(value.account)).concat(DateTime.codec.encode(value.createDateTime)).concat(Question.codec.encode(value.question)).concat(CommonClass.codec.encode(value.class)).concat(Account.codec.encode(value.answerStudent))), decode: (index: number, binary: Uint8Array): { readonly result: CommentMain; readonly nextIndex: number } => {
+  const idAndNextIndex: { readonly result: CommentId; readonly nextIndex: number } = CommentId.codec.decode(index, binary);
+  const messageAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(idAndNextIndex.nextIndex, binary);
+  const accountAndNextIndex: { readonly result: Account; readonly nextIndex: number } = Account.codec.decode(messageAndNextIndex.nextIndex, binary);
+  const createDateTimeAndNextIndex: { readonly result: DateTime; readonly nextIndex: number } = DateTime.codec.decode(accountAndNextIndex.nextIndex, binary);
+  const questionAndNextIndex: { readonly result: Question; readonly nextIndex: number } = Question.codec.decode(createDateTimeAndNextIndex.nextIndex, binary);
+  const classAndNextIndex: { readonly result: CommonClass; readonly nextIndex: number } = CommonClass.codec.decode(questionAndNextIndex.nextIndex, binary);
+  const answerStudentAndNextIndex: { readonly result: Account; readonly nextIndex: number } = Account.codec.decode(classAndNextIndex.nextIndex, binary);
+  return { result: { id: idAndNextIndex.result, message: messageAndNextIndex.result, account: accountAndNextIndex.result, createDateTime: createDateTimeAndNextIndex.result, question: questionAndNextIndex.result, class: classAndNextIndex.result, answerStudent: answerStudentAndNextIndex.result }, nextIndex: answerStudentAndNextIndex.nextIndex };
+} } };
+
+
+/**
  * ソーシャルログインのコールバックURL から得られる, アカウントトークンを得るための, code と state
  * @typePartId 3f53a9bf1e76b7ba560eeda263dc99d2
  */
@@ -903,41 +959,30 @@ readonly typePartId: TypePartId;
  */
 readonly codec: Codec<NotificationEvent>; 
 /**
- * 自分の回答に対してあらたなコメントがついた
+ * あらたなコメントがついた
  */
-readonly NewCommentToMyAnswer: (a: AnswerIdData) => NotificationEvent; 
+readonly NewComment: (a: CommentMain) => NotificationEvent; 
 /**
- * 自分のクラスの生徒の回答に, あらたなコメントがついた
+ * 新たに回答が提出された
  */
-readonly NewCommentInCreatedClass: (a: AnswerIdData) => NotificationEvent; 
-/**
- * 自分のクラスの生徒にあたらたに確定した回答が追加された
- */
-readonly ConfirmAnswerInCreatedClass: (a: AnswerIdData) => NotificationEvent } = { NewCommentToMyAnswer: (answerIdData: AnswerIdData): NotificationEvent => ({ _: "NewCommentToMyAnswer", answerIdData }), NewCommentInCreatedClass: (answerIdData: AnswerIdData): NotificationEvent => ({ _: "NewCommentInCreatedClass", answerIdData }), ConfirmAnswerInCreatedClass: (answerIdData: AnswerIdData): NotificationEvent => ({ _: "ConfirmAnswerInCreatedClass", answerIdData }), typePartId: "47bbe818062456a8c3aa11c8f59c364c" as TypePartId, codec: { encode: (value: NotificationEvent): ReadonlyArray<number> => {
+readonly NewAnswer: (a: AnswerMain) => NotificationEvent } = { NewComment: (commentMain: CommentMain): NotificationEvent => ({ _: "NewComment", commentMain }), NewAnswer: (answerMain: AnswerMain): NotificationEvent => ({ _: "NewAnswer", answerMain }), typePartId: "47bbe818062456a8c3aa11c8f59c364c" as TypePartId, codec: { encode: (value: NotificationEvent): ReadonlyArray<number> => {
   switch (value._) {
-    case "NewCommentToMyAnswer": {
-      return [0].concat(AnswerIdData.codec.encode(value.answerIdData));
+    case "NewComment": {
+      return [0].concat(CommentMain.codec.encode(value.commentMain));
     }
-    case "NewCommentInCreatedClass": {
-      return [1].concat(AnswerIdData.codec.encode(value.answerIdData));
-    }
-    case "ConfirmAnswerInCreatedClass": {
-      return [2].concat(AnswerIdData.codec.encode(value.answerIdData));
+    case "NewAnswer": {
+      return [1].concat(AnswerMain.codec.encode(value.answerMain));
     }
   }
 }, decode: (index: number, binary: Uint8Array): { readonly result: NotificationEvent; readonly nextIndex: number } => {
   const patternIndex: { readonly result: number; readonly nextIndex: number } = Int32.codec.decode(index, binary);
   if (patternIndex.result === 0) {
-    const result: { readonly result: AnswerIdData; readonly nextIndex: number } = AnswerIdData.codec.decode(patternIndex.nextIndex, binary);
-    return { result: NotificationEvent.NewCommentToMyAnswer(result.result), nextIndex: result.nextIndex };
+    const result: { readonly result: CommentMain; readonly nextIndex: number } = CommentMain.codec.decode(patternIndex.nextIndex, binary);
+    return { result: NotificationEvent.NewComment(result.result), nextIndex: result.nextIndex };
   }
   if (patternIndex.result === 1) {
-    const result: { readonly result: AnswerIdData; readonly nextIndex: number } = AnswerIdData.codec.decode(patternIndex.nextIndex, binary);
-    return { result: NotificationEvent.NewCommentInCreatedClass(result.result), nextIndex: result.nextIndex };
-  }
-  if (patternIndex.result === 2) {
-    const result: { readonly result: AnswerIdData; readonly nextIndex: number } = AnswerIdData.codec.decode(patternIndex.nextIndex, binary);
-    return { result: NotificationEvent.ConfirmAnswerInCreatedClass(result.result), nextIndex: result.nextIndex };
+    const result: { readonly result: AnswerMain; readonly nextIndex: number } = AnswerMain.codec.decode(patternIndex.nextIndex, binary);
+    return { result: NotificationEvent.NewAnswer(result.result), nextIndex: result.nextIndex };
   }
   throw new Error("存在しないパターンを指定された 型を更新してください");
 } } };
@@ -1063,6 +1108,31 @@ readonly helper: (a: AdminStudentAnswerPageParameter) => AdminStudentAnswerPageP
   const studentAccountIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(classIdAndNextIndex.nextIndex, binary);
   const questionIdAndNextIndex: { readonly result: QuestionId; readonly nextIndex: number } = QuestionId.codec.decode(studentAccountIdAndNextIndex.nextIndex, binary);
   return { result: { classId: classIdAndNextIndex.result, studentAccountId: studentAccountIdAndNextIndex.result, questionId: questionIdAndNextIndex.result }, nextIndex: questionIdAndNextIndex.nextIndex };
+} } };
+
+
+/**
+ * 管理者, 参加者関係なく取得できるクラスのデータ
+ * @typePartId 598adf2b96ee2b0f47a87a1bd22ac7c1
+ */
+export const CommonClass: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<CommonClass>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: CommonClass) => CommonClass } = { typePartId: "598adf2b96ee2b0f47a87a1bd22ac7c1" as TypePartId, helper: (commonClass: CommonClass): CommonClass => commonClass, codec: { encode: (value: CommonClass): ReadonlyArray<number> => (ClassId.codec.encode(value.id).concat(String.codec.encode(value.name)).concat(AccountId.codec.encode(value.createAccountId)).concat(ProgramId.codec.encode(value.programId))), decode: (index: number, binary: Uint8Array): { readonly result: CommonClass; readonly nextIndex: number } => {
+  const idAndNextIndex: { readonly result: ClassId; readonly nextIndex: number } = ClassId.codec.decode(index, binary);
+  const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(idAndNextIndex.nextIndex, binary);
+  const createAccountIdAndNextIndex: { readonly result: AccountId; readonly nextIndex: number } = AccountId.codec.decode(nameAndNextIndex.nextIndex, binary);
+  const programIdAndNextIndex: { readonly result: ProgramId; readonly nextIndex: number } = ProgramId.codec.decode(createAccountIdAndNextIndex.nextIndex, binary);
+  return { result: { id: idAndNextIndex.result, name: nameAndNextIndex.result, createAccountId: createAccountIdAndNextIndex.result, programId: programIdAndNextIndex.result }, nextIndex: programIdAndNextIndex.nextIndex };
 } } };
 
 
@@ -1225,6 +1295,30 @@ readonly helper: (a: Account) => Account } = { typePartId: "7e5003924c95d01064ec
 
 
 /**
+ * @typePartId 8220cd011a9dd0a4e88533b087d64d99
+ */
+export const AnswerMain: { 
+/**
+ * definy.app 内 の 型パーツの Id
+ */
+readonly typePartId: TypePartId; 
+/**
+ * 独自のバイナリ形式の変換処理ができるコーデック
+ */
+readonly codec: Codec<AnswerMain>; 
+/**
+ * 型を合わせる上で便利なヘルパー関数
+ */
+readonly helper: (a: AnswerMain) => AnswerMain } = { typePartId: "8220cd011a9dd0a4e88533b087d64d99" as TypePartId, helper: (answerMain: AnswerMain): AnswerMain => answerMain, codec: { encode: (value: AnswerMain): ReadonlyArray<number> => (Account.codec.encode(value.answerStudent).concat(Question.codec.encode(value.question)).concat(String.codec.encode(value.answerText)).concat(CommonClass.codec.encode(value.class))), decode: (index: number, binary: Uint8Array): { readonly result: AnswerMain; readonly nextIndex: number } => {
+  const answerStudentAndNextIndex: { readonly result: Account; readonly nextIndex: number } = Account.codec.decode(index, binary);
+  const questionAndNextIndex: { readonly result: Question; readonly nextIndex: number } = Question.codec.decode(answerStudentAndNextIndex.nextIndex, binary);
+  const answerTextAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(questionAndNextIndex.nextIndex, binary);
+  const classAndNextIndex: { readonly result: CommonClass; readonly nextIndex: number } = CommonClass.codec.decode(answerTextAndNextIndex.nextIndex, binary);
+  return { result: { answerStudent: answerStudentAndNextIndex.result, question: questionAndNextIndex.result, answerText: answerTextAndNextIndex.result, class: classAndNextIndex.result }, nextIndex: classAndNextIndex.nextIndex };
+} } };
+
+
+/**
  * 質問を作成するプログラム. 複数のクラスを開催できる.
  * @typePartId 830072ccaa2d061ee3c4a4ddeffc393c
  */
@@ -1367,28 +1461,6 @@ readonly helper: (a: AccountTokenAndProgramId) => AccountTokenAndProgramId } = {
   const accountTokenAndNextIndex: { readonly result: AccountToken; readonly nextIndex: number } = AccountToken.codec.decode(index, binary);
   const programIdAndNextIndex: { readonly result: ProgramId; readonly nextIndex: number } = ProgramId.codec.decode(accountTokenAndNextIndex.nextIndex, binary);
   return { result: { accountToken: accountTokenAndNextIndex.result, programId: programIdAndNextIndex.result }, nextIndex: programIdAndNextIndex.nextIndex };
-} } };
-
-
-/**
- * @typePartId a5c4ceae4af6d68040a6bd46548cbf40
- */
-export const User: { 
-/**
- * definy.app 内 の 型パーツの Id
- */
-readonly typePartId: TypePartId; 
-/**
- * 独自のバイナリ形式の変換処理ができるコーデック
- */
-readonly codec: Codec<User>; 
-/**
- * 型を合わせる上で便利なヘルパー関数
- */
-readonly helper: (a: User) => User } = { typePartId: "a5c4ceae4af6d68040a6bd46548cbf40" as TypePartId, helper: (user: User): User => user, codec: { encode: (value: User): ReadonlyArray<number> => (String.codec.encode(value.name).concat(Int32.codec.encode(value.age))), decode: (index: number, binary: Uint8Array): { readonly result: User; readonly nextIndex: number } => {
-  const nameAndNextIndex: { readonly result: String; readonly nextIndex: number } = String.codec.decode(index, binary);
-  const ageAndNextIndex: { readonly result: Int32; readonly nextIndex: number } = Int32.codec.decode(nameAndNextIndex.nextIndex, binary);
-  return { result: { name: nameAndNextIndex.result, age: ageAndNextIndex.result }, nextIndex: ageAndNextIndex.nextIndex };
 } } };
 
 

@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import {
   LoggedInState,
+  getClassAndRole,
   getQuestionText,
   getStudentSelfQuestionTree,
 } from "../state/loggedInState";
@@ -41,6 +42,7 @@ export const StudentAnswerPage = (props: {
           appState={props.appState}
           classId={props.answerIdData.classId}
           isDarkMode={props.isDarkMode}
+          loggedInState={props.loggedInState}
         />
       );
     }
@@ -67,6 +69,7 @@ export const StudentAnswerPage = (props: {
         appState={props.appState}
         classId={props.answerIdData.classId}
         isDarkMode={props.isDarkMode}
+        loggedInState={props.loggedInState}
       />
     );
   }
@@ -88,8 +91,9 @@ const NotFoundQuestion = (props: {
   readonly appState: AppState;
   readonly classId: d.ClassId;
   readonly isDarkMode: boolean;
+  readonly loggedInState: LoggedInState;
 }): React.ReactElement => {
-  const qClass = props.appState.getClassAndRole(props.classId);
+  const qClass = getClassAndRole(props.loggedInState, props.classId);
   return (
     <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
@@ -147,7 +151,7 @@ const StudentSelfEditQuestionPageLoaded = (props: {
       questionId: props.question.questionId,
     });
   };
-  const qClass = props.appState.getClassAndRole(props.classId);
+  const qClass = getClassAndRole(props.loggedInState, props.classId);
 
   return (
     <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
@@ -302,7 +306,7 @@ const PageLoadedOtherStudentView = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.classId, props.questionId, props.answerStudentId]);
 
-  const qClass = props.appState.getClassAndRole(props.classId);
+  const qClass = getClassAndRole(props.loggedInState, props.classId);
   const question = answersFromOtherStudents?.find(
     (answer) => answer.studentId === props.answerStudentId
   );

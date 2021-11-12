@@ -9,9 +9,9 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { LoggedInState, getParentQuestionList } from "../state/loggedInState";
 import { AppState } from "../state";
 import { Link } from "./Link";
-import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
@@ -48,7 +48,7 @@ export const QuestionNewPage = (props: {
   const parentList: ReadonlyArray<d.Question> =
     props.parent === undefined
       ? []
-      : props.appState.questionParentList(d.Option.Some(props.parent));
+      : getParentQuestionList(props.loggedInState, props.parent);
   return (
     <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
       <Box padding={1}>
@@ -111,6 +111,7 @@ export const QuestionNewPage = (props: {
               appState={props.appState}
               questionId={props.parent}
               programId={props.programId}
+              loggedInState={props.loggedInState}
             />
           )}
         </Box>

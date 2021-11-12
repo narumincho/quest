@@ -89,8 +89,14 @@ export const CommentAndAnswersFromOtherStudents = (props: {
           }}
           variant="fullWidth"
         >
-          <Tab label="受け取ったコメント" />
-          <Tab label="他の人の回答" />
+          <Tab
+            label="受け取ったコメント"
+            sx={{ color: props.isDarkMode ? "#fff" : "#000" }}
+          />
+          <Tab
+            label="他の人の回答"
+            sx={{ color: props.isDarkMode ? "#fff" : "#000" }}
+          />
         </Tabs>
       </Box>
       <Box padding={1}>

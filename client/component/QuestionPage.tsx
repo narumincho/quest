@@ -2,9 +2,14 @@ import * as React from "react";
 import * as d from "../../data";
 import { Add, Edit } from "@mui/icons-material";
 import { Box, Breadcrumbs, Button, Fab, Typography } from "@mui/material";
+import {
+  LoggedInState,
+  getParentQuestionList,
+  getQuestionDirectChildren,
+  getQuestionForProgramCreator,
+} from "../state/loggedInState";
 import { AppState } from "../state";
 import { Link } from "./Link";
-import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { ProgramCard } from "./ProgramCard";
 import { QuestionCard } from "./QuestionCard";
@@ -17,15 +22,24 @@ export const QuestionPage = (props: {
   readonly isDarkMode: boolean;
 }): React.ReactElement => {
   React.useEffect(() => {
-    const question = props.appState.question(props.questionId);
+    const question = getQuestionForProgramCreator(
+      props.loggedInState,
+      props.questionId
+    );
     if (question === undefined) {
       props.appState.requestGetQuestionListInProgram(props.programId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.questionId]);
 
-  const question = props.appState.question(props.questionId);
-  const children = props.appState.questionChildren(props.questionId);
+  const question = getQuestionForProgramCreator(
+    props.loggedInState,
+    props.questionId
+  );
+  const children = getQuestionDirectChildren(
+    props.loggedInState,
+    props.questionId
+  );
 
   if (question === undefined) {
     return (
@@ -48,7 +62,10 @@ export const QuestionPage = (props: {
     );
   }
   const program = props.loggedInState.createdProgramMap.get(question.programId);
-  const parentList = props.appState.questionParentList(question.parent);
+  const parentList =
+    question.parent._ === "Some"
+      ? getParentQuestionList(props.loggedInState, question.parent.value)
+      : [];
 
   return (
     <PageContainer appState={props.appState} isDarkMode={props.isDarkMode}>
@@ -96,6 +113,7 @@ export const QuestionPage = (props: {
               appState={props.appState}
               questionId={child}
               programId={props.programId}
+              loggedInState={props.loggedInState}
             />
           ))}
         </Box>

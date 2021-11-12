@@ -15,10 +15,15 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import {
+  LoggedInState,
+  getParentQuestionList,
+  getQuestionForProgramCreator,
+  getQuestionThatCanBeParentList,
+} from "../state/loggedInState";
 import { AppState } from "../state";
 import { Close } from "@mui/icons-material";
 import { Link } from "./Link";
-import { LoggedInState } from "../state/loggedInState";
 import { PageContainer } from "./PageContainer";
 import { QuestionButton } from "./QuestionCard";
 import { TextEditor } from "./TextEditor";
@@ -31,7 +36,10 @@ export const QuestionEditPage = (props: {
   readonly programId: d.ProgramId;
   readonly isDarkMode: boolean;
 }): React.ReactElement => {
-  const question = props.appState.question(props.questionId);
+  const question = getQuestionForProgramCreator(
+    props.loggedInState,
+    props.questionId
+  );
 
   if (question === undefined) {
     return (
@@ -83,7 +91,10 @@ const EditQuestionLoaded = (props: {
   const program = props.loggedInState.createdProgramMap.get(
     props.question.programId
   );
-  const parentList = props.appState.questionParentList(props.question.parent);
+  const parentList =
+    props.question.parent._ === "Some"
+      ? getParentQuestionList(props.loggedInState, props.question.parent.value)
+      : [];
 
   const editQuestion = () => {
     if (textResult._ === "Error") {
@@ -147,6 +158,7 @@ const EditQuestionLoaded = (props: {
           {parentQuestionId._ === "Some" ? (
             <QuestionButton
               appState={props.appState}
+              loggedInState={props.loggedInState}
               questionId={parentQuestionId.value}
               programId={props.programId}
               onClick={() => {
@@ -223,29 +235,28 @@ const EditQuestionLoaded = (props: {
             >
               <ListItemText primary="--指定なし--" />
             </ListItem>
-            {props.appState
-              .getQuestionThatCanBeParentList(
-                props.question.programId,
-                props.question.id
-              )
-              .map((q) => {
-                return (
-                  <ListItem
-                    key={q.id}
-                    button
-                    onClick={() => {
-                      setEditState("none");
-                      setParentQuestionId(d.Option.Some(q.id));
-                    }}
-                    selected={
-                      parentQuestionId._ === "Some" &&
-                      parentQuestionId.value === q.id
-                    }
-                  >
-                    <ListItemText primary={q.name} />
-                  </ListItem>
-                );
-              })}
+            {getQuestionThatCanBeParentList(
+              props.loggedInState,
+              props.question.programId,
+              props.question.id
+            ).map((q) => {
+              return (
+                <ListItem
+                  key={q.id}
+                  button
+                  onClick={() => {
+                    setEditState("none");
+                    setParentQuestionId(d.Option.Some(q.id));
+                  }}
+                  selected={
+                    parentQuestionId._ === "Some" &&
+                    parentQuestionId.value === q.id
+                  }
+                >
+                  <ListItemText primary={q.name} />
+                </ListItem>
+              );
+            })}
           </List>
         </DialogContent>
       </Dialog>

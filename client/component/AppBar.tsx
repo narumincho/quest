@@ -48,7 +48,7 @@ export const AppBar = (props: {
             <Link location={d.Location.Notification} appState={props.appState}>
               <Notifications
                 sx={{
-                  color: "#ddd",
+                  color: props.isDarkMode ? "#eee" : "#000",
                   width: 48,
                   height: 48,
                   display: "grid",

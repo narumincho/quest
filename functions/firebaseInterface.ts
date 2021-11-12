@@ -105,11 +105,21 @@ type FeedbackDocument = {
 };
 
 type NotificationDocument = {
-  readonly event: d.NotificationEvent;
+  readonly event: NotificationEventIdData;
   readonly accountId: d.AccountId;
   readonly done: boolean;
   readonly createTime: Timestamp;
 };
+
+type NotificationEventIdData =
+  | {
+      readonly tag: "NewComment";
+      readonly commentId: d.CommentId;
+    }
+  | {
+      readonly tag: "NewAnswer";
+      readonly idData: d.AnswerIdData;
+    };
 
 const cloudStorageBucket = getStorage(app).bucket();
 
@@ -166,6 +176,21 @@ export const getAccountByAccountTokenHash = async (
     return undefined;
   }
   const data = document.data();
+  return {
+    id: document.id,
+    name: data.name,
+    iconHash: data.iconHash,
+  };
+};
+
+export const getAccountByAccountId = async (
+  accountId: d.AccountId
+): Promise<d.Account | undefined> => {
+  const document = await firestore.collection("account").doc(accountId).get();
+  const data = document.data();
+  if (data === undefined) {
+    return;
+  }
   return {
     id: document.id,
     name: data.name,
@@ -396,9 +421,7 @@ export const getJoinClassDataListByAccountId = async (
     snapshot.docs.map<Promise<d.ParticipantClass>>(
       async (doc): Promise<d.ParticipantClass> => {
         const data = doc.data();
-        const classData = (
-          await firestore.collection("class").doc(data.classId).get()
-        ).data();
+        const classData = await getClassByClassId(data.classId);
         if (classData === undefined) {
           throw new Error("unknown class " + data.classId);
         }
@@ -556,6 +579,56 @@ export const isStudent = async (
   );
 };
 
+export const getAnswerMain = async (
+  answerIdData: d.AnswerIdData
+): Promise<d.AnswerMain> => {
+  const answer = (
+    await firestore
+      .collection("answer")
+      .doc(
+        `${answerIdData.questionId}_${answerIdData.classId}_${answerIdData.answerStudentId}`
+      )
+      .get()
+  ).data();
+  if (answer === undefined) {
+    throw new Error(
+      "回答を取得できなかった answerIdData = " + JSON.stringify(answerIdData)
+    );
+  }
+  const [answerStudent, qClass, question] = await Promise.all([
+    getAccountByAccountId(answerIdData.answerStudentId),
+    getClassByClassId(answerIdData.classId),
+    getQuestion(answerIdData.questionId),
+  ]);
+  if (answerStudent === undefined) {
+    throw new Error(
+      "回答者を取得できなかった answerIdData = " + JSON.stringify(answerIdData)
+    );
+  }
+  if (qClass === undefined) {
+    throw new Error(
+      "クラスを取得できなかった answerIdData = " + JSON.stringify(answerIdData)
+    );
+  }
+  if (question === undefined) {
+    throw new Error(
+      "質問を取得できなかった answerIdData = " + JSON.stringify(answerIdData)
+    );
+  }
+  if (!answer.isConfirm) {
+    throw new Error(
+      "確定していない回答は取得できない answerIdData = " +
+        JSON.stringify(answerIdData)
+    );
+  }
+  return {
+    answerStudent,
+    answerText: answer.text,
+    class: qClass,
+    question,
+  };
+};
+
 type AnswerItem = {
   readonly text: string;
   readonly questionId: d.QuestionId;
@@ -633,6 +706,56 @@ export const addComment = async (option: {
   });
 };
 
+/**
+ * コメントの情報を取得する. 見つからなかったりデータが不正だった場合はエラー
+ */
+const getCommentMain = async (
+  commentId: d.CommentId
+): Promise<d.CommentMain> => {
+  const data = (
+    await firestore.collection("feedback").doc(commentId).get()
+  ).data();
+  if (data === undefined) {
+    throw new Error("コメントを見つけられなかった commentId = " + commentId);
+  }
+  const [answerStudent, account, qClass, question] = await Promise.all([
+    getAccountByAccountId(data.answerAccountId),
+    getAccountByAccountId(data.feedbackAccountId),
+    getClassByClassId(data.classId),
+    getQuestion(data.questionId),
+  ]);
+  if (account === undefined) {
+    throw new Error(
+      "コメントしたアカウントを見つけられなかった commentId = " + commentId
+    );
+  }
+  if (answerStudent === undefined) {
+    throw new Error(
+      "回答した生徒のアカウントを見つけられなかった commentId = " + commentId
+    );
+  }
+  if (qClass === undefined) {
+    throw new Error("クラスを見つけられなかった commentId = " + commentId);
+  }
+  if (question === undefined) {
+    throw new Error("質問を見つけられなかった commentId = " + commentId);
+  }
+  return {
+    account,
+    answerStudent,
+    class: {
+      id: qClass.id,
+      name: qClass.name,
+      createAccountId: qClass.createAccountId,
+      programId: qClass.programId,
+    },
+    createDateTime: firestoreTimestampToDateTime(data.createTime),
+    id: commentId,
+    message: data.message,
+    question,
+  };
+};
+
 export const getCommentInAnswer = async (option: {
   questionId: d.QuestionId;
   classId: d.ClassId;
@@ -656,7 +779,7 @@ export const getCommentInAnswer = async (option: {
 };
 
 export const addNotification = async (option: {
-  readonly event: d.NotificationEvent;
+  readonly event: NotificationEventIdData;
   readonly accountId: d.AccountId;
   readonly id: d.NotificationId;
 }): Promise<void> => {
@@ -683,15 +806,26 @@ export const getNotificationListByAccount = async (
     .collection("notification")
     .where("accountId", "==", accountId)
     .get();
-  return snapshot.docs.map<d.Notification>((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      done: data.done,
-      event: data.event,
-      createTime: firestoreTimestampToDateTime(data.createTime),
-    };
-  });
+  return Promise.all(
+    snapshot.docs.map<Promise<d.Notification>>(
+      async (doc): Promise<d.Notification> => {
+        const data = doc.data();
+        return d.Notification.helper({
+          id: doc.id,
+          done: data.done,
+          createTime: firestoreTimestampToDateTime(data.createTime),
+          event:
+            data.event.tag === "NewComment"
+              ? d.NotificationEvent.NewComment(
+                  await getCommentMain(data.event.commentId)
+                )
+              : d.NotificationEvent.NewAnswer(
+                  await getAnswerMain(data.event.idData)
+                ),
+        });
+      }
+    )
+  );
 };
 
 /**

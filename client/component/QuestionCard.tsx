@@ -1,6 +1,10 @@
 import * as React from "react";
 import * as d from "../../data";
 import { Box, Button, Paper, Typography } from "@mui/material";
+import {
+  LoggedInState,
+  getQuestionForProgramCreator,
+} from "../state/loggedInState";
 import { AppState } from "../state";
 import { Link } from "./Link";
 
@@ -8,13 +12,17 @@ export type Props = {
   readonly questionId: d.QuestionId;
   readonly appState: AppState;
   readonly programId: d.ProgramId;
+  readonly loggedInState: LoggedInState;
 };
 
 /**
  * 質問へのリンクがついた, 質問の内容を表示するカード
  */
 export const QuestionCard = (props: Props): React.ReactElement => {
-  const question = props.appState.question(props.questionId);
+  const question = getQuestionForProgramCreator(
+    props.loggedInState,
+    props.questionId
+  );
   if (question === undefined) {
     return <Box>質問の情報を読込中</Box>;
   }
@@ -46,7 +54,10 @@ export const QuestionCard = (props: Props): React.ReactElement => {
 export const QuestionButton = (
   props: Props & { readonly onClick: () => void }
 ): React.ReactElement => {
-  const question = props.appState.question(props.questionId);
+  const question = getQuestionForProgramCreator(
+    props.loggedInState,
+    props.questionId
+  );
   if (question === undefined) {
     return <Box>質問の情報を読込中</Box>;
   }

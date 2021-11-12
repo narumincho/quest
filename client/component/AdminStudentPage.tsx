@@ -7,6 +7,7 @@ import {
   QuestionTreeListWithLoadingState,
   getClassNameAndStudent,
   getCreatedProgramIdByClassId,
+  getQuestionTreeListWithLoadingStateInProgram,
   getStudentConfirmedAnswer,
 } from "../state/loggedInState";
 import { AppState } from "../state";
@@ -90,7 +91,8 @@ export const AdminStudentPage = (props: {
         <Box padding={1}>
           <Typography>確定された質問:</Typography>
           <QuestionTreeListWithLoading
-            questionTreeListWithLoadingState={props.appState.getQuestionTreeListWithLoadingStateInProgram(
+            questionTreeListWithLoadingState={getQuestionTreeListWithLoadingStateInProgram(
+              props.loggedInState,
               program.id
             )}
             loggedInState={props.loggedInState}

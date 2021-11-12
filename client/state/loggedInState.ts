@@ -11,7 +11,7 @@ import { studentSelfQuestionTreeListFind } from "../../common/studentSelfQuestio
 
 export type { QuestionTree };
 
-/** ログインしたときに保存する管理する状態 */
+/** ログインしているときに保存し管理する状態 */
 export type LoggedInState = {
   readonly accountToken: d.AccountToken;
   readonly account: d.Account;
@@ -312,6 +312,9 @@ export const getParentQuestionList = (
   );
 };
 
+/**
+ * 質問の木構造を構築する
+ */
 export const getQuestionTreeListWithLoadingStateInProgram = (
   loggedInState: LoggedInState,
   programId: d.ProgramId
@@ -351,6 +354,9 @@ export const getQuestionThatCanBeParentList = (
   );
 };
 
+/**
+ * クラスへの関わり方とデータを取得する
+ */
 export const getClassAndRole = (
   loggedInState: LoggedInState,
   classId: d.ClassId

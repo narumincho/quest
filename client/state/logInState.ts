@@ -1,6 +1,9 @@
 import * as d from "../../data";
 import * as ls from "./loggedInState";
 
+/**
+ * ログイン状態とログインしているときに保持するデータなど
+ */
 export type LogInState =
   | {
       /** ログインしているか, 判断中 */
@@ -38,80 +41,6 @@ export const loggedIn = (
     tag: "LoggedIn",
     loggedInState: ls.initLoggedInState({ accountToken, accountData }),
   };
-};
-
-/** 質問をIDから取得する */
-export const getQuestionById = (
-  logInState: LogInState,
-  questionId: d.QuestionId
-): d.Question | undefined => {
-  if (logInState.tag !== "LoggedIn") {
-    return undefined;
-  }
-  return ls.getQuestionForProgramCreator(logInState.loggedInState, questionId);
-};
-
-/** 質問の直接的な子を取得する */
-export const getQuestionDirectChildren = (
-  logInState: LogInState,
-  questionId: d.QuestionId
-): ReadonlyArray<d.QuestionId> => {
-  if (logInState.tag !== "LoggedIn") {
-    return [];
-  }
-  return ls.getQuestionDirectChildren(logInState.loggedInState, questionId);
-};
-
-/** 質問の親を取得する */
-export const getParentQuestionList = (
-  logInState: LogInState,
-  questionId: d.QuestionId
-): ReadonlyArray<d.Question> => {
-  if (logInState.tag !== "LoggedIn") {
-    return [];
-  }
-  return ls.getParentQuestionList(logInState.loggedInState, questionId);
-};
-
-/** プログラムの質問の木構造を取得する */
-export const getQuestionTreeListWithLoadingStateInProgram = (
-  logInState: LogInState,
-  programId: d.ProgramId
-): ls.QuestionTreeListWithLoadingState => {
-  if (logInState.tag !== "LoggedIn") {
-    return { tag: "Empty" };
-  }
-  return ls.getQuestionTreeListWithLoadingStateInProgram(
-    logInState.loggedInState,
-    programId
-  );
-};
-
-/** 親の質問になることができる質問を, キャッシュから取得する */
-export const getQuestionThatCanBeParentList = (
-  logInState: LogInState,
-  programId: d.ProgramId,
-  questionId: d.QuestionId
-): ReadonlyArray<d.Question> => {
-  if (logInState.tag !== "LoggedIn") {
-    return [];
-  }
-  return ls.getQuestionThatCanBeParentList(
-    logInState.loggedInState,
-    programId,
-    questionId
-  );
-};
-
-/** クラスとクラスへの所属の種類を取得する */
-export const getClassAndRole = (
-  logInState: LogInState,
-  classId: d.ClassId
-): ls.ClassAndRole => {
-  if (logInState.tag !== "LoggedIn") {
-    return { tag: "none" };
-  }
-  return ls.getClassAndRole(logInState.loggedInState, classId);
 };
 
 export const updateLoggedInState =
