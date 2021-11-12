@@ -27,12 +27,17 @@ export const apiFunc: {
   },
   getAccountData: async (accountToken) => {
     const account = await validateAndGetAccount(accountToken);
-    const [createdProgramList, createdClassList, joinedClassList] =
-      await Promise.all([
-        firebaseInterface.getProgramListByCreateAccountId(account.id),
-        firebaseInterface.getClassListByCreateAccountId(account.id),
-        firebaseInterface.getJoinClassDataListByAccountId(account.id),
-      ]);
+    const [
+      createdProgramList,
+      createdClassList,
+      joinedClassList,
+      notDoneNotificationCount,
+    ] = await Promise.all([
+      firebaseInterface.getProgramListByCreateAccountId(account.id),
+      firebaseInterface.getClassListByCreateAccountId(account.id),
+      firebaseInterface.getJoinClassDataListByAccountId(account.id),
+      firebaseInterface.getNotDoneNotificationCount(account.id),
+    ]);
     return {
       account: {
         name: account.name,
@@ -42,6 +47,7 @@ export const apiFunc: {
       createdClassList,
       createdProgramList,
       joinedClassList,
+      notDoneNotificationCount,
     };
   },
   createProgram: async (parameter) => {

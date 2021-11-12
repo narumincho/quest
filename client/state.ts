@@ -704,6 +704,13 @@ export const useAppState = (): AppState => {
     getNotificationList: async (accountToken) => {
       const response = await api.getNotificationList(accountToken);
       if (response._ === "Ok") {
+        setLogInState(
+          updateLoggedInState((beforeLogInState) => ({
+            ...beforeLogInState,
+            notDoneNotificationCount: response.okValue.filter((e) => !e.done)
+              .length,
+          }))
+        );
         return response.okValue;
       }
       return undefined;

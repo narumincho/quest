@@ -128,7 +128,11 @@ readonly createdClassList: List<AdminClass>;
 /**
  * 参加したクラス
  */
-readonly joinedClassList: List<ParticipantClass> };
+readonly joinedClassList: List<ParticipantClass>; 
+/**
+ * 通知の未読数
+ */
+readonly notDoneNotificationCount: Int32 };
 
 
 /**
@@ -839,12 +843,13 @@ readonly codec: Codec<AccountData>;
 /**
  * 型を合わせる上で便利なヘルパー関数
  */
-readonly helper: (a: AccountData) => AccountData } = { typePartId: "2d6ee02ca9b9d1fa852217cd8e722844" as TypePartId, helper: (accountData: AccountData): AccountData => accountData, codec: { encode: (value: AccountData): ReadonlyArray<number> => (Account.codec.encode(value.account).concat(List.codec(Program.codec).encode(value.createdProgramList)).concat(List.codec(AdminClass.codec).encode(value.createdClassList)).concat(List.codec(ParticipantClass.codec).encode(value.joinedClassList))), decode: (index: number, binary: Uint8Array): { readonly result: AccountData; readonly nextIndex: number } => {
+readonly helper: (a: AccountData) => AccountData } = { typePartId: "2d6ee02ca9b9d1fa852217cd8e722844" as TypePartId, helper: (accountData: AccountData): AccountData => accountData, codec: { encode: (value: AccountData): ReadonlyArray<number> => (Account.codec.encode(value.account).concat(List.codec(Program.codec).encode(value.createdProgramList)).concat(List.codec(AdminClass.codec).encode(value.createdClassList)).concat(List.codec(ParticipantClass.codec).encode(value.joinedClassList)).concat(Int32.codec.encode(value.notDoneNotificationCount))), decode: (index: number, binary: Uint8Array): { readonly result: AccountData; readonly nextIndex: number } => {
   const accountAndNextIndex: { readonly result: Account; readonly nextIndex: number } = Account.codec.decode(index, binary);
   const createdProgramListAndNextIndex: { readonly result: List<Program>; readonly nextIndex: number } = List.codec(Program.codec).decode(accountAndNextIndex.nextIndex, binary);
   const createdClassListAndNextIndex: { readonly result: List<AdminClass>; readonly nextIndex: number } = List.codec(AdminClass.codec).decode(createdProgramListAndNextIndex.nextIndex, binary);
   const joinedClassListAndNextIndex: { readonly result: List<ParticipantClass>; readonly nextIndex: number } = List.codec(ParticipantClass.codec).decode(createdClassListAndNextIndex.nextIndex, binary);
-  return { result: { account: accountAndNextIndex.result, createdProgramList: createdProgramListAndNextIndex.result, createdClassList: createdClassListAndNextIndex.result, joinedClassList: joinedClassListAndNextIndex.result }, nextIndex: joinedClassListAndNextIndex.nextIndex };
+  const notDoneNotificationCountAndNextIndex: { readonly result: Int32; readonly nextIndex: number } = Int32.codec.decode(joinedClassListAndNextIndex.nextIndex, binary);
+  return { result: { account: accountAndNextIndex.result, createdProgramList: createdProgramListAndNextIndex.result, createdClassList: createdClassListAndNextIndex.result, joinedClassList: joinedClassListAndNextIndex.result, notDoneNotificationCount: notDoneNotificationCountAndNextIndex.result }, nextIndex: notDoneNotificationCountAndNextIndex.nextIndex };
 } } };
 
 
