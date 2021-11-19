@@ -181,33 +181,46 @@ const StudentSelfEditQuestionPageLoaded = (props: {
         </Breadcrumbs>
       </Box>
       <Box padding={1}>
-        <Typography variant="h4">{props.question.questionText}</Typography>
-      </Box>
-      {props.question.answer._ === "Some" ? (
-        <Box padding={1}>
-          <Typography variant="h5">
-            保存した回答
-            {props.question.answer.value.isConfirm ? " (確定済み)" : ""}
+        <Box display="grid" gridTemplateColumns="50px 1fr">
+          <Typography variant="h2" sx={{ color: "#d6696b" }} align="center">
+            Q
           </Typography>
-          {props.question.answer.value.text}
+          <Typography variant="h4">{props.question.questionText}</Typography>
         </Box>
-      ) : (
-        <></>
-      )}
-      <Box padding={1}>
-        <TextEditor
-          multiline
-          label="あなたの回答"
-          value={answerText}
-          onChangeOrReadonlyOrDisabled={changeAnswerText}
-          error={!isFirst && validationResult._ === "Error"}
-          helperText={
-            !isFirst && validationResult._ === "Error"
-              ? validationResult.errorValue
-              : ""
-          }
-          isDarkMode={props.isDarkMode}
-        />
+      </Box>
+
+      <Box display="grid" padding={1} gridTemplateColumns="50px 1fr">
+        <Typography variant="h2" sx={{ color: "#5d9ac4" }} align="center">
+          A
+        </Typography>
+        <Box>
+          {props.question.answer._ === "Some" ? (
+            <Box>
+              <Typography variant="h5">
+                保存した回答
+                {props.question.answer.value.isConfirm ? " (確定済み)" : ""}
+              </Typography>
+              {props.question.answer.value.text}
+            </Box>
+          ) : (
+            <></>
+          )}
+          <Box padding={1}>
+            <TextEditor
+              multiline
+              label="あなたの回答"
+              value={answerText}
+              onChangeOrReadonlyOrDisabled={changeAnswerText}
+              error={!isFirst && validationResult._ === "Error"}
+              helperText={
+                !isFirst && validationResult._ === "Error"
+                  ? validationResult.errorValue
+                  : ""
+              }
+              isDarkMode={props.isDarkMode}
+            />
+          </Box>
+        </Box>
       </Box>
       <Box padding={1}>
         <TemplateSaveButton

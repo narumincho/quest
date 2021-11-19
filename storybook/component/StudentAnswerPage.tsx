@@ -5,8 +5,9 @@ import {
   mockAppState,
   mockClassId,
   mockKadaiQuestionId,
+  mockLoggedInAppState,
   mockLoggedInState,
-  mockManabiQuestionId,
+  muzintou,
 } from "../mock";
 import { StudentAnswerPage } from "../../client/component/StudentAnswerPage";
 
@@ -36,11 +37,11 @@ export const Default: Story<Props> = (args) => (
 
 export const WithAnswer: Story<Props> = (args) => (
   <StudentAnswerPage
-    appState={mockAppState}
+    appState={mockLoggedInAppState}
     answerIdData={{
       answerStudentId: mockAccount.id,
       classId: mockClassId,
-      questionId: mockManabiQuestionId,
+      questionId: muzintou,
     }}
     loggedInState={mockLoggedInState}
     isDarkMode={args.isDarkMode}
