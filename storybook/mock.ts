@@ -1,6 +1,7 @@
 import * as d from "../data";
 import {
   ClassWithParticipantList,
+  JoinedClass,
   LoggedInState,
   ProgramWithClassList,
 } from "../client/state/loggedInState";
@@ -208,7 +209,7 @@ export const mockClass: d.AdminClass = {
 
 export const mockCommonClass: d.CommonClass = {
   id: mockClassId,
-  name: "サンプルクラス",
+  name: "サンプルクラス (共通データ構造内)",
   programId: mockProgramIdA,
   createAccountId: mockAccountId,
 };
@@ -336,26 +337,48 @@ export const mockQClassStudentOrGuest: d.ParticipantClass = {
   role: d.ClassParticipantRole.Student,
 };
 
+const joinedClass: JoinedClass = {
+  class: mockQClassStudentOrGuest,
+  participantList: undefined,
+  questionTreeList: [
+    {
+      questionId: muzintou,
+      answer: d.Option.Some({
+        isConfirm: true,
+        text: "鏡かな. 太陽光を跳ね返して, 飛行機に助けを呼ぶため",
+      }),
+      children: [],
+      questionText: "無人島に 1つだけ ものを持っていくとしたら何を持っていく?",
+    },
+  ],
+};
+
 export const mockLoggedInState: LoggedInState = {
   account: mockAccount,
   accountToken: mockAccountToken,
   createdProgramMap: new Map<d.ProgramId, ProgramWithClassList>([
     [mockProgramIdA, programA],
   ]),
-  questionMap: new Map(),
-  joinedClassMap: new Map([
+  questionMap: new Map([
     [
-      mockClassId,
+      mockProgramIdA,
       {
-        class: mockQClassStudentOrGuest,
-        role: d.ClassParticipantRole.Guest,
-        participantList: undefined,
-        questionTreeList: undefined,
+        tag: "Loaded",
+        questionMap: new Map(questionList.map((e) => [e.id, e])),
       },
     ],
   ]),
+  joinedClassMap: new Map([[mockClassId, joinedClass]]),
   accountMap: new Map(),
   notDoneNotificationCount: 5,
+};
+
+export const mockLoggedInAppState: AppState = {
+  ...mockAppState,
+  logInState: {
+    tag: "LoggedIn",
+    loggedInState: mockLoggedInState,
+  },
 };
 
 export const mockKadaiQuestionId = d.QuestionId.fromString("kadai");

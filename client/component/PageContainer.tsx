@@ -8,7 +8,7 @@ import { Box } from "@mui/material";
  * @param props
  * @returns
  */
-export const PageContainer: React.FC<{
+export const PageContainer = (props: {
   /**
    * アプリの状態
    */
@@ -21,9 +21,13 @@ export const PageContainer: React.FC<{
    * ダークモードかどうか
    */
   readonly isDarkMode: boolean;
-}> = (props) => {
+  /**
+   * 子要素
+   */
+  readonly children: React.ReactNode;
+}): React.ReactElement => {
   return (
-    <Box width="100%" height="100%">
+    <Box width="100%" height="100%" display="grid" gridTemplateRows="auto 1fr">
       <AppBar
         leftActionType={props.leftActionType}
         appState={props.appState}
@@ -33,6 +37,7 @@ export const PageContainer: React.FC<{
         sx={{
           backgroundColor: props.isDarkMode ? "#222" : "#eee",
           color: props.isDarkMode ? "#eee" : "#000",
+          minHeight: "100%",
         }}
       >
         {props.children}

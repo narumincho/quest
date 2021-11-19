@@ -1,7 +1,7 @@
 import * as React from "react";
-import * as commonUrl from "../../common/url";
 import * as d from "../../data";
-import { Avatar, Box, Breadcrumbs, Button, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Button, Typography } from "@mui/material";
+import { AccountIcon } from "./AccountIcon";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { Logout } from "@mui/icons-material";
@@ -34,9 +34,9 @@ export const SettingPage = (props: {
         <Box padding={1}>アカウントID: {props.account.id}</Box>
         <Box padding={1}>
           アカウント画像:
-          <Avatar
-            alt={props.account.name}
-            src={commonUrl.imageUrl(props.account.iconHash).toString()}
+          <AccountIcon
+            name={props.account.name}
+            imageHashValue={props.account.iconHash}
           />
         </Box>
         <Box padding={1}>

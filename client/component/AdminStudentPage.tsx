@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Avatar, Box, Breadcrumbs, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Typography } from "@mui/material";
 import {
   LoggedInState,
   QuestionTree,
@@ -10,11 +10,11 @@ import {
   getQuestionTreeListWithLoadingStateInProgram,
   getStudentConfirmedAnswer,
 } from "../state/loggedInState";
+import { AccountIcon } from "./AccountIcon";
 import { AppState } from "../state";
 import { ChevronRight } from "@mui/icons-material";
 import { Link } from "./Link";
 import { PageContainer } from "./PageContainer";
-import { imageUrl } from "../../common/url";
 
 export const AdminStudentPage = (props: {
   readonly appState: AppState;
@@ -87,11 +87,9 @@ export const AdminStudentPage = (props: {
         </Box>
         <Box padding={1}>
           <Typography variant="h5">
-            <Avatar
-              alt={classNameAndStudent.studentName}
-              src={imageUrl(
-                classNameAndStudent.studentImageHashValue
-              ).toString()}
+            <AccountIcon
+              name={classNameAndStudent.studentName}
+              imageHashValue={classNameAndStudent.studentImageHashValue}
             />
             {classNameAndStudent.studentName}
           </Typography>

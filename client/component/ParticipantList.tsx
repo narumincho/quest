@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as d from "../../data";
-import { Avatar, Box, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { AccountIcon } from "./AccountIcon";
 import { AppState } from "../state";
 import { Link } from "./Link";
-import { imageUrl } from "../../common/url";
 
 /**
  * クラスの参加者一覧表示
@@ -59,9 +59,9 @@ const ParticipantItem = (props: {
         gap: 1,
       }}
     >
-      <Avatar
-        alt={props.participant.account.name}
-        src={imageUrl(props.participant.account.iconHash).toString()}
+      <AccountIcon
+        name={props.participant.account.name}
+        imageHashValue={props.participant.account.iconHash}
       />
       {props.participant.account.name}
 

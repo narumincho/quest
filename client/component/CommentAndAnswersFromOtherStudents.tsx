@@ -2,6 +2,7 @@ import * as React from "react";
 import * as d from "../../data";
 import { Box, Button, CircularProgress, Paper, Tab, Tabs } from "@mui/material";
 import { AccountCard } from "./AccountCard";
+import { AccountIcon } from "./AccountIcon";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { LoggedInState } from "../state/loggedInState";
@@ -138,37 +139,51 @@ const FeedbackListWithInput = (props: {
 }): React.ReactElement => {
   const isNotEmpty = props.commentEditText.trim().length === 0;
   return (
-    <div>
-      <TextEditor
-        multiline
-        label="この回答に対するコメント"
-        value={props.commentEditText}
-        onChangeOrReadonlyOrDisabled={
-          props.isSubmittingComment ? "disabled" : props.onChangeCommentEditText
-        }
-        helperText=""
-        error={false}
-        isDarkMode={props.isDarkMode}
-      />
-      <Button
-        fullWidth
-        onClick={(): void => {
-          props.onSubmitFeedback();
-        }}
-        size="large"
-        disabled={isNotEmpty || props.isSubmittingComment}
-        variant="contained"
-        color="secondary"
-        startIcon={props.isSubmittingComment ? <CircularProgress /> : <Send />}
-      >
-        送信
-      </Button>
+    <Box>
+      <Box display="grid" padding={1} gridTemplateColumns="auto 1fr" gap={1}>
+        <AccountIcon
+          name={props.loggedInState.account.name}
+          imageHashValue={props.loggedInState.account.iconHash}
+        />
+        <Box display="grid" gap={1}>
+          <TextEditor
+            multiline
+            label="この回答に対するコメント"
+            value={props.commentEditText}
+            onChangeOrReadonlyOrDisabled={
+              props.isSubmittingComment
+                ? "disabled"
+                : props.onChangeCommentEditText
+            }
+            helperText=""
+            error={false}
+            isDarkMode={props.isDarkMode}
+          />
+          <Button
+            onClick={(): void => {
+              props.onSubmitFeedback();
+            }}
+            size="large"
+            disabled={isNotEmpty || props.isSubmittingComment}
+            variant="contained"
+            color="secondary"
+            startIcon={
+              props.isSubmittingComment ? <CircularProgress /> : <Send />
+            }
+            sx={{
+              justifySelf: "right",
+            }}
+          >
+            送信
+          </Button>
+        </Box>
+      </Box>
       <CommentList
         commentList={props.feedbackList}
         classId={props.classId}
         loggedInState={props.loggedInState}
       />
-    </div>
+    </Box>
   );
 };
 
