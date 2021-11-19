@@ -1,9 +1,7 @@
 import * as React from "react";
-import * as commonUrl from "../../common/url";
 import * as d from "../../data";
 import { ArrowBack, Menu, Notifications } from "@mui/icons-material";
 import {
-  Avatar,
   Badge,
   Box,
   Drawer,
@@ -12,6 +10,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { AccountIcon } from "./AccountIcon";
 import { AppState } from "../state";
 import { Link } from "./Link";
 import { getNotDoneNotificationCount } from "../state/loggedInState";
@@ -111,14 +110,13 @@ const LeftAction = (props: {
               {props.appState.logInState.tag === "LoggedIn" ? (
                 <Link location={d.Location.Setting} appState={props.appState}>
                   <Box display="flex" alignItems="center">
-                    <Avatar
-                      alt={props.appState.logInState.loggedInState.account.name}
-                      src={commonUrl
-                        .imageUrl(
-                          props.appState.logInState.loggedInState.account
-                            .iconHash
-                        )
-                        .toString()}
+                    <AccountIcon
+                      name={
+                        props.appState.logInState.loggedInState.account.name
+                      }
+                      imageHashValue={
+                        props.appState.logInState.loggedInState.account.iconHash
+                      }
                     />
                     <Typography>
                       {props.appState.logInState.loggedInState.account.name}

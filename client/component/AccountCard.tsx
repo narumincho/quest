@@ -1,8 +1,8 @@
 import * as React from "react";
-import * as commonUrl from "../../common/url";
 import * as d from "../../data";
-import { Avatar, Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { LoggedInState, getAccountById } from "../state/loggedInState";
+import { AccountIcon } from "./AccountIcon";
 
 export const AccountCard = (props: {
   readonly accountId: d.AccountId;
@@ -27,9 +27,9 @@ export const AccountCardFromData = (props: {
         padding: 1,
       }}
     >
-      <Avatar
-        alt={props.account.name}
-        src={commonUrl.imageUrl(props.account.iconHash).toString()}
+      <AccountIcon
+        name={props.account.name}
+        imageHashValue={props.account.iconHash}
       />
       <Typography>{props.account.name}</Typography>
     </Paper>
