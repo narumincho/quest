@@ -222,15 +222,13 @@ const StudentSelfEditQuestionPageLoaded = (props: {
           </Box>
         </Box>
       </Box>
-      <Box padding={1}>
+      <Box display="grid" padding={1} gridTemplateColumns="1fr 1fr" gap={1}>
         <TemplateSaveButton
           onClick={() => {
             answerQuestion(false);
           }}
           disabled={!isFirst && validationResult._ === "Error"}
         />
-      </Box>
-      <Box padding={1}>
         <ConfirmSaveButton
           onClick={() => {
             answerQuestion(true);
