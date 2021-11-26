@@ -1,8 +1,8 @@
-import * as apiCodec from "../common/apiCodec";
 import * as d from "../data";
 import * as firebaseInterface from "./firebaseInterface";
 import * as functions from "firebase-functions";
 import * as lib from "./lib";
+import { ApiCodec, apiCodec } from "../common/apiCodec";
 import { imagePng } from "./mimeType";
 import { nowMode } from "../common/nowMode";
 
@@ -75,7 +75,7 @@ const callApiFunction = (
       return callApiFromCodecAndFunction(
         selectedApiName,
         binary,
-        selectedApiCodec as apiCodec.ApiCodec<unknown, unknown>,
+        selectedApiCodec as ApiCodec<unknown, unknown>,
         lib.apiFunc[selectedApiName as keyof typeof apiCodec] as (
           request: unknown
         ) => Promise<unknown>
@@ -88,7 +88,7 @@ const callApiFunction = (
 const callApiFromCodecAndFunction = async <Request, Response>(
   apiName: string,
   binary: Uint8Array,
-  codec: apiCodec.ApiCodec<Request, Response>,
+  codec: ApiCodec<Request, Response>,
   func: (request: Request) => Promise<Response>
 ): Promise<ReadonlyArray<number>> => {
   const request: Request = codec.request.decode(0, binary).result;

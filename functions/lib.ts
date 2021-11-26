@@ -1,21 +1,19 @@
-import * as apiCodec from "../common/apiCodec";
 import * as crypto from "crypto";
 import * as d from "../data";
 import * as firebaseInterface from "./firebaseInterface";
 import * as jimp from "jimp";
 import * as jsonWebToken from "jsonwebtoken";
 import * as validation from "../common/validation";
+import { ApiCodecType, GetCodecType } from "../common/apiCodec";
 import { QuestionTree, getQuestionTree } from "../client/state/question";
 import axios, { AxiosResponse } from "axios";
 import { imagePng } from "./mimeType";
 import { lineLoginCallbackUrl } from "../common/url";
 
-type ApiCodecType = typeof apiCodec;
-
 export const apiFunc: {
   [apiName in keyof ApiCodecType]: (
-    request: apiCodec.GetCodecType<ApiCodecType[apiName]["request"]>
-  ) => Promise<apiCodec.GetCodecType<ApiCodecType[apiName]["response"]>>;
+    request: GetCodecType<ApiCodecType[apiName]["request"]>
+  ) => Promise<GetCodecType<ApiCodecType[apiName]["response"]>>;
 } = {
   requestLineLoginUrl: async (location) => {
     const state = createRandomId();
