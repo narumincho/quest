@@ -6,40 +6,47 @@ import { ApiCodec, apiCodec } from "../common/apiCodec";
 import { imagePng } from "./mimeType";
 import { nowMode } from "../common/nowMode";
 
-if (nowMode === "development") {
-  firebaseInterface.createAccount({
-    id: d.AccountId.fromString("71d21c2b889f7479fc67e1abacb5d16b"),
-    name: "テスト0",
-    accountTokenHash:
-      "a565b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955",
-    iconHash: d.ImageHashValue.fromString(
-      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
-    ),
-    lineId: "noLineId",
-  });
-  firebaseInterface.createAccount({
-    id: d.AccountId.fromString("443d74e7acc6c2098441e2e4d80cf604"),
-    name: "テスト1",
-    accountTokenHash: d.AccountToken.fromString(
-      "67bb8cdaca8b776f9a30154a3a3add4884d01992b2b4ca79f637d20af0dca4c2"
-    ),
-    iconHash: d.ImageHashValue.fromString(
-      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
-    ),
-    lineId: "noLineId",
-  });
-  firebaseInterface.createAccount({
-    id: d.AccountId.fromString("5abdaa7f315f7906cf5eb41ac95d3a77"),
-    name: "テスト2",
-    accountTokenHash: d.AccountToken.fromString(
-      "1759bc4af3049e16edd06fc8f71b301d4fe04116b52aa4451d96e49bad139609"
-    ),
-    iconHash: d.ImageHashValue.fromString(
-      "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
-    ),
-    lineId: "noLineId",
-  });
-}
+const createSampleAccount = async (): Promise<void> => {
+  if (
+    nowMode === "development" &&
+    !(await firebaseInterface.getDevelopmentFlag())
+  ) {
+    await firebaseInterface.setDevelopmentFlag(true);
+    firebaseInterface.createAccount({
+      id: d.AccountId.fromString("71d21c2b889f7479fc67e1abacb5d16b"),
+      name: "テスト0",
+      accountTokenHash:
+        "a565b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955",
+      iconHash: d.ImageHashValue.fromString(
+        "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
+      ),
+      lineId: "noLineId",
+    });
+    firebaseInterface.createAccount({
+      id: d.AccountId.fromString("443d74e7acc6c2098441e2e4d80cf604"),
+      name: "テスト1",
+      accountTokenHash: d.AccountToken.fromString(
+        "67bb8cdaca8b776f9a30154a3a3add4884d01992b2b4ca79f637d20af0dca4c2"
+      ),
+      iconHash: d.ImageHashValue.fromString(
+        "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
+      ),
+      lineId: "noLineId",
+    });
+    firebaseInterface.createAccount({
+      id: d.AccountId.fromString("5abdaa7f315f7906cf5eb41ac95d3a77"),
+      name: "テスト2",
+      accountTokenHash: d.AccountToken.fromString(
+        "1759bc4af3049e16edd06fc8f71b301d4fe04116b52aa4451d96e49bad139609"
+      ),
+      iconHash: d.ImageHashValue.fromString(
+        "ff65b235efeaff4b2d81543f6b532f78de4fc04d1fe5b1415c968837a81f4955"
+      ),
+      lineId: "noLineId",
+    });
+  }
+};
+
 /*
  * =====================================================================
  *               api データを取得したり変更したりする
@@ -51,6 +58,9 @@ if (nowMode === "development") {
  * =====================================================================
  */
 export const api = functions.https.onRequest(async (request, response) => {
+  if (nowMode === "development") {
+    await createSampleAccount();
+  }
   const apiName = request.path.split("/")[2];
   console.log("call api function!", apiName);
   const result = await callApiFunction(apiName, request.body as Buffer);

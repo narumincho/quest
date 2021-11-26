@@ -83,6 +83,11 @@ const firestore = getFirestore(app) as unknown as typedFirestore.Firestore<{
     value: NotificationDocument;
     subCollections: Record<never, never>;
   };
+  development: {
+    key: "main";
+    value: { isCreatedAccount: boolean };
+    subCollections: Record<never, never>;
+  };
 }>;
 
 type AnswerDocument = {
@@ -893,4 +898,17 @@ export const firestoreTimestampToDateTime = (
     day: Math.floor(millisecond / millisecondInDay),
     millisecond: millisecond % millisecondInDay,
   };
+};
+
+export const setDevelopmentFlag = async (
+  isCreatedAccount: boolean
+): Promise<void> => {
+  await firestore.collection("development").doc("main").set({
+    isCreatedAccount,
+  });
+};
+
+export const getDevelopmentFlag = async (): Promise<boolean> => {
+  const e = await firestore.collection("development").doc("main").get();
+  return e.data()?.isCreatedAccount ?? false;
 };
