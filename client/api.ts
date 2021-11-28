@@ -1,7 +1,5 @@
-import * as apiCodec from "../common/apiCodec";
 import * as d from "../data";
-
-type ApiCodecType = typeof apiCodec;
+import { ApiCodecType, GetCodecType, apiCodec } from "../common/apiCodec";
 
 /**
  * quest の API. api[api名](リクエストのデータ) で呼べる.
@@ -10,12 +8,10 @@ export const api = Object.fromEntries(
   Object.entries(apiCodec).map(([apiName, codec]) => [
     apiName,
     async (
-      requestData: apiCodec.GetCodecType<
-        ApiCodecType[keyof ApiCodecType]["request"]
-      >
+      requestData: GetCodecType<ApiCodecType[keyof ApiCodecType]["request"]>
     ): Promise<
       d.Result<
-        apiCodec.GetCodecType<ApiCodecType[keyof ApiCodecType]["response"]>,
+        GetCodecType<ApiCodecType[keyof ApiCodecType]["response"]>,
         string
       >
     > => {
@@ -47,8 +43,8 @@ export const api = Object.fromEntries(
   ])
 ) as {
   [apiName in keyof ApiCodecType]: (
-    requestData: apiCodec.GetCodecType<ApiCodecType[apiName]["request"]>
+    requestData: GetCodecType<ApiCodecType[apiName]["request"]>
   ) => Promise<
-    d.Result<apiCodec.GetCodecType<ApiCodecType[apiName]["response"]>, string>
+    d.Result<GetCodecType<ApiCodecType[apiName]["response"]>, string>
   >;
 };

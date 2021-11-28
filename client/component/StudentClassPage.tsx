@@ -51,18 +51,18 @@ export const StudentClassPage = (props: {
         <Typography variant="h5">{props.participantClass.name}</Typography>
       </Box>
       <Box padding={1}>
-        <Typography variant="h6">クラスの参加者</Typography>
-        <ParticipantList
-          appState={props.appState}
-          participantList={props.participantList}
-        />
-      </Box>
-      <Box padding={1}>
         <StudentSelfQuestionTreeList
           treeList={props.questionTreeList}
           classId={props.participantClass.id}
           appState={props.appState}
           loggedInState={props.loggedInState}
+        />
+      </Box>
+      <Box padding={1}>
+        <Typography variant="h6">クラスの参加者</Typography>
+        <ParticipantList
+          appState={props.appState}
+          participantList={props.participantList}
         />
       </Box>
       <Box padding={1}>クラスID: {props.participantClass.id}</Box>
