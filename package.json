@@ -55,7 +55,7 @@
     "firebase-functions": "3.16.0",
     "firebase-tools": "11.22.0",
     "fs-extra": "10.0.0",
-    "jimp": "0.16.1",
+    "jimp": "0.22.12",
     "jsonwebtoken": "8.5.1",
     "notistack": "2.0.3",
     "npm-check-updates": "16.7.4",
